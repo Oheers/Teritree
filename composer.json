@@ -1,0 +1,15 @@
+{
+    "name": "cyril/teritree",
+    "autoload": {
+        "psr-4": {
+            "Cyril\\Teritree\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Oheers",
+            "email": "38732412+Oheers@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}

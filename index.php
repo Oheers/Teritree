@@ -111,6 +111,16 @@
                 margin-bottom: 0px;
             }
         }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .canvas1 {
+            opacity: 20%;
+        }
     </style>
 </head>
 <body>
@@ -122,12 +132,6 @@
         </svg>
     </a>
 </nav>
-<div class="teo">
-    <form>
-        <input type="text" placeholder="teo put your SQL injection here lad">
-        <input type="submit">
-    </form>
-</div>
 <div class="content">
     <svg
         class="main-image"
@@ -198,11 +202,47 @@
         </a>
     </div>
 
-    <canvas id="canvas"></canvas>
+    <canvas class="canvas1" id="canvas1"></canvas>
+
+    <canvas id="canvas2"></canvas>
 
     <script type="text/javascript">
-        var canvas = document.getElementById("canvas");
-        var ctx = canvas.getContext("2d");
+        var canvas1 = document.getElementById("canvas1");
+        var ctx = canvas1.getContext("2d");
+
+        canvas1.width = window.innerWidth;
+        canvas1.height = window.innerHeight;
+
+        var gradient = ctx.createLinearGradient(0, 0, canvas1.width, canvas1.height);
+        gradient.addColorStop(0, "rgb(255, 0, 0)");
+        gradient.addColorStop(0.25, "rgb(255, 255, 0)");
+        gradient.addColorStop(0.5, "rgb(0, 255, 0)");
+        gradient.addColorStop(0.75, "rgb(0, 255, 255)");
+        gradient.addColorStop(1, "rgb(0, 0, 255)");
+
+        var posX = canvas1.width / 2;
+        var posY = canvas1.height / 2;
+        var radius = 50;
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas1.width, canvas1.height);
+
+            ctx.beginPath();
+            ctx.arc(posX, posY, radius, 0, Math.PI * 2, false);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            radius += 2;
+
+            if (radius > canvas1.width * 0.8) {
+                radius = 50;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        var canvas = document.getElementById("canvas2");
+        var ctx2 = canvas.getContext("2d");
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -224,14 +264,14 @@
         }
 
         function drawParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx2.clearRect(0, 0, canvas.width, canvas.height);
 
             for (var i = 0; i < particles.length; i++) {
                 var p = particles[i];
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2, false);
-                ctx.fillStyle = p.color;
-                ctx.fill();
+                ctx2.beginPath();
+                ctx2.arc(p.x, p.y, p.radius, 0, Math.PI * 2, false);
+                ctx2.fillStyle = p.color;
+                ctx2.fill();
 
                 p.x += p.vx;
                 p.y += p.vy;
@@ -246,6 +286,7 @@
         }
 
         drawParticles();
+        draw();
     </script>
 
 </div>

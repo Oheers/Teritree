@@ -198,6 +198,56 @@
         </a>
     </div>
 
+    <canvas id="canvas"></canvas>
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        var particles = [];
+        var particleCount = 500;
+
+        for (var i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function Particle() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = Math.random() * 5 - 2.5;
+            this.vy = Math.random() * 5 - 2.5;
+            this.color = "rgb(" + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + ")";
+            this.radius = Math.random() * 5 + 1;
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (var i = 0; i < particles.length; i++) {
+                var p = particles[i];
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < -50) p.x = canvas.width + 50;
+                if (p.y < -50) p.y = canvas.height + 50;
+                if (p.x > canvas.width + 50) p.x = -50;
+                if (p.y > canvas.height + 50) p.y = -50;
+            }
+
+            requestAnimationFrame(drawParticles);
+        }
+
+        drawParticles();
+    </script>
+
 </div>
 </body>
 </html>

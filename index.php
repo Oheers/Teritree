@@ -16,11 +16,14 @@
     </style>
 </head>
 <body>
-    <canvas id="viewport"></canvas>
+    <canvas id="viewport" tabindex='1'></canvas>
 
     <script>
         let grassBackground;
+        window.addEventListener('keydown', keyDownProcessor, false)
+        window.addEventListener('keyup', keyUpProcessor, false)
         backgroundRegister = []
+        var keyMap = {};
         const viewportArea = {
             canvas: document.getElementById("viewport"),
             start: function () {
@@ -36,12 +39,36 @@
 
         function startGame() {
             viewportArea.start();
-            for (let x=-1; x*65 < window.innerWidth+65; x++) {
-                for (let y=-1; y*65 < window.innerHeight+65; y++) {
-                    backgroundRegister.push(new BackgroundElement(65, 65, "rgb("+(255-(x*9))+", "+(255-(x*14))+", "+(50+(y*10))+")", x*65, y*65));
+            for (let x=-1; x*100 < window.innerWidth+100; x++) {
+                for (let y=-1; y*100 < window.innerHeight+100; y++) {
+                    backgroundRegister.push(new BackgroundElement(100, 100, "rgb("+(155+Math.floor(Math.random()*100))+", "+(155+Math.floor(Math.random()*100))+", "+(225+Math.floor(Math.random()*25))+")", x*100, y*100));
                 }
             }
             console.log(backgroundRegister);
+        }
+
+        function keyDownProcessor(event) {
+            keyMap[event.keyCode] = true;
+        }
+
+        function keyUpProcessor(event) {
+            keyMap[event.keyCode] = false;
+        }
+
+        function fetchKeyPress() {
+            let x = 0, y = 0;
+            if (keyMap[87]) y = 1; // W
+            if (keyMap[65]) x = 1; // A
+            if (keyMap[83]) y += -1 // S
+            if (keyMap[68]) x += -1 // D
+            if (keyMap[17]) {
+                console.log("sprint");
+                x = x * 15;
+                y = y * 15;
+            }
+            backgroundRegister.forEach(function(backgroundElement) {
+                backgroundElement.translate(x, y);
+            });
         }
 
         function BackgroundElement(width, height, colour, x, y) {
@@ -54,10 +81,15 @@
                 ctx.fillStyle = colour;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
             }
+            this.translate = function (x, y) {
+                this.x += x;
+                this.y += y;
+            }
         }
 
         function updateViewport() {
             viewportArea.clear();
+            fetchKeyPress();
             backgroundRegister.forEach(function(backgroundElement) {
                 backgroundElement.update();
             });

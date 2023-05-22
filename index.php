@@ -3,6 +3,7 @@
 <head>
     <title>Default page</title>
     <link rel="icon" type="image/x-icon" href="https://hpanel.hostinger.com/favicons/hostinger.png">
+    <link rel="preload" href="CozetteVector-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta content="Default page" name="description">
@@ -13,19 +14,44 @@
             margin: 0;
             overflow: hidden;
         }
+
+        @font-face {
+            font-family: 'CozetteVector';
+            src: url("CozetteVector-Regular.woff2");
+        }
+
+        .location {
+            position: absolute;
+            margin: 1%;
+            font-family: 'CozetteVector', Arial, serif;
+            font-size: 24px;
+            padding: 0.025% 1.75%;
+            background-color: rgb(200, 200, 200, 0.4);
+        }
+
+        .location span {
+            color: black;
+        }
     </style>
 </head>
 <body>
+
+    <div class="location">
+        <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
+    </div>
     <canvas id="viewport" tabindex='1'></canvas>
 
     <script>
         let grassBackground;
         var focused = true;
+        var camCentreX = 0;
+        var camCentreY = 0;
         window.addEventListener('keydown', keyDownProcessor, false)
         window.addEventListener('keyup', keyUpProcessor, false)
         window.addEventListener("blur", onBlur, false);
         window.addEventListener("focus", onFocus, false);
         backgroundRegister = []
+        const coordinateTracker = document.getElementById("location-preview")
         var keyMap = {};
         const viewportArea = {
             canvas: document.getElementById("viewport"),
@@ -44,7 +70,8 @@
             viewportArea.start();
             for (let x=-1; x*100 < window.innerWidth+100; x++) {
                 for (let y=-1; y*100 < window.innerHeight+100; y++) {
-                    backgroundRegister.push(new BackgroundElement(100, 100, "rgb("+(155+Math.floor(Math.random()*100))+", "+(255+Math.floor(Math.random()*25))+", "+(155+Math.floor(Math.random()*100))+")", x*100, y*100));
+                    backgroundRegister.push(new BackgroundElement(100, 100, "rgb("+(155+Math.floor(Math.random()*100))+", "+
+                        (255+Math.floor(Math.random()*25))+", "+(155+Math.floor(Math.random()*100))+")", x*100, y*100));
                 }
             }
         }
@@ -82,6 +109,8 @@
             backgroundRegister.forEach(function(backgroundElement) {
                 backgroundElement.translate(x, y);
             });
+            camCentreX += -(x / 100);
+            camCentreY += (y / 100);
         }
 
         function BackgroundElement(width, height, colour, x, y) {
@@ -100,9 +129,14 @@
             }
         }
 
+        function updateCoordinateTracker() {
+            coordinateTracker.innerHTML = "X: "+ (Math.round(camCentreX*2)/2).toFixed(1) +" Y: "+ (Math.round(camCentreY*2)/2).toFixed(1);
+        }
+
         function updateViewport() {
             viewportArea.clear();
             fetchKeyPress();
+            updateCoordinateTracker();
             backgroundRegister.forEach(function(backgroundElement) {
                 backgroundElement.update();
             });

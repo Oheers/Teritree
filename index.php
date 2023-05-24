@@ -61,6 +61,7 @@
         window.addEventListener("blur", onBlur, false);
         window.addEventListener("focus", onFocus, false);
         window.addEventListener("mousemove", onMouseMove, false);
+        window.addEventListener("mousedown", onMouseUp, false);
         backgroundRegister = []
         const coordinateTracker = document.getElementById("location-preview")
         const mouseTracker = document.getElementById("mouse-preview")
@@ -89,7 +90,6 @@
                 }
                 backgroundRegister[x] = xIndex;
             }
-            console.log(backgroundRegister);
         }
 
         function keyDownProcessor(event) {
@@ -114,6 +114,16 @@
         function onMouseMove(event) {
             mouseX = event.clientX + (camCentreX*scaledSquareSize);
             mouseY = event.clientY - (camCentreY*scaledSquareSize);
+        }
+
+        function onMouseUp() {
+            tileX = Math.floor(mouseX/scaledSquareSize);
+            tileY = Math.floor(mouseY/scaledSquareSize);
+            try {
+                backgroundRegister[tileX][tileY].highlight();
+            } catch (error) {
+
+            }
         }
 
         function fetchKeyPress(timeDiff) {
@@ -161,6 +171,10 @@
                 this.x += x;
                 this.y += y;
             }
+            this.highlight = function () {
+                this.originalColour = "orange";
+                console.log(this.originalColour);
+            }
         }
 
         function updateCoordinateTracker() {
@@ -171,7 +185,6 @@
         function selectTile() {
             tileX = Math.floor(mouseX/scaledSquareSize);
             tileY = Math.floor(mouseY/scaledSquareSize);
-            console.log(mouseX, mouseY, tileX, tileY, scaledSquareSize);
             try {
                 activeTile = backgroundRegister[tileX][tileY];
             } catch (error) {

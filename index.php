@@ -50,6 +50,7 @@
     <script>
         let grassBackground;
         var focused = true;
+        var scaledSquareSize = window.innerWidth / 20;
         var camCentreX = 0;
         var camCentreY = 0;
         var mouseX = 0;
@@ -80,12 +81,15 @@
 
         function startGame() {
             viewportArea.start();
-            for (let x=-1; x*100 < window.innerWidth+100; x++) {
-                for (let y=-1; y*100 < window.innerHeight+100; y++) {
-                    backgroundRegister.push(new BackgroundElement(100, 100, "rgb("+(155+Math.floor(Math.random()*100))+", "+
-                        (255+Math.floor(Math.random()*25))+", "+(155+Math.floor(Math.random()*100))+")", x*100, y*100));
+            for (let x=-1; x*scaledSquareSize < window.innerWidth+scaledSquareSize; x++) {
+                const xIndex = [];
+                for (let y=-1; y*scaledSquareSize < window.innerHeight+scaledSquareSize; y++) {
+                    xIndex[y] = (new BackgroundElement(scaledSquareSize, scaledSquareSize, "rgb("+(155+Math.floor(Math.random()*100))+", "+
+                        (255+Math.floor(Math.random()*25))+", "+(155+Math.floor(Math.random()*100))+")", x*scaledSquareSize, y*scaledSquareSize));
                 }
+                backgroundRegister[x] = xIndex;
             }
+            console.log(backgroundRegister);
         }
 
         function keyDownProcessor(event) {
@@ -108,8 +112,8 @@
         }
 
         function onMouseMove(event) {
-            mouseX = event.clientX + (camCentreX*100);
-            mouseY = event.clientY - (camCentreY*100);
+            mouseX = event.clientX + (camCentreX*scaledSquareSize);
+            mouseY = event.clientY - (camCentreY*scaledSquareSize);
         }
 
         function fetchKeyPress(timeDiff) {
@@ -125,13 +129,15 @@
             }
             x *= (timeDiff / 50);
             y *= (timeDiff / 50);
-            backgroundRegister.forEach(function(backgroundElement) {
-                backgroundElement.translate(x, y);
+            camCentreX += (-(x / scaledSquareSize));
+            camCentreY += (y / scaledSquareSize);
+            mouseX -= (x);
+            mouseY -= (y);
+            backgroundRegister.forEach(function(xRegister) {
+                xRegister.forEach(function(backgroundElement) {
+                    backgroundElement.translate(x, y);
+                });
             });
-            camCentreX += (-(x / 100));
-            camCentreY += (y / 100);
-            mouseX += (x);
-            mouseY += (y);
             lastUpdated = Date.now();
         }
 
@@ -163,13 +169,14 @@
         }
 
         function selectTile() {
-            tileX = Math.floor(mouseX/100.0)*100
-            tileY = Math.floor(mouseY/100.0)*100
-            backgroundRegister.forEach(function (backgroundElement) {
-                if (backgroundElement.x === tileX && backgroundElement.y === tileY) {
-                    activeTile = backgroundElement;
-                }
-            })
+            tileX = Math.floor(mouseX/scaledSquareSize);
+            tileY = Math.floor(mouseY/scaledSquareSize);
+            console.log(mouseX, mouseY, tileX, tileY, scaledSquareSize);
+            try {
+                activeTile = backgroundRegister[tileX][tileY];
+            } catch (error) {
+
+            }
         }
 
         function updateViewport() {
@@ -178,8 +185,10 @@
             fetchKeyPress(diff);
             selectTile();
             updateCoordinateTracker();
-            backgroundRegister.forEach(function(backgroundElement) {
-                backgroundElement.update();
+            backgroundRegister.forEach(function(xIndex) {
+                xIndex.forEach(function(backgroundElement) {
+                    backgroundElement.update();
+                });
             });
         }
 

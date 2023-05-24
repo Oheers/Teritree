@@ -15,6 +15,10 @@
             overflow: hidden;
         }
 
+        canvas {
+            position: relative;
+        }
+
         @font-face {
             font-family: 'CozetteVector';
             src: url("CozetteVector-Regular.woff2");
@@ -27,6 +31,7 @@
             font-size: 24px;
             padding: 0.025% 1.75%;
             background-color: rgb(200, 200, 200, 0.4);
+            z-index: 1;
         }
 
         .location span {
@@ -38,6 +43,7 @@
 
     <div class="location">
         <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
+        <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
     </div>
     <canvas id="viewport" tabindex='1'></canvas>
 
@@ -46,12 +52,18 @@
         var focused = true;
         var camCentreX = 0;
         var camCentreY = 0;
+        var mouseX = 0;
+        var mouseY = 0;
+        var lastUpdated = Date.now();
         window.addEventListener('keydown', keyDownProcessor, false)
         window.addEventListener('keyup', keyUpProcessor, false)
         window.addEventListener("blur", onBlur, false);
         window.addEventListener("focus", onFocus, false);
+        window.addEventListener("mousemove", onMouseMove, false);
         backgroundRegister = []
         const coordinateTracker = document.getElementById("location-preview")
+        const mouseTracker = document.getElementById("mouse-preview")
+        var activeTile = null;
         var keyMap = {};
         const viewportArea = {
             canvas: document.getElementById("viewport"),
@@ -95,7 +107,12 @@
             focused = true;
         }
 
-        function fetchKeyPress() {
+        function onMouseMove(event) {
+            mouseX = event.clientX + (camCentreX*100);
+            mouseY = event.clientY - (camCentreY*100);
+        }
+
+        function fetchKeyPress(timeDiff) {
             if (!focused) return;
             let x = 0, y = 0;
             if (keyMap[87]) y = 3; // W
@@ -106,21 +123,32 @@
                 x = x * 2;
                 y = y * 2;
             }
+            x *= (timeDiff / 50);
+            y *= (timeDiff / 50);
             backgroundRegister.forEach(function(backgroundElement) {
                 backgroundElement.translate(x, y);
             });
-            camCentreX += -(x / 100);
+            camCentreX += (-(x / 100));
             camCentreY += (y / 100);
+            mouseX += (x);
+            mouseY += (y);
+            lastUpdated = Date.now();
         }
 
-        function BackgroundElement(width, height, colour, x, y) {
+        function BackgroundElement(width, height, originalColour, x, y) {
             this.width = width;
             this.height = height;
+            this.originalColour = originalColour;
+            this.newColour = "red";
             this.x = x;
             this.y = y;
             this.update = function() {
                 const ctx = viewportArea.context;
-                ctx.fillStyle = colour;
+                if (activeTile === this) {
+                    ctx.fillStyle = this.newColour;
+                } else {
+                    ctx.fillStyle = this.originalColour;
+                }
                 ctx.fillRect(this.x, this.y, this.width, this.height);
             }
             this.translate = function (x, y) {
@@ -130,12 +158,25 @@
         }
 
         function updateCoordinateTracker() {
-            coordinateTracker.innerHTML = "X: "+ (Math.round(camCentreX*2)/2).toFixed(1) +" Y: "+ (Math.round(camCentreY*2)/2).toFixed(1);
+            coordinateTracker.innerHTML = "[Camera] X: "+ (Math.round(camCentreX*2)/2).toFixed(1) +" Y: "+ (Math.round(camCentreY*2)/2).toFixed(1);
+            mouseTracker.innerHTML = "[Mouse] X: "+ (Math.round(mouseX*2)/2).toFixed(1) +" Y: "+ (Math.round(mouseY*2)/2).toFixed(1);
+        }
+
+        function selectTile() {
+            tileX = Math.floor(mouseX/100.0)*100
+            tileY = Math.floor(mouseY/100.0)*100
+            backgroundRegister.forEach(function (backgroundElement) {
+                if (backgroundElement.x === tileX && backgroundElement.y === tileY) {
+                    activeTile = backgroundElement;
+                }
+            })
         }
 
         function updateViewport() {
             viewportArea.clear();
-            fetchKeyPress();
+            var diff = Date.now() - lastUpdated;
+            fetchKeyPress(diff);
+            selectTile();
             updateCoordinateTracker();
             backgroundRegister.forEach(function(backgroundElement) {
                 backgroundElement.update();

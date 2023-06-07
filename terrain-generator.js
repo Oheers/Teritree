@@ -24,10 +24,12 @@ class BackgroundElement {
         }
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
+
     translate(x, y) {
         this.x += x;
         this.y += y;
     }
+
     highlight(state) {
         if (!state) {
             this.currentColour = this.baseColour;
@@ -35,6 +37,18 @@ class BackgroundElement {
             this.currentColour = "orange";
         }
         this.highlighted = !this.highlighted;
+    }
+
+    get getCurrentColour() {
+        return this.currentColour;
+    }
+
+    get getX() {
+        return this.x;
+    }
+
+    get getY() {
+        return this.y;
     }
 }
 
@@ -49,6 +63,7 @@ class TerrainGenerator {
         this.windowWidth = _windowWidth;
         this.windowHeight = _windowHeight;
         this._scaledSquareSize = _windowWidth / 20;
+        this.compressor = new TerrainCompressor(this.terrainMap, this._scaledSquareSize);
     }
 
     generate() {
@@ -67,6 +82,11 @@ class TerrainGenerator {
                 backgroundElement.update();
             });
         });
+        this.compressor.render();
+    }
+
+    compress() {
+        this.compressor.fetch();
     }
 
     get terrainMap() {

@@ -25,6 +25,7 @@ class RenderEngine {
                 backgroundElement.translate(x, y);
             });
         });
+        terrain.compressor.translateCompression(x, y);
     }
 
     onBlur() {

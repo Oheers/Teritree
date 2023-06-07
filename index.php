@@ -45,11 +45,13 @@
 <div class="location">
     <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
+    <p><span id="tick-preview">{time}ms</span></p>
 </div>
 <canvas oncontextmenu="return false;" id="viewport" width=700px height=500px tabindex='1'></canvas>
 
 <script src="input-handler.js"></script>
 <script src="render-engine.js"></script>
+<script src="terrain-compressor.js"></script>
 <script src="terrain-generator.js"></script>
 <script src="controller.js"></script>
 </body>

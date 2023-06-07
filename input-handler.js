@@ -7,7 +7,6 @@ let keyMap = {};
 class InputHandler {
 
     constructor() {
-        console.log(this.keyMap);
         window.addEventListener('keydown', this.keyDownProcessor, false)
         window.addEventListener('keyup', this.keyUpProcessor, false)
         window.addEventListener("mousemove", this.onMouseMove, false);
@@ -83,7 +82,6 @@ class InputHandler {
     onMouseMove(event) {
         mouseX = event.clientX + (camCentreX*terrain.scaledSquareSize);
         mouseY = event.clientY - (camCentreY*terrain.scaledSquareSize);
-        console.log(event.clientX, camCentreX, terrain.scaledSquareSize);
     }
 
     onMouseDown(event) {

@@ -11,7 +11,7 @@
 
     <style>
         body {
-            margin: 0;
+            margin: 0;w
             overflow: hidden;
         }
 
@@ -51,7 +51,6 @@
 
 <script src="input-handler.js"></script>
 <script src="render-engine.js"></script>
-<script src="terrain-compressor.js"></script>
 <script src="terrain-generator.js"></script>
 <script src="controller.js"></script>
 </body>

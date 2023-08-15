@@ -16,7 +16,6 @@ let totalTickingTime = 0;
 function init() {
     viewport.start();
     terrain.generate();
-    terrain.compress()
 }
 
 function updateViewport() {

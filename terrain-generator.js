@@ -57,18 +57,17 @@ class TerrainGenerator {
     windowWidth = 0;
     windowHeight = 0;
     _scaledSquareSize = 0;
-    terrainMap = []
+    terrainMap = {}
 
     constructor(_windowWidth, _windowHeight) {
         this.windowWidth = _windowWidth;
         this.windowHeight = _windowHeight;
         this._scaledSquareSize = _windowWidth / 20;
-        this.compressor = new TerrainCompressor(this.terrainMap, this._scaledSquareSize);
     }
 
     generate() {
         for (let x=-1; x*this._scaledSquareSize < this.windowWidth+this._scaledSquareSize; x++) {
-            const vertical = [];
+            const vertical = {};
             for (let y=-1; y*this._scaledSquareSize < this.windowHeight+this._scaledSquareSize; y++) {
                 vertical[y] = (new BackgroundElement(this._scaledSquareSize, this._scaledSquareSize, randomColours[Math.floor(Math.random()*3)], x*this._scaledSquareSize, y*this._scaledSquareSize));
             }
@@ -77,16 +76,16 @@ class TerrainGenerator {
     }
 
     updateAll() {
-        this.terrainMap.forEach(function(verticalRow) {
-            verticalRow.forEach(function(backgroundElement) {
-                backgroundElement.update();
-            });
-        });
-        this.compressor.render();
-    }
-
-    compress() {
-        this.compressor.fetch();
+        for (const rowKey in this.terrainMap) {
+            if (this.terrainMap.hasOwnProperty(rowKey)) {
+                const row = this.terrainMap[rowKey];
+                for (const colKey in row) {
+                    if (row.hasOwnProperty(colKey)) {
+                        row[colKey].update();
+                    }
+                }
+            }
+        }
     }
 
     get terrainMap() {

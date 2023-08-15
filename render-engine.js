@@ -9,7 +9,7 @@ class RenderEngine {
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
                 this.context = this.canvas.getContext("2d");
-                setInterval(updateViewport, 20);
+                setInterval(updateViewport, 10);
             },
             clear: function () {
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -20,12 +20,16 @@ class RenderEngine {
     }
 
     translate(x, y) {
-        terrain.terrainMap.forEach(function(xRegister) {
-            xRegister.forEach(function(backgroundElement) {
-                backgroundElement.translate(x, y);
-            });
-        });
-        terrain.compressor.translateCompression(x, y);
+        for (const rowKey in terrain.terrainMap) {
+            if (terrain.terrainMap.hasOwnProperty(rowKey)) {
+                const row = terrain.terrainMap[rowKey];
+                for (const colKey in row) {
+                    if (row.hasOwnProperty(colKey)) {
+                        row[colKey].translate(x, y)
+                    }
+                }
+            }
+        }
     }
 
     onBlur() {

@@ -3,7 +3,7 @@ let camCentreY = 0;
 let mouseX = 0;
 let mouseY = 0;
 let keyMap = {};
-let moveSpeed = 1 // default = 1
+let moveSpeed = 5 // default = 1
 
 class InputHandler {
 
@@ -35,7 +35,7 @@ class InputHandler {
         mouseX -= (x);
         mouseY -= (y);
         renderer.translate(x, y);
-        //terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
+        terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
     }
 
     fetchKeyPress() {

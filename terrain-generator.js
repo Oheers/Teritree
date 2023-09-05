@@ -69,8 +69,8 @@ class Chunk {
     populate(squareSize) {
         for (let x=0; x < 32; x++) {
             const vertical = {};
-            for (let y=0; y > -32; y--) {
-                vertical[(this.chunkY*32) + y] = (new BackgroundElement(squareSize, squareSize + Math.random(), randomColours[getRandomNumber(0, 2)], ((this.chunkX*32) + x)*squareSize, ((this.chunkY*32) + y)*squareSize));
+            for (let y=0; y < 32; y++) {
+                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, randomColours[getRandomNumber(0, 2)], squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }
@@ -123,6 +123,7 @@ class TerrainGenerator {
 
     _scaledSquareSize = 0;
     terrainMap = {}
+    activeChunks = []
 
     constructor(_windowWidth, _windowHeight) {
         windowWidth = _windowWidth;
@@ -134,6 +135,11 @@ class TerrainGenerator {
         const newChunk = new Chunk(x, y);
         newChunk.populate(this._scaledSquareSize);
         newChunk.loadInMem(this.terrainMap);
+        this.activeChunks.push({
+            chunk: newChunk,
+            x: x,
+            y: y
+        })
     }
 
     /**
@@ -154,13 +160,54 @@ class TerrainGenerator {
         const newRenderRegion = this.findRenderRegion(newX, newY);
         const oldRenderRegion = this.findRenderRegion(oldX, oldY);
 
-        if (newRenderRegion.x === oldRenderRegion.x && newRenderRegion.y === oldRenderRegion.y) {
-            return;
+        if (newRenderRegion.x === oldRenderRegion.x) {} // Stopping the else statement triggering if moving up/down
+        else if (newRenderRegion.x > oldRenderRegion.x) {
+            // Player has moved EAST into a new render region
+            this.fetchChunk(newRenderRegion.x, newRenderRegion.y);
+            this.fetchChunk(newRenderRegion.x, newRenderRegion.y + 1);
+            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+                // Check if the current item meets the criteria, e.g., equal to 3
+                if (this.activeChunks[i].x === newRenderRegion.x - 2) {
+                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                }
+            }
+        } else {
+            // Player has moved WEST into a new render region
+            this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y);
+            this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y + 1);
+            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+                // Check if the current item meets the criteria, e.g., equal to 3
+                if (this.activeChunks[i].x === newRenderRegion.x + 1) {
+                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                }
+            }
         }
 
-        // Player has moved EAST into a new render region
-        if (newRenderRegion.x > oldRenderRegion.x) {
-
+        if (newRenderRegion.y === oldRenderRegion.y) {} // Stopping the else statement triggering if moving up/down
+        else if (newRenderRegion.y > oldRenderRegion.y) {
+            // Player has moved NORTH into a new render region
+            this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y + 1);
+            this.fetchChunk(newRenderRegion.x, newRenderRegion.y + 1);
+            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+                // Check if the current item meets the criteria, e.g., equal to 3
+                if (this.activeChunks[i].y === newRenderRegion.y - 1) {
+                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                }
+            }
+        } else {
+            // Player has moved SOUTH into a new render region
+            this.fetchChunk(newRenderRegion.x, newRenderRegion.y);
+            this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y);
+            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+                // Check if the current item meets the criteria, e.g., equal to 3
+                if (this.activeChunks[i].y === newRenderRegion.y + 2) {
+                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                }
+            }
         }
     }
 
@@ -179,8 +226,8 @@ class TerrainGenerator {
 
     findRenderRegion(x, y) {
        return {
-           x: Math.floor((x + 32) / 64),
-           y: Math.ceil((y - 32) / 64)
+           x: Math.floor((x + 16) / 32),
+           y: Math.ceil((y - 16) / 32)
        }
     }
 

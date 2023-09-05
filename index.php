@@ -51,6 +51,7 @@
 
 <script src="input-handler.js"></script>
 <script src="render-engine.js"></script>
+<script src="random-seed.js"></script>
 <script src="terrain-generator.js"></script>
 <script src="controller.js"></script>
 </body>

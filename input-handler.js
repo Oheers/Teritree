@@ -3,6 +3,7 @@ let camCentreY = 0;
 let mouseX = 0;
 let mouseY = 0;
 let keyMap = {};
+let moveSpeed = 1 // default = 1
 
 class InputHandler {
 
@@ -18,8 +19,8 @@ class InputHandler {
         if (!renderer.isFocus) return;
         this.fetchMousePress();
         const keyResult = this.fetchKeyPress();
-        keyResult.x *= (timeDiff / 50);
-        keyResult.y *= (timeDiff / 50);
+        keyResult.x *= (timeDiff / 50) * moveSpeed;
+        keyResult.y *= (timeDiff / 50) * moveSpeed;
         const x = keyResult.x;
         const y = keyResult.y;
         this.updatePositioning(x, y);
@@ -27,11 +28,14 @@ class InputHandler {
     }
 
     updatePositioning(x, y) {
+        const oldX = camCentreX;
+        const oldY = camCentreY;
         camCentreX += (-(x / terrain.scaledSquareSize));
         camCentreY += (y / terrain.scaledSquareSize);
         mouseX -= (x);
         mouseY -= (y);
         renderer.translate(x, y);
+        //terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
     }
 
     fetchKeyPress() {
@@ -80,8 +84,8 @@ class InputHandler {
     }
 
     onMouseMove(event) {
-        mouseX = event.clientX + (camCentreX*terrain.scaledSquareSize);
-        mouseY = event.clientY - (camCentreY*terrain.scaledSquareSize);
+        mouseX = event.clientX + (camCentreX*terrain.scaledSquareSize) - windowWidth / 2;
+        mouseY = event.clientY - (camCentreY*terrain.scaledSquareSize) - windowHeight / 2;
     }
 
     onMouseDown(event) {

@@ -15,7 +15,7 @@ let totalTickingTime = 0;
 
 function init() {
     viewport.start();
-    terrain.generate();
+    terrain.loadStartingChunks(camCentreX, camCentreY);
 }
 
 function updateViewport() {

@@ -121,19 +121,19 @@ class Chunk {
 
 class TerrainGenerator {
 
-    _scaledSquareSize = 0;
+    scaledSquareSize = 0;
     terrainMap = {}
     activeChunks = []
 
     constructor(_windowWidth, _windowHeight) {
         windowWidth = _windowWidth;
         windowHeight = _windowHeight;
-        this._scaledSquareSize = _windowWidth / 20;
+        this.scaledSquareSize = _windowWidth / 20;
     }
 
     fetchChunk(x, y) {
         const newChunk = new Chunk(x, y);
-        newChunk.populate(this._scaledSquareSize);
+        newChunk.populate(this.scaledSquareSize);
         newChunk.loadInMem(this.terrainMap);
         this.activeChunks.push({
             chunk: newChunk,
@@ -236,6 +236,6 @@ class TerrainGenerator {
     }
 
     get scaledSquareSize() {
-        return this._scaledSquareSize;
+        return this.scaledSquareSize;
     }
 }

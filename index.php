@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Default page</title>
+    <title>Teritree</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link rel="preload" href="CozetteVector-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
-    <meta content="Default page" name="description">
+    <meta content="Teritree" name="description">
     <meta content="width=device-width, initial-scale=1" name="viewport">
 
     <style>

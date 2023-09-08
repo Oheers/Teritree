@@ -3,7 +3,7 @@ let camCentreY = 0;
 let mouseX = 0;
 let mouseY = 0;
 let keyMap = {};
-let moveSpeed = 5 // default = 1
+let moveSpeed = 1.5 // default = 1
 
 class InputHandler {
 
@@ -13,6 +13,8 @@ class InputHandler {
         window.addEventListener("mousemove", this.onMouseMove, false);
         window.addEventListener("mousedown", this.onMouseDown, false);
         window.addEventListener("mouseup", this.onMouseUp, false);
+
+        moveSpeed = terrain.scaledSquareSize / 96;
     }
 
     tick(timeDiff) {

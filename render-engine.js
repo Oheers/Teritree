@@ -5,6 +5,9 @@ class RenderEngine {
         this.iWidth = window.innerWidth;
         this.iHeight = window.innerHeight;
 
+        console.log(this.iWidth);
+        console.log(this.iHeight);
+
         this.viewportArea = {
             canvas: document.getElementById("viewport"),
             start: function () {

@@ -3,44 +3,11 @@
 <head>
     <title>Teritree</title>
     <link rel="icon" type="image/x-icon" href="favicon.png">
-    <link rel="preload" href="CozetteVector-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta content="Teritree" name="description">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
-    <style>
-        body {
-            margin: 0;w
-            overflow: hidden;
-        }
-
-        canvas {
-            width: 100%; /* Set canvas width to 100% of its container */
-            max-width: 100%; /* Ensure the canvas doesn't exceed its container's width */
-            display: block; /* Remove any default inline spacing */
-            image-rendering: pixelated;
-        }
-
-        @font-face {
-            font-family: 'CozetteVector';
-            src: url("CozetteVector-Regular.woff2");
-        }
-
-        .location {
-            position: absolute;
-            margin: 1%;
-            font-family: 'CozetteVector', Arial, serif;
-            font-size: 24px;
-            padding: 0.025% 1.75%;
-            background-color: rgb(200, 200, 200, 0.4);
-            z-index: 1;
-        }
-
-        .location span {
-            color: black;
-        }
-    </style>
+    <link href="styles.css" rel="stylesheet" type="text/css" media="screen">
 </head>
 <body>
 
@@ -48,6 +15,10 @@
     <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="tick-preview">{time}ms</span></p>
+</div>
+<div class="warning">
+    <p><span id="current-warning">⚠️ Warning ⚠️</span></p>
+    <p><span id="current-warning">It is recommended to play this game on a smaller screen.</span></p>
 </div>
 <canvas oncontextmenu="return false;" id="viewport" width=700px height=500px tabindex='1'></canvas>
 

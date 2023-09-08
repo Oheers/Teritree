@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta content="Teritree" name="description">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
     <style>
         body {
@@ -16,7 +16,9 @@
         }
 
         canvas {
-            position: relative;
+            width: 100%; /* Set canvas width to 100% of its container */
+            max-width: 100%; /* Ensure the canvas doesn't exceed its container's width */
+            display: block; /* Remove any default inline spacing */
             image-rendering: pixelated;
         }
 

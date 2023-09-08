@@ -2,6 +2,8 @@ class RenderEngine {
 
     constructor() {
         this.focused = true;
+        this.iWidth = window.innerWidth;
+        this.iHeight = window.innerHeight;
 
         this.viewportArea = {
             canvas: document.getElementById("viewport"),
@@ -9,6 +11,8 @@ class RenderEngine {
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
                 this.context = this.canvas.getContext("2d");
+                this.context.imageSmoothingEnabled = false;
+                this.context.imageSmoothingQuality = "low";
                 setInterval(updateViewport, 2);
             },
             clear: function () {
@@ -47,5 +51,13 @@ class RenderEngine {
 
     get viewport() {
         return this.viewportArea;
+    }
+
+    get initialWidth() {
+        return this.iWidth;
+    }
+
+    get initialHeight() {
+        return this.iHeight;
     }
 }

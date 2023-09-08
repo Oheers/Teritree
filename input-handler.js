@@ -86,8 +86,8 @@ class InputHandler {
     }
 
     onMouseMove(event) {
-        mouseX = event.clientX + (camCentreX*terrain.scaledSquareSize) - windowWidth / 2;
-        mouseY = event.clientY - (camCentreY*terrain.scaledSquareSize) - windowHeight / 2;
+        mouseX = ((event.clientX / window.innerWidth) * renderer.initialWidth) + (camCentreX*terrain.scaledSquareSize) - windowWidth / 2;
+        mouseY = ((event.clientY / window.innerHeight) * renderer.initialHeight) - (camCentreY*terrain.scaledSquareSize) - windowHeight / 2;
     }
 
     onMouseDown(event) {

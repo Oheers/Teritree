@@ -23,27 +23,3 @@ canvas {
 .location p {
     color: black;
 }
-
-@media (max-width: 2700px), (max-height: 1300px) {
-    .warning {
-        display: none;
-    }
-}
-
-.warning {
-    position: absolute;
-    left: 50%;
-    margin-top: 1%;
-    transform: translateX(-50%);
-    font-family: 'Calibri', Arial, serif;
-    font-size: 24px;
-    padding: 0.025% 1.75%;
-    background-color: rgb(200, 0, 0, 0.4);
-    z-index: 1;
-}
-
-.warning p {
-    color: black;
-    font-size: 72px;
-    text-align: center;
-}

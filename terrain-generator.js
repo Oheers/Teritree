@@ -25,7 +25,7 @@ class BackgroundElement {
         } else {
             ctx.fillStyle = this.currentColour;
         }
-        ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width, this.height);
+        ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
     }
 
     translate(x, y) {
@@ -128,7 +128,7 @@ class TerrainGenerator {
     constructor(_windowWidth, _windowHeight) {
         windowWidth = _windowWidth;
         windowHeight = _windowHeight;
-        this.scaledSquareSize = _windowWidth / 20;
+        this.scaledSquareSize = 100;
     }
 
     fetchChunk(x, y) {

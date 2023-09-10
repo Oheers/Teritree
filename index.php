@@ -16,10 +16,6 @@
     <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="tick-preview">{time}ms</span></p>
 </div>
-<div class="warning">
-    <p><span id="current-warning">⚠️ Warning ⚠️</span></p>
-    <p><span id="current-warning">It is recommended to play this game on a smaller screen.</span></p>
-</div>
 <canvas oncontextmenu="return false;" id="viewport" width=700px height=500px tabindex='1'></canvas>
 
 <script src="input-handler.js"></script>

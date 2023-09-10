@@ -1,6 +1,6 @@
 const renderer = new RenderEngine();
 const viewport = renderer.viewport;
-const terrain = new TerrainGenerator(window.innerWidth, window.innerHeight);
+const terrain = new TerrainGenerator(1920, 1080);
 const inputHandler = new InputHandler();
 
 let lastUpdated = Date.now();

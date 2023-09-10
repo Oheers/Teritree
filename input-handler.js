@@ -14,7 +14,7 @@ class InputHandler {
         window.addEventListener("mousedown", this.onMouseDown, false);
         window.addEventListener("mouseup", this.onMouseUp, false);
 
-        moveSpeed = terrain.scaledSquareSize / 96;
+        moveSpeed = terrain.scaledSquareSize / 100;
     }
 
     tick(timeDiff) {
@@ -86,8 +86,8 @@ class InputHandler {
     }
 
     onMouseMove(event) {
-        mouseX = ((event.clientX / window.innerWidth) * renderer.initialWidth) + (camCentreX*terrain.scaledSquareSize) - windowWidth / 2;
-        mouseY = ((event.clientY / window.innerHeight) * renderer.initialHeight) - (camCentreY*terrain.scaledSquareSize) - windowHeight / 2;
+        mouseX = ((event.clientX / window.innerWidth) * 1920) + (camCentreX*terrain.scaledSquareSize) - windowWidth / 2;
+        mouseY = (event.clientY / renderer.gameHeight) * renderer.verticalZoomLevel - (camCentreY*terrain.scaledSquareSize) - windowHeight / 2;
     }
 
     onMouseDown(event) {

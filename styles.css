@@ -23,3 +23,16 @@ canvas {
 .location p {
     color: black;
 }
+
+.color-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    margin-bottom: 2vw;
+    transition: background-color 200ms ease;
+    transform: translateX(-50%);
+    width: 4vw;
+    height: 4vw;
+    border: 3px solid black;
+    background-color: #FECC02;
+}

@@ -3,7 +3,7 @@ let camCentreY = 0;
 let mouseX = 0;
 let mouseY = 0;
 let keyMap = {};
-let moveSpeed = 1.5 // default = 1
+let moveSpeed = 1.8 // default = 1
 
 class InputHandler {
 
@@ -42,13 +42,26 @@ class InputHandler {
 
     fetchKeyPress() {
         let x = 0, y = 0;
+
+        if (keyMap[49]) setColor(1);
+        else if (keyMap[50]) setColor(2);
+        else if (keyMap[51]) setColor(3);
+        else if (keyMap[52]) setColor(4);
+        else if (keyMap[53]) setColor(5);
+        else if (keyMap[54]) setColor(6);
+        else if (keyMap[55]) setColor(7);
+        else if (keyMap[56]) setColor(8);
+        else if (keyMap[57]) setColor(9);
+        else if (keyMap[48]) setColor(10);
+        else if (keyMap[101]) setColor(11); // The deep purple 5 on the right-side numpad.
+
         if (keyMap[87]) y = 4; // W
         if (keyMap[65]) x = 4; // A
         if (keyMap[83]) y += -4 // S
         if (keyMap[68]) x += -4 // D
         if (keyMap[16]) {
-            x = x * 2;
-            y = y * 2;
+            x = x * 1.6;
+            y = y * 1.6;
         }
         return {x, y};
     }

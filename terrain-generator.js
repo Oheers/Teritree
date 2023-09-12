@@ -21,7 +21,7 @@ class BackgroundElement {
     update() {
         const ctx = renderer.viewportArea.context;
         if (activeTile === this) {
-            ctx.fillStyle = "red";
+            ctx.fillStyle = item.color;
         } else {
             ctx.fillStyle = this.currentColour;
         }
@@ -37,7 +37,7 @@ class BackgroundElement {
         if (!state) {
             this.currentColour = this.baseColour;
         } else {
-            this.currentColour = "orange";
+            this.currentColour = item.color;
         }
         this.highlighted = !this.highlighted;
     }

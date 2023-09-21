@@ -1,8 +1,13 @@
-const http = require("http");
+const path = require("path");
+const express = require("express");
+const app = express();
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200);
-    res.end("Test 200")
-});
+app.use(express.static('./public'));
 
-server.listen(8000);
+app.get('/', (req, res) => {
+    res.status(200).send("teritree test");
+})
+
+app.listen(80, () => {
+    console.log("Server Initiated.");
+})

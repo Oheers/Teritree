@@ -3,6 +3,8 @@ const viewport = renderer.viewport;
 const terrain = new TerrainGenerator(1920, 1080);
 const inputHandler = new InputHandler();
 
+const socket = io();
+
 let lastUpdated = Date.now();
 
 const coordinateTracker = document.getElementById("location-preview");

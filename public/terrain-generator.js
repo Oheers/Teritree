@@ -35,11 +35,17 @@ class BackgroundElement {
 
     highlight(state) {
         if (!state) {
-            this.currentColour = this.baseColour;
+            this.setColour(this.baseColour)
         } else {
-            this.currentColour = item.color;
+            this.setColour(item.color);
         }
         this.highlighted = !this.highlighted;
+
+        socket.emit("new_colour", {x: Math.floor(mouseX/terrain.scaledSquareSize), y: Math.floor(mouseY/terrain.scaledSquareSize) , colour: this.currentColour})
+    }
+
+    setColour(colour) {
+        this.currentColour = colour;
     }
 
     get getCurrentColour() {

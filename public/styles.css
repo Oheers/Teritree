@@ -8,6 +8,7 @@ canvas {
     max-width: 100%; /* Ensure the canvas doesn't exceed its container's width */
     display: block; /* Remove any default inline spacing */
     image-rendering: pixelated;
+    position: relative;
 }
 
 .location {

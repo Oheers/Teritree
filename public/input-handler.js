@@ -2,6 +2,7 @@ let camCentreX = 0;
 let camCentreY = 0;
 let mouseX = 0;
 let mouseY = 0;
+let draw = false;
 let keyMap = {};
 let moveSpeed = 1.8 // default = 1
 
@@ -40,6 +41,19 @@ class InputHandler {
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
     }
 
+    fetchMousePress() {
+        if (draw) {
+            const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
+            const tileY = Math.floor(mouseY / terrain.scaledSquareSize);
+            try {
+                terrain.terrainMap[tileX][tileY].highlight(keyMap["mouse_L"]);
+            } catch (error) {
+
+            }
+            draw = false;
+        }
+    }
+
     fetchKeyPress() {
         let x = 0, y = 0;
 
@@ -66,23 +80,21 @@ class InputHandler {
         return {x, y};
     }
 
-    fetchMousePress() {
-        if (keyMap["mouse_L"] || keyMap["mouse_R"]) {
-            const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
-            const tileY = Math.floor(mouseY / terrain.scaledSquareSize);
-            try {
-                terrain.terrainMap[tileX][tileY].highlight(keyMap["mouse_L"]);
-            } catch (error) {
+    highlightTile(_mouseX, _mouseY, clickSide) {
+        const tileX = Math.floor(_mouseX / terrain.scaledSquareSize);
+        const tileY = Math.floor(_mouseY / terrain.scaledSquareSize);
+        try {
+            terrain.terrainMap[tileX][tileY].highlight(clickSide);
+        } catch (error) {
 
-            }
         }
     }
 
     selectTile() {
-        const tileX = Math.floor(mouseX/terrain.scaledSquareSize);
-        const tileY = Math.floor(mouseY/terrain.scaledSquareSize);
         try {
-            return terrain.terrainMap[tileX][tileY];
+            return terrain.terrainMap
+                [Math.floor(mouseX/terrain.scaledSquareSize)]
+                [Math.floor(mouseY/terrain.scaledSquareSize)];
         } catch (error) {
             return null;
         }
@@ -99,8 +111,15 @@ class InputHandler {
     }
 
     onMouseMove(event) {
+        const oldTileX = Math.floor(mouseX/terrain.scaledSquareSize);
         mouseX = ((event.clientX / window.innerWidth) * 1920) + (camCentreX*terrain.scaledSquareSize) - windowWidth / 2;
+        const oldTileY = Math.floor(mouseY/terrain.scaledSquareSize);
         mouseY = (event.clientY / renderer.gameHeight) * renderer.verticalZoomLevel - (camCentreY*terrain.scaledSquareSize) - windowHeight / 2;
+        if (oldTileX !== Math.floor(mouseX/terrain.scaledSquareSize) || oldTileY !== Math.floor(mouseY/terrain.scaledSquareSize)) {
+            if (keyMap["mouse_L"] || keyMap["mouse_R"]) {
+                draw = true;
+            }
+        }
     }
 
     onMouseDown(event) {
@@ -109,10 +128,11 @@ class InputHandler {
         } else {
             keyMap["mouse_L"] = true;
         }
+        draw = true;
         event.preventDefault();
     }
 
-    onMouseUp() {
+    onMouseUp(event) {
         keyMap["mouse_R"] = false;
         keyMap["mouse_L"] = false;
     }

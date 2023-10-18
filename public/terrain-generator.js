@@ -40,7 +40,6 @@ class BackgroundElement {
             this.setColour(item.color);
         }
         this.highlighted = !this.highlighted;
-        console.log("@new_colour")
         socket.emit("new_colour", {x: Math.floor(mouseX/terrain.scaledSquareSize), y: Math.floor(mouseY/terrain.scaledSquareSize) , colour: this.currentColour})
     }
 

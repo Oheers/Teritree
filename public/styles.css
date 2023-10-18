@@ -36,4 +36,5 @@ canvas {
     height: 4vw;
     border: 3px solid black;
     background-color: #FECC02;
+    z-index: 1;
 }

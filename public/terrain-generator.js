@@ -34,13 +34,22 @@ class BackgroundElement {
     }
 
     highlight(state) {
-        if (!state) {
-            this.setColour(this.baseColour)
-        } else {
-            this.setColour(item.color);
-        }
+        if (!state) this.setColour(this.baseColour)
+        else this.setColour(item.color);
+
+        const realX = Math.floor(mouseX/terrain.scaledSquareSize)
+        const realY = Math.floor(mouseY/terrain.scaledSquareSize)
+
         this.highlighted = !this.highlighted;
-        socket.emit("new_colour", {x: Math.floor(mouseX/terrain.scaledSquareSize), y: Math.floor(mouseY/terrain.scaledSquareSize) , colour: this.currentColour})
+        const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
+        if (!updateMap.hasOwnProperty(realX)) {
+            updateMap[realX] = {};
+        }
+
+        updateMap[realX][realY] = {
+            colour: this.currentColour
+        };
+        socket.emit("new_colour", {x: realX, y: realY, id: socket.id})
     }
 
     setColour(colour) {
@@ -65,6 +74,7 @@ class Chunk {
     chunkX;
     chunkY;
     chunkMap = {};
+    updateMap = {};
 
     constructor(_chunkX, _chunkY) {
         this.chunkX = _chunkX;
@@ -79,6 +89,7 @@ class Chunk {
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }
+        this.updateMap = fetchCache(this.chunkX, this.chunkY);
     }
 
     loadInMem(liveMap) {
@@ -99,9 +110,30 @@ class Chunk {
                 }
             }
         }
+
+        for (const rowKey in this.updateMap) {
+            if (this.updateMap.hasOwnProperty(rowKey)) {
+                const updateRow = this.updateMap[rowKey];
+
+                // Check if the corresponding row exists in liveMap, continues to the next if not
+                if (!liveMap.hasOwnProperty(rowKey)) {
+                    continue;
+                }
+
+                const liveRow = liveMap[rowKey]
+
+                // Loop through the columns of chunkMap
+                for (const colKey in updateRow) {
+                    if (updateRow.hasOwnProperty(colKey) && liveRow.hasOwnProperty(colKey)) {
+                        liveMap[rowKey][colKey].setColour(this.updateMap[rowKey][colKey].colour);
+                    }
+                }
+            }
+        }
     }
 
     unloadInMem(liveMap) {
+        cacheChunk(this.chunkX, this.chunkY, this.updateMap, Date.now() + 86400000)
         for (const rowKey in this.chunkMap) {
             if (this.chunkMap.hasOwnProperty(rowKey) && liveMap.hasOwnProperty(rowKey)) {
                 const chunkRow = this.chunkMap[rowKey];
@@ -128,7 +160,7 @@ class TerrainGenerator {
 
     scaledSquareSize = 0;
     terrainMap = {}
-    activeChunks = []
+    activeChunks = {}
 
     constructor(_windowWidth, _windowHeight) {
         windowWidth = _windowWidth;
@@ -140,11 +172,11 @@ class TerrainGenerator {
         const newChunk = new Chunk(x, y);
         newChunk.populate(this.scaledSquareSize);
         newChunk.loadInMem(this.terrainMap);
-        this.activeChunks.push({
+        this.activeChunks[getChunkID(x, y)] = {
             chunk: newChunk,
             x: x,
             y: y
-        })
+        }
     }
 
     /**
@@ -170,22 +202,22 @@ class TerrainGenerator {
             // Player has moved EAST into a new render region
             this.fetchChunk(newRenderRegion.x, newRenderRegion.y);
             this.fetchChunk(newRenderRegion.x, newRenderRegion.y + 1);
-            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+            for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
-                if (this.activeChunks[i].x === newRenderRegion.x - 2) {
-                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
-                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].x === newRenderRegion.x - 2) {
+                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
         } else {
             // Player has moved WEST into a new render region
             this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y);
             this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y + 1);
-            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+            for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
-                if (this.activeChunks[i].x === newRenderRegion.x + 1) {
-                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
-                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].x === newRenderRegion.x + 1) {
+                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
         }
@@ -195,22 +227,22 @@ class TerrainGenerator {
             // Player has moved NORTH into a new render region
             this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y + 1);
             this.fetchChunk(newRenderRegion.x, newRenderRegion.y + 1);
-            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+            for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
-                if (this.activeChunks[i].y === newRenderRegion.y - 1) {
-                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
-                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].y === newRenderRegion.y - 1) {
+                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
         } else {
             // Player has moved SOUTH into a new render region
             this.fetchChunk(newRenderRegion.x, newRenderRegion.y);
             this.fetchChunk(newRenderRegion.x - 1, newRenderRegion.y);
-            for (let i = this.activeChunks.length - 1; i >= 0; i--) {
+            for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
-                if (this.activeChunks[i].y === newRenderRegion.y + 2) {
-                    this.activeChunks[i].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
-                    this.activeChunks.splice(i, 1); // Remove the element at index i
+                if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].y === newRenderRegion.y + 2) {
+                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
         }
@@ -234,6 +266,16 @@ class TerrainGenerator {
            x: Math.floor((x + 16) / 32),
            y: Math.ceil((y - 16) / 32)
        }
+    }
+
+    cache() {
+        for (const chunkID in this.activeChunks) {
+            // Check if the current item meets the criteria, e.g., equal to 3
+            if (this.activeChunks.hasOwnProperty(chunkID)) {
+                const chunk = this.activeChunks[chunkID];
+                cacheChunk(chunk.chunk.chunkX, chunk.chunk.chunkY, chunk.chunk.updateMap, Date.now())
+            }
+        }
     }
 
     get terrainMap() {

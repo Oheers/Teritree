@@ -29,6 +29,7 @@ function updateViewport() {
     activeTile = inputHandler.selectTile();
     updateCoordinateTracker();
     terrain.updateAll();
+    if (totalTicks % 30 === 0) terrain.cache();
 }
 
 function getTerrainGenerator() {

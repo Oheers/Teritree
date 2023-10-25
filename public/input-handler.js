@@ -66,7 +66,7 @@ class InputHandler {
         else if (keyMap[55]) setColor(7);
         else if (keyMap[56]) setColor(8);
         else if (keyMap[57]) setColor(9);
-        else if (keyMap[48]) setColor(10);
+        else if (keyMap[48]) setColor(11);
         else if (keyMap[101]) setColor(11); // The deep purple 5 on the right-side numpad.
 
         if (keyMap[87]) y = 4; // W

@@ -1,9 +1,3 @@
-randomColours = [
-    "#efffef",
-    "#ccffcc",
-    "#ccffff"
-]
-
 let windowWidth = 0;
 let windowHeight = 0;
 
@@ -85,7 +79,7 @@ class Chunk {
         for (let x=0; x < 32; x++) {
             const vertical = {};
             for (let y=0; y < 32; y++) {
-                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, randomColours[getRandomNumber(0, 2)], squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
+                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, "#ffffff", squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }

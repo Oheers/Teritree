@@ -4,5 +4,6 @@ socket.on("update_tile", (data) => {
     const playerRenderRegion = terrain.findRenderRegion(camCentreX, camCentreY);
     if (relevantRenderRegion.x === playerRenderRegion.x && relevantRenderRegion.y === relevantRenderRegion.y) {
         terrain.terrainMap[data.x][data.y].setColour(data.colour)
+        console.log(data.x, data.y, terrain.terrainMap[data.x][data.y])
     }
 });

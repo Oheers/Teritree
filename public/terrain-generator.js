@@ -35,6 +35,17 @@ class BackgroundElement {
         const realY = Math.floor(mouseY/terrain.scaledSquareSize)
 
         this.highlighted = !this.highlighted;
+        this.cacheElement(realX, realY);
+        socket.emit("new_colour", {x: realX, y: realY, colour: this.currentColour, id: socket.id})
+    }
+
+    setColour(colour) {
+        console.log("new colour:", colour)
+        this.currentColour = colour;
+    }
+
+    // Adds a tile to the update maps, to be cached in localStorage.
+    cacheElement(realX, realY) {
         const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
         if (!updateMap.hasOwnProperty(realX)) {
             updateMap[realX] = {};
@@ -43,12 +54,6 @@ class BackgroundElement {
         updateMap[realX][realY] = {
             colour: this.currentColour
         };
-        socket.emit("new_colour", {x: realX, y: realY, colour: this.currentColour, id: socket.id})
-    }
-
-    setColour(colour) {
-        console.log("new colour:", colour)
-        this.currentColour = colour;
     }
 
     get getCurrentColour() {

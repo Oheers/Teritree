@@ -5,8 +5,6 @@ socket.on("update_tile", (data) => {
     if (relevantRenderRegion.x === playerRenderRegion.x && relevantRenderRegion.y === relevantRenderRegion.y) {
         const tile = terrain.terrainMap[data.x][data.y];
         tile.setColour(data.colour)
-        const realX = Math.floor(mouseX/terrain.scaledSquareSize)
-        const realY = Math.floor(mouseY/terrain.scaledSquareSize)
-        tile.cacheElement(realX, realY);
+        tile.cacheElement(data.x, data.y);
     }
 });

@@ -40,7 +40,6 @@ class BackgroundElement {
     }
 
     setColour(colour) {
-        console.log("new colour:", colour)
         this.currentColour = colour;
     }
 

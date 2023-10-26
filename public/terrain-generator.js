@@ -43,6 +43,7 @@ class BackgroundElement {
         updateMap[realX][realY] = {
             colour: this.currentColour
         };
+        socket.emit("new_colour", {x: realX, y: realY, colour: this.currentColour, id: socket.id})
     }
 
     setColour(colour) {

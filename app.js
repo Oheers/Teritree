@@ -6,8 +6,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-
-const dbmanager = require("./database.js")
+const dbBackend = require("./sql-backend")
 
 const port = 3000
 
@@ -30,6 +29,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("new_colour", (data) => {
+        dbBackend.onNewColour(data.x, data.y, data.colour)
         io.emit("update_tile", data);
     })
 })

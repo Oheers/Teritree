@@ -1,10 +1,11 @@
-const mysql = require("mysql");
+const mysql = require("mysql2");
+const auth = require('./auth-account.js')
 
 const connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'root',
-    database : 'teritree_db1'
+    host     : auth.host,
+    user     : auth.user,
+    password : auth.password,
+    database : auth.dbName
 });
 
 connection.connect(function(err) {
@@ -16,4 +17,19 @@ connection.connect(function(err) {
     console.log('Connected as ID ' + connection.threadId);
 });
 
-connection.end();
+function sendTileUpdate(chunkID, tileID, itemID, epochTime) {
+    connection.query(
+        "INSERT INTO teritree_world (chunkID, tileID, itemID, epochTime)\n" +
+        `VALUES (${chunkID}, ${tileID}, '${itemID}', ${epochTime})\n` +
+        "ON DUPLICATE KEY UPDATE\n" +
+        "itemID = VALUES(itemID),\n" +
+        "epochTime = VALUES(epochTime);",
+        function (err, result) {
+            if (err) throw err;
+        }
+    )
+}
+
+module.exports = {
+    sendTileUpdate
+}

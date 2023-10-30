@@ -16,12 +16,12 @@ class Item {
 
 const colors = [
     new Item("Red", "red"),
-    new Item("Orange", "#FECC02"),
+    new Item("Orange", "#fecc02"),
     new Item("Yellow", "yellow"),
     new Item("Lime", "lime"),
     new Item("Green", "green"),
     new Item("Aqua", "aqua"),
-    new Item("Blue", "#006AA7"),
+    new Item("Blue", "#006aa7"),
     new Item("Black", "black"),
     new Item("Gray", "gray"),
     new Item("White", "white"),

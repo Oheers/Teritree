@@ -26,11 +26,11 @@ class InputHandler {
         keyResult.y *= (timeDiff / 50) * moveSpeed;
         const x = keyResult.x;
         const y = keyResult.y;
-        this.updatePositioning(x, y);
+        this.updatePositioning(x, y, true);
         lastUpdated = Date.now();
     }
 
-    updatePositioning(x, y) {
+    updatePositioning(x, y, back) {
         const oldX = camCentreX;
         const oldY = camCentreY;
         camCentreX += (-(x / terrain.scaledSquareSize));
@@ -39,6 +39,11 @@ class InputHandler {
         mouseY -= (y);
         renderer.translate(x, y);
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
+        if (!back || (x === 0 && y === 0)) return;
+        socket.emit("move", {
+            newX: camCentreX,
+            newY: camCentreY
+        })
     }
 
     fetchMousePress() {

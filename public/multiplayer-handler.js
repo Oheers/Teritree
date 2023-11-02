@@ -8,3 +8,7 @@ socket.on("update_tile", (data) => {
         tile.cacheElement(data.x, data.y);
     }
 });
+
+socket.on("reset_position", (data) => {
+    inputHandler.updatePositioning((camCentreX - data.x) * terrain.scaledSquareSize, (data.y - camCentreY) * terrain.scaledSquareSize, false);
+});

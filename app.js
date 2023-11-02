@@ -17,20 +17,29 @@ app.get('/', (req, res) => {
 })
 
 const users = { }
+const { Player } = require("./objects/player.js")
 
 io.on("connection", (socket) => {
-    users[socket.id] = {
-        x: 0,
-        y: 0
-    }
+    const playerObject = new Player(526, 527, 0, 0, 10000, 2, "Oheers", 1, 1);
+    dbBackend.addPlayer(playerObject, socket.id)
 
     socket.on("disconnect", (reason) => {
-        delete users[socket.id];
+        dbBackend.deletePlayer(socket.id);
     })
 
     socket.on("new_colour", (data) => {
         dbBackend.onNewColour(data.x, data.y, data.colour)
         io.emit("update_tile", data);
+    })
+
+    socket.on("move", (data) => {
+        const result = dbBackend.onMove(data.newX, data.newY, socket.id);
+        if (result !== null) {
+            socket.emit("reset_position", {
+                x: result.x,
+                y: result.y
+            })
+        }
     })
 })
 

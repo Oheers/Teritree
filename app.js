@@ -4,9 +4,10 @@ const app = express();
 
 const http = require("http");
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+const ws = require("./ws-handler.js");
+ws.init(server);
 const dbBackend = require("./sql-backend")
+const worldHandler = require("./world-handler.js");
 
 const port = 3000
 
@@ -16,32 +17,15 @@ app.get('/', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, './public/index.html'))
 })
 
+app.get('/api/world/chunk/:id', async (req, res) => {
+    const chunkID = req.params.id;
+    const viewTime = req.query.time;
+    const chunk = await worldHandler.restChunk(chunkID, viewTime);
+    res.status(200).send(chunk)
+})
+
 const users = { }
 const { Player } = require("./objects/player.js")
-
-io.on("connection", (socket) => {
-    const playerObject = new Player(526, 527, 0, 0, 10000, 2, "Oheers", 1, 1);
-    dbBackend.addPlayer(playerObject, socket.id)
-
-    socket.on("disconnect", (reason) => {
-        dbBackend.deletePlayer(socket.id);
-    })
-
-    socket.on("new_colour", (data) => {
-        dbBackend.onNewColour(data.x, data.y, data.colour)
-        io.emit("update_tile", data);
-    })
-
-    socket.on("move", (data) => {
-        const result = dbBackend.onMove(data.newX, data.newY, socket.id);
-        if (result !== null) {
-            socket.emit("reset_position", {
-                x: result.x,
-                y: result.y
-            })
-        }
-    })
-})
 
 server.listen(port, () => {
     console.log("Server Initiated.");

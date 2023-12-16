@@ -1,14 +1,24 @@
 const auth = require('./auth-account.js')
 const dbManager = require("./database.js")
+const utils = require("./utils.js");
+const { changeInternalCache, onTileChange} = require("./world-handler");
 
 const activeUsers = {}
 const userLocations = {}
 const activeChunks = {}
 
-const maxSpeed = 0.002
+const maxSpeed = 0.0019
 
 function addPlayer(player, socketID) {
     activeUsers[socketID] = player;
+}
+
+function getCoords(socketID) {
+    const user = activeUsers[socketID];
+    return {
+        x: user.x,
+        y: user.y
+    }
 }
 
 function deletePlayer(socketID) {
@@ -16,10 +26,11 @@ function deletePlayer(socketID) {
 }
 
 // Processes the x, y, and colour variables and sends them to the database backend.
-function onNewColour(x, y, colour) {
-    const chunkID = ((157 - Math.ceil(y / 32)) * 312) + (Math.floor(x / 32) + 156);
-    const tileID = (Math.abs(y) % 32) * 32 + (Math.abs(x) % 32);
-    dbManager.sendTileUpdate(chunkID, tileID, getItemID(colour), Date.now());
+function onNewColour(x, y, colourID) {
+    const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(y / 32));
+    const tileID = utils.getTileID(x, y);
+    onTileChange(chunkID, tileID, colourID);
+    //dbManager.sendTileUpdate(chunkID, tileID, colourID, Date.now());
 }
 
 function onMove(newX, newY, playerID) {
@@ -34,7 +45,14 @@ function onMove(newX, newY, playerID) {
     if (Math.sqrt((newX - player.x)**2 + (newY - player.y)**2) / (Date.now() - player.lastMoveTime) > maxSpeed) {
         // Player moving illegally, returning the difference so that it can be reversed clientside in case it was due to
         // latency issue rather than hacked clients.
-        return shouldRecalibrate(player);
+        //return shouldRecalibrate(player);
+        // @TODO DEBUG: DISABLED ANTICHEAT, REDISABLE ON LIVE RELEASE
+    }
+
+    const newRenderRegion = utils.findRenderRegion(newX, newY);
+    const oldRenderRegion = utils.findRenderRegion(player.x, player.y);
+    if (newRenderRegion !== oldRenderRegion) {
+        changeInternalCache(newRenderRegion, oldRenderRegion, playerID)
     }
     player.lastMoveTime = Date.now();
     player.x = newX;
@@ -60,7 +78,7 @@ function getItemID(colour) {
 }
 
 module.exports = {
-    onNewColour, onMove, addPlayer, deletePlayer
+    onNewColour, onMove, addPlayer, deletePlayer, getCoords
 }
 
 // Items, the index of each item is the id of the item.

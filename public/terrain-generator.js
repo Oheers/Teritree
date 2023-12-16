@@ -7,6 +7,7 @@ class BackgroundElement {
         this.height = _height;
         this.baseColour = _originalColour;
         this.currentColour = _originalColour;
+        this.colourID = 1;
         this.highlighted = false;
         this.x = _x;
         this.y = _y;
@@ -29,30 +30,38 @@ class BackgroundElement {
 
     highlight(state) {
         if (!state) this.setColour(this.baseColour)
-        else this.setColour(item.color);
+        else this.setColour(item.colorID);
 
         const realX = Math.floor(mouseX/terrain.scaledSquareSize)
         const realY = Math.floor(mouseY/terrain.scaledSquareSize)
 
         this.highlighted = !this.highlighted;
         this.cacheElement(realX, realY);
-        socket.emit("new_colour", {x: realX, y: realY, colour: this.currentColour, id: socket.id})
+        socket.emit("new_colour", {x: realX, y: realY, colour: this.colourID, id: socket.id})
     }
 
     setColour(colour) {
-        this.currentColour = colour;
+        this.currentColour = colors[colour - 1].color
+        this.colourID = colour;
     }
 
     // Adds a tile to the update maps, to be cached in localStorage.
     cacheElement(realX, realY) {
         const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
-        if (!updateMap.hasOwnProperty(realX)) {
-            updateMap[realX] = {};
+        const tileID = ((4493 - realY) * 9984) + (realX + 4492)
+        for (let i = 0; i < updateMap.length; i++) {
+            if (updateMap[i].tileID === tileID) {
+                updateMap[i] = {
+                    tileID: tileID,
+                    itemID: this.colourID
+                }
+                return;
+            }
         }
-
-        updateMap[realX][realY] = {
-            colour: this.currentColour
-        };
+        updateMap.push({
+            tileID: tileID,
+            itemID: this.colourID
+        })
     }
 
     get getCurrentColour() {
@@ -73,7 +82,7 @@ class Chunk {
     chunkX;
     chunkY;
     chunkMap = {};
-    updateMap = {};
+    updateMap = [];
 
     constructor(_chunkX, _chunkY) {
         this.chunkX = _chunkX;
@@ -84,7 +93,7 @@ class Chunk {
         for (let x=0; x < 32; x++) {
             const vertical = {};
             for (let y=0; y < 32; y++) {
-                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, "#ffffff", squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
+                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colors[9].color, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }
@@ -110,7 +119,24 @@ class Chunk {
             }
         }
 
-        for (const rowKey in this.updateMap) {
+        for (const i in this.updateMap) {
+            const update = this.updateMap[i]
+            const uX = (update.tileID % 9984) - 4492
+            const uY = Math.floor(-update.tileID / 9984) + 4494
+
+            if (!liveMap.hasOwnProperty(uX)) {
+                continue;
+            }
+
+            const liveRow = liveMap[uX]
+
+            // Loop through the columns of chunkMap
+            if (liveRow.hasOwnProperty(uY)) {
+                liveMap[uX][uY].setColour(update.itemID);
+            }
+        }
+
+        /*for (const rowKey in this.updateMap) {
             if (this.updateMap.hasOwnProperty(rowKey)) {
                 const updateRow = this.updateMap[rowKey];
 
@@ -128,7 +154,7 @@ class Chunk {
                     }
                 }
             }
-        }
+        }*/
     }
 
     unloadInMem(liveMap) {

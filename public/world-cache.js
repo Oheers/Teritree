@@ -6,7 +6,7 @@ function cacheChunk(x, y, localMap, saveTime) {
 
 function fetchCache(x, y) {
     const cachedData = localStorage.getItem(getChunkID(x, y));
-    if (cachedData === null) return {};
+    if (cachedData === null) return [];
     const parsedData = JSON.parse(cachedData);
     const map = parsedData.map;
     const saveTime = parsedData.saveTime;
@@ -14,5 +14,5 @@ function fetchCache(x, y) {
 }
 
 function getChunkID(x, y) {
-    return ((157 - y) * 312) + (x + 156).toString();
+    return ((157 - y) * 312) + (x + 156)
 }

@@ -12,3 +12,7 @@ socket.on("update_tile", (data) => {
 socket.on("reset_position", (data) => {
     inputHandler.updatePositioning((camCentreX - data.x) * terrain.scaledSquareSize, (data.y - camCentreY) * terrain.scaledSquareSize, false);
 });
+
+socket.on("chunk_resting", (data) => {
+    console.log("NEW CHUNK RESTING:", data)
+})

@@ -4,7 +4,7 @@ let mouseX = 0;
 let mouseY = 0;
 let draw = false;
 let keyMap = {};
-let moveSpeed = 1.8 // default = 1
+let moveSpeed = 4 // default = 1
 
 class InputHandler {
 
@@ -16,6 +16,7 @@ class InputHandler {
         window.addEventListener("mouseup", this.onMouseUp, false);
 
         moveSpeed = terrain.scaledSquareSize / 100;
+        moveSpeed = 4
     }
 
     tick(timeDiff) {

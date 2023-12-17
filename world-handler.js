@@ -62,6 +62,9 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
 
 function removePlayerFromCachedChunk(chunkID, playerID) {
     const cachedChunk = cache[chunkID];
+    if (cachedChunk === undefined) {
+        console.log("CRASH PROTECTION: UNDEFINED CACHED CHUNK. DETAILS ON SESSION:\n", "cache:", cache, "chunkID:", chunkID, "playerID:", playerID, "cachedChunk:", cachedChunk)
+    }
     const activeUsers = cachedChunk.users;
     if (activeUsers.length === 1) {
         // This is the only player using this chunk, it can be unloaded from internal cache.
@@ -79,8 +82,7 @@ function removePlayerFromCachedChunk(chunkID, playerID) {
                     dbManager.cacheChunk(chunkID, cachedChunk.chunk, cacheUpdateTimes).then(
                         r => delete cache[chunkID])
                 }
-                // @TODO SET THIS TO 60000 MS
-            }, 1000);
+            }, 60000);
         }
     } else {
         const index = cachedChunk.users.indexOf(playerID);
@@ -110,7 +112,6 @@ async function downloadChunk(chunkID) {
 }
 
 async function restChunk(chunkID, time) {
-    console.log(cache)
     const cachedChunk = cache[chunkID];
     if (cachedChunk === undefined) return [];
     const updateMap = cachedChunk.chunk;
@@ -154,7 +155,7 @@ function uncacheChunks(chunk1, chunk2, socketID) {
     for (const chunkID in cache) {
         // Check if the current item meets the criteria, e.g., equal to 3
         if (cache.hasOwnProperty(chunkID) && ( chunkID === chunk1.toString() || chunkID === chunk2.toString() )) {
-            removePlayerFromCachedChunk(socketID, chunkID)
+            removePlayerFromCachedChunk(chunkID, socketID)
         }
     }
 }
@@ -162,17 +163,20 @@ function uncacheChunks(chunk1, chunk2, socketID) {
 function onTileChange(chunkID, tileID, colourID) {
     const start = Date.now();
     const updateMap = cache[chunkID].chunk;
+    const time = Date.now();
     if (updateMap === null) return;
-    cacheUpdateTimes[tileID] = Date.now();
+    cacheUpdateTimes[tileID] = time;
     for (let i=0; i < updateMap.length; i++) {
         if (updateMap[i].tileID === tileID) {
             updateMap[i].itemID = colourID;
+            updateMap[i].epochTime = time;
             return;
         }
     }
     updateMap.push({
         tileID: tileID,
-        itemID: colourID
+        itemID: colourID,
+        epochTime: time
     })
     if (Object.keys(cacheUpdateTimes).length > 10) {
         cacheAllChunks();

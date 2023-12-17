@@ -45,8 +45,7 @@ function onMove(newX, newY, playerID) {
     if (Math.sqrt((newX - player.x)**2 + (newY - player.y)**2) / (Date.now() - player.lastMoveTime) > maxSpeed) {
         // Player moving illegally, returning the difference so that it can be reversed clientside in case it was due to
         // latency issue rather than hacked clients.
-        //return shouldRecalibrate(player);
-        // @TODO DEBUG: DISABLED ANTICHEAT, REDISABLE ON LIVE RELEASE
+        return shouldRecalibrate(player);
     }
 
     const newRenderRegion = utils.findRenderRegion(newX, newY);

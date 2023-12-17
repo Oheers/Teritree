@@ -16,7 +16,6 @@ class InputHandler {
         window.addEventListener("mouseup", this.onMouseUp, false);
 
         moveSpeed = terrain.scaledSquareSize / 100;
-        moveSpeed = 4
     }
 
     tick(timeDiff) {

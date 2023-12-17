@@ -50,6 +50,7 @@ class BackgroundElement {
         const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
         const tileID = ((4493 - realY) * 9984) + (realX + 4492)
         for (let i = 0; i < updateMap.length; i++) {
+
             if (updateMap[i].tileID === tileID) {
                 updateMap[i] = {
                     tileID: tileID,
@@ -58,6 +59,7 @@ class BackgroundElement {
                 return;
             }
         }
+
         updateMap.push({
             tileID: tileID,
             itemID: this.colourID
@@ -83,6 +85,7 @@ class Chunk {
     chunkY;
     chunkMap = {};
     updateMap = [];
+    saveTime = 0;
 
     constructor(_chunkX, _chunkY) {
         this.chunkX = _chunkX;
@@ -97,7 +100,9 @@ class Chunk {
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }
-        this.updateMap = fetchCache(this.chunkX, this.chunkY);
+        const chunk = fetchCache(this.chunkX, this.chunkY)
+        this.updateMap = chunk.map
+        this.saveTime = chunk.saveTime;
     }
 
     loadInMem(liveMap) {
@@ -135,26 +140,6 @@ class Chunk {
                 liveMap[uX][uY].setColour(update.itemID);
             }
         }
-
-        /*for (const rowKey in this.updateMap) {
-            if (this.updateMap.hasOwnProperty(rowKey)) {
-                const updateRow = this.updateMap[rowKey];
-
-                // Check if the corresponding row exists in liveMap, continues to the next if not
-                if (!liveMap.hasOwnProperty(rowKey)) {
-                    continue;
-                }
-
-                const liveRow = liveMap[rowKey]
-
-                // Loop through the columns of chunkMap
-                for (const colKey in updateRow) {
-                    if (updateRow.hasOwnProperty(colKey) && liveRow.hasOwnProperty(colKey)) {
-                        liveMap[rowKey][colKey].setColour(this.updateMap[rowKey][colKey].colour);
-                    }
-                }
-            }
-        }*/
     }
 
     unloadInMem(liveMap) {
@@ -186,6 +171,7 @@ class TerrainGenerator {
     scaledSquareSize = 0;
     terrainMap = {}
     activeChunks = {}
+    restingQueue = []
 
     constructor(_windowWidth, _windowHeight) {
         windowWidth = _windowWidth;
@@ -197,11 +183,28 @@ class TerrainGenerator {
         const newChunk = new Chunk(x, y);
         newChunk.populate(this.scaledSquareSize);
         newChunk.loadInMem(this.terrainMap);
-        this.activeChunks[getChunkID(x, y)] = {
+        const chunkID = getChunkID(x, y)
+        this.activeChunks[chunkID] = {
             chunk: newChunk,
             x: x,
             y: y
         }
+        const index = this.restingQueue.indexOf(chunkID);
+        if (index !== -1) {
+            fetchRestingChunk(chunkID, newChunk.saveTime);
+            this.restingQueue.splice(index, 1)
+        }
+    }
+
+    actionRestUpdate(tileID, itemID) {
+        // Recovering x and y from compressed tileID form
+        const x = (tileID % 9984) - 4492
+        const y = 4493 - Math.floor(tileID / 9984)
+
+        // Actioning the colour changing
+        const tile = terrain.terrainMap[x][y];
+        tile.setColour(itemID)
+        tile.cacheElement(x, y);
     }
 
     /**

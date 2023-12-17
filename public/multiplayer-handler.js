@@ -14,5 +14,23 @@ socket.on("reset_position", (data) => {
 });
 
 socket.on("chunk_resting", (data) => {
-    console.log("NEW CHUNK RESTING:", data)
+    if (data in terrain.activeChunks) {
+        const chunk = terrain.activeChunks[data];
+        fetchRestingChunk(data, chunk.chunk.saveTime)
+    } else {
+        terrain.restingQueue.push(data)
+    }
 })
+
+function fetchRestingChunk(chunkID, saveTime) {
+    fetch(`http://localhost:3000/api/world/chunk/${chunkID}?time=${saveTime}`)
+        .then(r => {
+            return r.json();
+        })
+        .then(tileList => {
+                tileList.forEach(tile => {
+                    terrain.actionRestUpdate(tile.tileID, tile.itemID)
+                })
+            }
+        )
+}

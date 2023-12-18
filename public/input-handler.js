@@ -33,10 +33,14 @@ class InputHandler {
     updatePositioning(x, y, back) {
         const oldX = camCentreX;
         const oldY = camCentreY;
-        camCentreX += (-(x / terrain.scaledSquareSize));
-        camCentreY += (y / terrain.scaledSquareSize);
-        mouseX -= (x);
-        mouseY -= (y);
+        if (Math.abs(camCentreX + newX) < 4992) { // 9984 world tile size, 312 chunks
+            camCentreX += newX;
+            mouseX -= (x);
+        } else x = 0;
+        if (Math.abs(camCentreY + newY) < 4992) {
+            camCentreY += newY;
+            mouseY -= (y);
+        } else y = 0;
         renderer.translate(x, y);
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
         if (!back || (x === 0 && y === 0)) return;

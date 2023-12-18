@@ -4,7 +4,7 @@ let mouseX = 0;
 let mouseY = 0;
 let draw = false;
 let keyMap = {};
-let moveSpeed = 1.8 // default = 1
+let moveSpeed = 4 // default = 1
 
 class InputHandler {
 
@@ -26,14 +26,11 @@ class InputHandler {
         keyResult.y *= (timeDiff / 50) * moveSpeed;
         const x = keyResult.x;
         const y = keyResult.y;
-        this.updatePositioning(x, y);
+        this.updatePositioning(x, y, true);
         lastUpdated = Date.now();
     }
 
-    updatePositioning(x, y) {
-        const newX = (-(x / terrain.scaledSquareSize));
-        const newY = (y / terrain.scaledSquareSize)
-        if (Math.sqrt(x**2 + y**2) > 0.75) return;
+    updatePositioning(x, y, back) {
         const oldX = camCentreX;
         const oldY = camCentreY;
         if (Math.abs(camCentreX + newX) < 4992) { // 9984 world tile size, 312 chunks
@@ -46,6 +43,11 @@ class InputHandler {
         } else y = 0;
         renderer.translate(x, y);
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
+        if (!back || (x === 0 && y === 0)) return;
+        socket.emit("move", {
+            newX: camCentreX,
+            newY: camCentreY
+        })
     }
 
     fetchMousePress() {
@@ -73,7 +75,7 @@ class InputHandler {
         else if (keyMap[55]) setColor(7);
         else if (keyMap[56]) setColor(8);
         else if (keyMap[57]) setColor(9);
-        else if (keyMap[48]) setColor(10);
+        else if (keyMap[48]) setColor(11);
         else if (keyMap[101]) setColor(11); // The deep purple 5 on the right-side numpad.
 
         if (keyMap[87]) y = 4; // W

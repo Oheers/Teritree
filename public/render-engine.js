@@ -13,7 +13,7 @@ class RenderEngine {
                 this.context = this.canvas.getContext("2d");
                 this.context.imageSmoothingEnabled = false;
                 this.context.imageSmoothingQuality = "low";
-                setInterval(updateViewport, 2);
+                setInterval(updateViewport, 10);
             },
             clear: function () {
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);

@@ -73,8 +73,7 @@ class RenderEngine {
     }
 
     createSelector() {
-        const element = new UiElementStroke(100, 100, 0, 0, "black", 2);
-        this.uiMap["selector"] ??= element
+        this.uiMap["selector"] ??= new UiElementSprite(100, 100, 0, 0, 40);
     }
 
     get isFocus() {

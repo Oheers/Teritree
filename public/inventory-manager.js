@@ -29,15 +29,6 @@ const colours = [
     new Item("Blue", "#006aa7", 7),
     new Item("Black", "black", 8),
     new Item("Gray", "gray", 9),
-    new Item("White", "white", 10),
+    new Item("Grass", "#a8ca58", 10),
     new Item("Purple", "#cc00ff", 11)
 ]
-
-let item = colours[1];
-const indicator = document.getElementById("color-indicator");
-
-function setColour(id) {
-    item = colours[id-1];
-    //renderer.uiMap["selector"].setColour(id);
-    indicator.style.backgroundColor = item.colour;
-}

@@ -66,9 +66,8 @@ class SpriteElement extends Element {
      */
     constructor(_width, _height, _x, _y, _itemID) {
         const allocatedItem = sprites[_itemID];
-        console.log(allocatedItem, (Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft))
-        const x = _x + ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * PIXELS_WIDTH);
-        const y = _y + ((Math.random() * (allocatedItem.tUp - allocatedItem.tDown) + allocatedItem.tDown) * PIXELS_HEIGHT);
+        const x = _x + ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * PIXELS_WIDTH * 0.65);
+        const y = _y + ((Math.random() * (allocatedItem.tUp - allocatedItem.tDown) + allocatedItem.tDown) * PIXELS_HEIGHT * 0.55);
         super(_width, _height, x, y);
         this.sx = allocatedItem.sx;
         this.sy = allocatedItem.sy;
@@ -119,6 +118,34 @@ class SpriteElement extends Element {
     }
 }
 
+class UiElementSprite extends SpriteElement {
+
+    constructor(_width, _height, _x, _y, _itemID) {
+        super(_width, _height, _x, _y, _itemID);
+    }
+
+    changeTile(tileX, tileY) {
+        this.x = tileX;
+        this.y = tileY;
+    }
+}
+
+class StaticUiElementSprite extends SpriteElement {
+
+    constructor(_width, _height, _x, _y, _itemID) {
+        super(_width, _height, _x, _y, _itemID);
+    }
+
+    translate(x, y) {
+        // Do nothing
+    }
+
+    update() {
+        this.ctx = renderer.viewportArea.context;
+        this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x, this.y, this.width, this.height)
+    }
+}
+
 class BackgroundElement extends Element {
     constructor(_width, _height, _originalColour, _x, _y) {
         super(_width, _height, _x, _y);
@@ -134,13 +161,13 @@ class BackgroundElement extends Element {
             this.ctx.fillStyle = item.color;
         } else {*/
             this.ctx.fillStyle = this.currentColour;
-        //}
+        //}d
         this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
     }
 
     highlight(state) {
         if (!state) this.setColour(this.baseColour)
-        else this.setColour(item.colourID);
+        else this.setColour(itemID);
 
         const realX = Math.floor(mouseX/terrain.scaledSquareSize)
         const realY = Math.floor(mouseY/terrain.scaledSquareSize)
@@ -178,6 +205,23 @@ class BackgroundElement extends Element {
 
     get getCurrentColour() {
         return this.currentColour;
+    }
+}
+
+class StaticUiBackgroundElement extends BackgroundElement {
+
+    constructor(_width, _height, _colour, _x, _y) {
+        super(_width, _height, _x, _y);
+        this.colour = _colour;
+    }
+
+    translate(x, y) {
+        // Do nothing
+    }
+
+    update() {
+        this.ctx = renderer.viewportArea.context;
+        this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x, this.y, this.width, this.height)
     }
 }
 

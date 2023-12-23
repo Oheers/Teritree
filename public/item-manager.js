@@ -97,6 +97,32 @@ sprites[35] = new Sprite(35, 0, 0.5, 0.5, 0.5, "hot_dead_tree", "Dead Tree")
 sprites[36] = new Sprite(36, 0, 0.5, 0.5, 0.5, "hot_snowy_dead_tree", "Dead Tree")
 sprites[37] = new Sprite(37, 0, 0.5, 0.5, 0.5, "hotter_dead_tree", "Dead Tree")
 sprites[38] = new Sprite(38, 0, 0.5, 0.5, 0.5, "hotter_snowy_dead_tree", "Dead Tree")
+sprites[39] = new Sprite(39, 0, 0.5, 0, 1, "palm_tree_right_stump", "Palm Tree Stump")
+sprites[40] = new Sprite(40, 0, 0, 0, 0, "tile_selector_indicator", "Selector")
+
+let itemID = 0;
+
+function increaseItemID() {
+    // length - 1 to block people placing the selector indicator
+    // @TODO REMOVE THIS
+    if (itemID + 1 < Object.keys(sprites).length - 1) {
+        itemID += 1;
+    }
+    changeHotbar()
+}
+
+function decreaseItemID() {
+    if (itemID - 1 >= 0) {
+        itemID--;
+    }
+    changeHotbar()
+}
+
+function changeHotbar() {
+    const hotbar = document.getElementById("color-indicator");
+    const coords = getImageCoords(itemID);
+    hotbar.style.backgroundPosition = `calc(4vw * ${coords.sx / -16}) calc(4vw * ${coords.sy / -16})`;
+}
 
 function getImageCoords(itemID) {
     return {

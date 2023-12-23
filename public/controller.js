@@ -10,6 +10,7 @@ let lastUpdated = Date.now();
 const coordinateTracker = document.getElementById("location-preview");
 const mouseTracker = document.getElementById("mouse-preview");
 const tickTracker = document.getElementById("tick-preview");
+const itemTracker = document.getElementById("item-preview");
 let activeTile = null;
 
 let totalTicks = 0;
@@ -44,6 +45,7 @@ function updateCoordinateTracker() {
     coordinateTracker.innerHTML = "[Camera] X: "+ (Math.round(camCentreX*2)/2).toFixed(1) +" Y: "+ (Math.round(camCentreY*2)/2).toFixed(1);
     mouseTracker.innerHTML = "[Mouse] X: "+ (Math.round(mouseX*2)/2).toFixed(1) +" Y: "+ (Math.round(mouseY*2)/2).toFixed(1);
     tickTracker.innerHTML = "[Avg Tick] " + Math.round(10*(totalTickingTime / totalTicks))/10 + "ms"
+    itemTracker.innerHTML = "[Holding] " + sprites[itemID].namedID + ":" + itemID;
 }
 
 init();

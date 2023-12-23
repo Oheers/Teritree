@@ -56,10 +56,10 @@ class InputManager {
                 terrain.decorMap[tileX] ??= {};
                 if (terrain.decorMap[tileX][tileY] === undefined) {
                     const correspondingTile = terrain.terrainMap[tileX][tileY]
-                    terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, item.colourID)
+                    terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, itemID)
                     terrain.decorMap[tileX][tileY].cacheElement(tileX, tileY);
                 } else {
-                    terrain.decorMap[tileX][tileY].changeSprite(item.colourID, true);
+                    terrain.decorMap[tileX][tileY].changeSprite(itemID, true);
                 }
             } catch (error) {
 
@@ -71,17 +71,14 @@ class InputManager {
     fetchKeyPress() {
         let x = 0, y = 0;
 
-        if (keyMap[49]) setColour(1);
-        else if (keyMap[50]) setColour(2);
-        else if (keyMap[51]) setColour(3);
-        else if (keyMap[52]) setColour(4);
-        else if (keyMap[53]) setColour(5);
-        else if (keyMap[54]) setColour(6);
-        else if (keyMap[55]) setColour(7);
-        else if (keyMap[56]) setColour(8);
-        else if (keyMap[57]) setColour(9);
-        else if (keyMap[48]) setColour(11);
-        else if (keyMap[101]) setColour(11); // The deep purple 5 on the right-side numpad.
+        if (keyMap[39]) {
+            increaseItemID()
+            keyMap[39] = false;
+        }
+        else if (keyMap[37]) {
+            decreaseItemID();
+            keyMap[37] = false;
+        }
 
         if (keyMap[87]) y = 4; // W
         if (keyMap[65]) x = 4; // A
@@ -106,11 +103,16 @@ class InputManager {
 
     keyDownProcessor(event) {
         var event = window.event || event;
+        if (event.keyCode === 37 || event.keyCode === 39) return;
         keyMap[event.keyCode] = true;
     }
 
     keyUpProcessor(event) {
         var event = window.event || event;
+        if (event.keyCode === 37 || event.keyCode === 39) {
+            keyMap[event.keyCode] = true;
+            return;
+        }
         keyMap[event.keyCode] = false;
     }
 

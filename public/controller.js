@@ -1,7 +1,7 @@
 const renderer = new RenderEngine();
 const viewport = renderer.viewport;
 const terrain = new TerrainGenerator(1920, 1080);
-const inputHandler = new InputHandler();
+const inputHandler = new InputManager();
 
 const socket = io();
 
@@ -27,8 +27,11 @@ function updateViewport() {
     totalTickingTime += diff;
     inputHandler.tick(diff);
     activeTile = inputHandler.selectTile();
+    renderer.uiMap["selector"].changeTile(activeTile.x, activeTile.y)
     updateCoordinateTracker();
-    terrain.updateAll();
+    terrain.updateAll(terrain.terrainMap); // LAYER 1 - BASE LAYER, UNCHANGEABLE
+    terrain.updateAll(terrain.decorMap); // LAYER 2 - DECOR MAP, WORLD UPDATES
+    terrain.updateAllUI(renderer.uiMap); // LAYER 3 - UI ELEMENTS
     if (totalTicks % 30 === 0) terrain.cache();
 }
 

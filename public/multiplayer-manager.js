@@ -3,9 +3,13 @@ socket.on("update_tile", (data) => {
     const relevantRenderRegion = terrain.findRenderRegion(data.x, data.y);
     const playerRenderRegion = terrain.findRenderRegion(camCentreX, camCentreY);
     if (relevantRenderRegion.x === playerRenderRegion.x && relevantRenderRegion.y === relevantRenderRegion.y) {
-        const tile = terrain.terrainMap[data.x][data.y];
-        tile.setColour(data.colour)
-        tile.cacheElement(data.x, data.y);
+        terrain.decorMap[data.x] ??= {}
+        if (terrain.decorMap[data.x][data.y] === undefined) {
+            const correspondingTile = terrain.terrainMap[data.x][data.y]
+            terrain.decorMap[data.x][data.y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, data.colour)
+        } else {
+            terrain.decorMap[data.x][data.y].changeSprite(data.colour, false);
+        }
     }
 });
 

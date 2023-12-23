@@ -6,7 +6,7 @@ let draw = false;
 let keyMap = {};
 let moveSpeed = 4 // default = 1
 
-class InputHandler {
+class InputManager {
 
     constructor() {
         window.addEventListener('keydown', this.keyDownProcessor, false)
@@ -37,7 +37,9 @@ class InputHandler {
         camCentreY += (y / terrain.scaledSquareSize);
         mouseX -= (x);
         mouseY -= (y);
-        renderer.translate(x, y);
+        renderer.translate(x, y, terrain.terrainMap);
+        renderer.translate(x, y, terrain.decorMap);
+        renderer.translateUI(x, y, renderer.uiMap);
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
         if (!back || (x === 0 && y === 0)) return;
         socket.emit("move", {
@@ -51,7 +53,14 @@ class InputHandler {
             const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
             const tileY = Math.floor(mouseY / terrain.scaledSquareSize);
             try {
-                terrain.terrainMap[tileX][tileY].highlight(keyMap["mouse_L"]);
+                terrain.decorMap[tileX] ??= {};
+                if (terrain.decorMap[tileX][tileY] === undefined) {
+                    const correspondingTile = terrain.terrainMap[tileX][tileY]
+                    terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, item.colourID)
+                    terrain.decorMap[tileX][tileY].cacheElement(tileX, tileY);
+                } else {
+                    terrain.decorMap[tileX][tileY].changeSprite(item.colourID, true);
+                }
             } catch (error) {
 
             }
@@ -62,17 +71,17 @@ class InputHandler {
     fetchKeyPress() {
         let x = 0, y = 0;
 
-        if (keyMap[49]) setColor(1);
-        else if (keyMap[50]) setColor(2);
-        else if (keyMap[51]) setColor(3);
-        else if (keyMap[52]) setColor(4);
-        else if (keyMap[53]) setColor(5);
-        else if (keyMap[54]) setColor(6);
-        else if (keyMap[55]) setColor(7);
-        else if (keyMap[56]) setColor(8);
-        else if (keyMap[57]) setColor(9);
-        else if (keyMap[48]) setColor(11);
-        else if (keyMap[101]) setColor(11); // The deep purple 5 on the right-side numpad.
+        if (keyMap[49]) setColour(1);
+        else if (keyMap[50]) setColour(2);
+        else if (keyMap[51]) setColour(3);
+        else if (keyMap[52]) setColour(4);
+        else if (keyMap[53]) setColour(5);
+        else if (keyMap[54]) setColour(6);
+        else if (keyMap[55]) setColour(7);
+        else if (keyMap[56]) setColour(8);
+        else if (keyMap[57]) setColour(9);
+        else if (keyMap[48]) setColour(11);
+        else if (keyMap[101]) setColour(11); // The deep purple 5 on the right-side numpad.
 
         if (keyMap[87]) y = 4; // W
         if (keyMap[65]) x = 4; // A
@@ -83,16 +92,6 @@ class InputHandler {
             y = y * 1.6;
         }
         return {x, y};
-    }
-
-    highlightTile(_mouseX, _mouseY, clickSide) {
-        const tileX = Math.floor(_mouseX / terrain.scaledSquareSize);
-        const tileY = Math.floor(_mouseY / terrain.scaledSquareSize);
-        try {
-            terrain.terrainMap[tileX][tileY].highlight(clickSide);
-        } catch (error) {
-
-        }
     }
 
     selectTile() {

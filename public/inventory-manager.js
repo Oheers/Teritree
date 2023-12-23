@@ -1,25 +1,25 @@
 class Item {
 
-    constructor(name, color, colorID) {
-        this._color = color;
+    constructor(name, colour, colourID) {
+        this._colour = colour;
         this._name = name;
-        this._colorID = colorID;
+        this._colourID = colourID;
     }
 
     get name() {
         return this._name;
     }
 
-    get color() {
-        return this._color;
+    get colour() {
+        return this._colour;
     }
 
-    get colorID() {
-        return this._colorID;
+    get colourID() {
+        return this._colourID;
     }
 }
 
-const colors = [
+const colours = [
     new Item("Red", "red", 1),
     new Item("Orange", "#fecc02", 2),
     new Item("Yellow", "yellow", 3),
@@ -33,10 +33,11 @@ const colors = [
     new Item("Purple", "#cc00ff", 11)
 ]
 
-let item = colors[1];
+let item = colours[1];
 const indicator = document.getElementById("color-indicator");
 
-function setColor(id) {
-    item = colors[id-1];
-    indicator.style.backgroundColor = item.color;
+function setColour(id) {
+    item = colours[id-1];
+    //renderer.uiMap["selector"].setColour(id);
+    indicator.style.backgroundColor = item.colour;
 }

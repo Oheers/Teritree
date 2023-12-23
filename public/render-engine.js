@@ -22,21 +22,30 @@ class RenderEngine {
 
         this.onResize = this.onResize.bind(this);
 
+        this.uiMap = {};
+        this.createSelector();
+
         window.addEventListener("blur", this.onBlur, false);
         window.addEventListener("focus", this.onFocus, false);
         window.addEventListener("resize", this.onResize, false);
     }
 
-    translate(x, y) {
-        for (const rowKey in terrain.terrainMap) {
-            if (terrain.terrainMap.hasOwnProperty(rowKey)) {
-                const row = terrain.terrainMap[rowKey];
+    translate(x, y, map) {
+        for (const rowKey in map) {
+            if (map.hasOwnProperty(rowKey)) {
+                const row = map[rowKey];
                 for (const colKey in row) {
                     if (row.hasOwnProperty(colKey)) {
                         row[colKey].translate(x, y)
                     }
                 }
             }
+        }
+    }
+
+    translateUI(x, y, map) {
+        for (const element in map) {
+            map[element].translate(x, y);
         }
     }
 
@@ -61,6 +70,11 @@ class RenderEngine {
         }
         // window.innerWidth / 19.2 is the number of pixels per square. 19.2 pixels are rendered horizontally on any monitor.
         this._verticalZoomLevel = this._gameHeight * (100 / (window.innerWidth / 19.2));
+    }
+
+    createSelector() {
+        const element = new UiElementStroke(100, 100, 0, 0, "black", 2);
+        this.uiMap["selector"] ??= element
     }
 
     get isFocus() {

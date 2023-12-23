@@ -1,26 +1,18 @@
 let windowWidth = 0;
 let windowHeight = 0;
 
-class BackgroundElement {
-    constructor(_width, _height, _originalColour, _x, _y) {
+class Element {
+
+    constructor(_width, _height, _x, _y) {
         this.width = _width;
         this.height = _height;
-        this.baseColour = _originalColour;
-        this.currentColour = _originalColour;
-        this.colourID = 1;
-        this.highlighted = false;
         this.x = _x;
         this.y = _y;
     }
 
     update() {
-        const ctx = renderer.viewportArea.context;
-        if (activeTile === this) {
-            ctx.fillStyle = item.color;
-        } else {
-            ctx.fillStyle = this.currentColour;
-        }
-        ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+        this.ctx = renderer.viewportArea.context;
+        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
     }
 
     translate(x, y) {
@@ -28,9 +20,127 @@ class BackgroundElement {
         this.y += y;
     }
 
+    get getX() {
+        return this.x;
+    }
+
+    get getY() {
+        return this.y;
+    }
+}
+
+class UiElementStroke extends Element {
+
+    constructor(_width, _height, _x, _y, _colour, _thickness) {
+        super(_width, _height, _x, _y);
+        this.colour = _colour;
+        this.thickness = _thickness;
+    }
+
+    update() {
+        this.ctx = renderer.viewportArea.context;
+        this.ctx.lineWidth = this.thickness
+        this.ctx.strokeStyle = this.colour;
+        this.ctx.strokeRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+    }
+
+    setColour(colourID) {
+        this.colour = colours[colourID - 1].colour
+    }
+
+    changeTile(tileX, tileY) {
+        this.x = tileX;
+        this.y = tileY;
+    }
+}
+
+class SpriteElement extends Element {
+
+    /**
+     * Creates a new sprite element for the second layer.
+     * @param _width The width of the sprite, usually 16.
+     * @param _height The height of the sprite, usually 16.
+     * @param _x The x coordinate of the position it should be rendered on the screen.
+     * @param _y The y coordinate of the position it should be rendered on the screen.
+     * @param _itemID The itemID relevant to the sprite.
+     */
+    constructor(_width, _height, _x, _y, _itemID) {
+        const allocatedItem = sprites[_itemID];
+        console.log(allocatedItem, (Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft))
+        const x = _x + ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * PIXELS_WIDTH);
+        const y = _y + ((Math.random() * (allocatedItem.tUp - allocatedItem.tDown) + allocatedItem.tDown) * PIXELS_HEIGHT);
+        super(_width, _height, x, y);
+        this.sx = allocatedItem.sx;
+        this.sy = allocatedItem.sy;
+        this.itemID = _itemID;
+        this.img = document.getElementById("sprites");
+    }
+
+    update() {
+        this.ctx = renderer.viewportArea.context;
+        this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x + windowWidth / 2, this.y + windowHeight / 2, this.width, this.height)
+    }
+
+    setItem(itemID) {
+        this.itemID = itemID;
+        const allocatedItem = sprites[itemID];
+        this.sx = allocatedItem.sx;
+        this.sy = allocatedItem.sy;
+    }
+
+    changeSprite(itemID, emitToSocket) {
+        this.setItem(itemID);
+
+        const realX = Math.floor(mouseX/terrain.scaledSquareSize)
+        const realY = Math.floor(mouseY/terrain.scaledSquareSize)
+
+        this.cacheElement(realX, realY);
+        if (emitToSocket) socket.emit("new_colour", {x: realX, y: realY, colour: this.itemID, id: socket.id})
+    }
+
+    // Adds a tile to the update maps, to be cached in localStorage.
+    cacheElement(realX, realY) {
+        const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
+        const tileID = ((4493 - realY) * 9984) + (realX + 4492)
+        for (let i = 0; i < updateMap.length; i++) {
+            if (updateMap[i].tileID === tileID) {
+                updateMap[i] = {
+                    tileID: tileID,
+                    itemID: this.itemID
+                }
+                return;
+            }
+        }
+
+        updateMap.push({
+            tileID: tileID,
+            itemID: this.itemID
+        })
+    }
+}
+
+class BackgroundElement extends Element {
+    constructor(_width, _height, _originalColour, _x, _y) {
+        super(_width, _height, _x, _y);
+        this.baseColour = _originalColour;
+        this.currentColour = _originalColour;
+        this.colourID = 1;
+        this.highlighted = false;
+    }
+
+    update() {
+        this.ctx = renderer.viewportArea.context;
+        /*if (activeTile === this) {
+            this.ctx.fillStyle = item.color;
+        } else {*/
+            this.ctx.fillStyle = this.currentColour;
+        //}
+        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+    }
+
     highlight(state) {
         if (!state) this.setColour(this.baseColour)
-        else this.setColour(item.colorID);
+        else this.setColour(item.colourID);
 
         const realX = Math.floor(mouseX/terrain.scaledSquareSize)
         const realY = Math.floor(mouseY/terrain.scaledSquareSize)
@@ -41,7 +151,7 @@ class BackgroundElement {
     }
 
     setColour(colour) {
-        this.currentColour = colors[colour - 1].color
+        this.currentColour = colours[colour - 1].colour
         this.colourID = colour;
     }
 
@@ -69,14 +179,6 @@ class BackgroundElement {
     get getCurrentColour() {
         return this.currentColour;
     }
-
-    get getX() {
-        return this.x;
-    }
-
-    get getY() {
-        return this.y;
-    }
 }
 
 class Chunk {
@@ -96,7 +198,7 @@ class Chunk {
         for (let x=0; x < 32; x++) {
             const vertical = {};
             for (let y=0; y < 32; y++) {
-                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colors[9].color, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
+                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colours[9].colour, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }
@@ -105,7 +207,7 @@ class Chunk {
         this.saveTime = chunk.saveTime;
     }
 
-    loadInMem(liveMap) {
+    loadInMem(liveMap, decorMap) {
         for (const rowKey in this.chunkMap) {
             if (this.chunkMap.hasOwnProperty(rowKey)) {
                 const row = this.chunkMap[rowKey];
@@ -129,21 +231,18 @@ class Chunk {
             const uX = (update.tileID % 9984) - 4492
             const uY = Math.floor(-update.tileID / 9984) + 4494
 
-            if (!liveMap.hasOwnProperty(uX)) {
-                continue;
-            }
+            decorMap[uX] ??= {}
+            const xRow = decorMap[uX]
 
-            const liveRow = liveMap[uX]
-
-            // Loop through the columns of chunkMap
-            if (liveRow.hasOwnProperty(uY)) {
-                liveMap[uX][uY].setColour(update.itemID);
-            }
+            // Creates new decoration on the map.
+            xRow[uY] ??= {};
+            const correspondingTile = liveMap[uX][uY]
+            decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, update.itemID)
         }
     }
 
-    unloadInMem(liveMap) {
-        cacheChunk(this.chunkX, this.chunkY, this.updateMap, Date.now() + 86400000)
+    unloadInMem(liveMap, cache) {
+        if (cache) cacheChunk(this.chunkX, this.chunkY, this.updateMap, Date.now() + 86400000)
         for (const rowKey in this.chunkMap) {
             if (this.chunkMap.hasOwnProperty(rowKey) && liveMap.hasOwnProperty(rowKey)) {
                 const chunkRow = this.chunkMap[rowKey];
@@ -170,6 +269,7 @@ class TerrainGenerator {
 
     scaledSquareSize = 0;
     terrainMap = {}
+    decorMap = {};
     activeChunks = {}
     restingQueue = []
 
@@ -182,7 +282,7 @@ class TerrainGenerator {
     fetchChunk(x, y) {
         const newChunk = new Chunk(x, y);
         newChunk.populate(this.scaledSquareSize);
-        newChunk.loadInMem(this.terrainMap);
+        newChunk.loadInMem(this.terrainMap, this.decorMap);
         const chunkID = getChunkID(x, y)
         this.activeChunks[chunkID] = {
             chunk: newChunk,
@@ -202,9 +302,13 @@ class TerrainGenerator {
         const y = 4493 - Math.floor(tileID / 9984)
 
         // Actioning the colour changing
-        const tile = terrain.terrainMap[x][y];
-        tile.setColour(itemID)
-        tile.cacheElement(x, y);
+        terrain.decorMap[x] ??= {}
+        if (terrain.decorMap[x][y] === undefined) {
+            const correspondingTile = terrain.terrainMap[x][y]
+            terrain.decorMap[x][y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, itemID)
+        } else {
+            terrain.decorMap[x][y].changeSprite(itemID, false);
+        }
     }
 
     /**
@@ -233,7 +337,9 @@ class TerrainGenerator {
             for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].x === newRenderRegion.x - 2) {
-                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    const chunk = this.activeChunks[chunkID];
+                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
+                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
@@ -244,7 +350,9 @@ class TerrainGenerator {
             for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].x === newRenderRegion.x + 1) {
-                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    const chunk = this.activeChunks[chunkID];
+                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
+                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
@@ -258,7 +366,9 @@ class TerrainGenerator {
             for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].y === newRenderRegion.y - 1) {
-                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    const chunk = this.activeChunks[chunkID];
+                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
+                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
@@ -269,23 +379,31 @@ class TerrainGenerator {
             for (const chunkID in this.activeChunks) {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].y === newRenderRegion.y + 2) {
-                    this.activeChunks[chunkID].chunk.unloadInMem(this.terrainMap) // Unloads tiles from memory.
+                    const chunk = this.activeChunks[chunkID];
+                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
+                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
         }
     }
 
-    updateAll() {
-        for (const rowKey in this.terrainMap) {
-            if (this.terrainMap.hasOwnProperty(rowKey)) {
-                const row = this.terrainMap[rowKey];
+    updateAll(map) {
+        for (const rowKey in map) {
+            if (map.hasOwnProperty(rowKey)) {
+                const row = map[rowKey];
                 for (const colKey in row) {
                     if (row.hasOwnProperty(colKey)) {
                         row[colKey].update();
                     }
                 }
             }
+        }
+    }
+
+    updateAllUI(map) {
+        for (const element in map) {
+            map[element].update();
         }
     }
 

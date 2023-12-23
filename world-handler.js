@@ -64,6 +64,7 @@ function removePlayerFromCachedChunk(chunkID, playerID) {
     const cachedChunk = cache[chunkID];
     if (cachedChunk === undefined) {
         console.log("CRASH PROTECTION: UNDEFINED CACHED CHUNK. DETAILS ON SESSION:\n", "cache:", cache, "chunkID:", chunkID, "playerID:", playerID, "cachedChunk:", cachedChunk)
+        return;
     }
     const activeUsers = cachedChunk.users;
     if (activeUsers.length === 1) {

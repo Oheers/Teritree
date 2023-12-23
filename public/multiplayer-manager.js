@@ -27,7 +27,7 @@ socket.on("chunk_resting", (data) => {
 })
 
 function fetchRestingChunk(chunkID, saveTime) {
-    fetch(`http://localhost:3000/api/world/chunk/${chunkID}?time=${saveTime}`)
+    fetch(`/api/world/chunk/${chunkID}?time=${saveTime}`)
         .then(r => {
             return r.json();
         })

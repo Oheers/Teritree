@@ -3,6 +3,8 @@ const viewport = renderer.viewport;
 const terrain = new TerrainGenerator(1920, 1080);
 const inputHandler = new InputManager();
 
+const WORLD_SEED = 526;
+
 const socket = io();
 
 let lastUpdated = Date.now();

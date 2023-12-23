@@ -242,7 +242,51 @@ class Chunk {
         for (let x=0; x < 32; x++) {
             const vertical = {};
             for (let y=0; y < 32; y++) {
-                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colours[9].colour, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
+                const tileX = (((32*this.chunkX) + x) + 4492);
+                const tileY = (((32*this.chunkY) - y) + 4492);
+                noise.seed(WORLD_SEED)
+                noise.numOctaves
+                const height = Math.abs(noise.simplex2(tileX / 400, tileY / 400));
+                noise.seed(WORLD_SEED + 1)
+                const warmth = Math.abs(noise.simplex2(tileX / 200, tileY / 200));
+                noise.seed(WORLD_SEED + 2)
+                const dampness = Math.abs(noise.simplex2(tileX / 0.005, tileY / 0.005));
+                let colour = "";
+                if (height < 0.25 * dampness) {
+                    colour = "#73bed3"
+                }
+                else if (height < 0.15) {
+                    if (warmth < 0.2) {
+                        console.log(dampness)
+                        colour = "#ebede9"
+                    } else {
+                        if (dampness > 0.75) {
+                            colour = "#a4dddb"
+                        } else {
+                            colour = "#e8c170"
+                        }
+                    }
+                } else {
+                    if (warmth < 0.1) {
+                        colour = "#ebede9"
+                    } else if (warmth < 0.2) {
+                        colour = "#ebede9"
+                    } else if (warmth < 0.8) {
+                        if (dampness < 0) {
+                            colour = "#a8ca58"
+                        } else if (dampness < 0.65) {
+                            colour = "#75a743"
+                        } else if (dampness < 0.8) {
+                            colour = "#468232"
+                        } else {
+                            colour = "#25562e"
+                        }
+                    } else {
+                        colour = "#e8c170"
+                    }
+
+                }
+                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colour, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }

@@ -88,6 +88,20 @@ class InputManager {
             x = x * 1.6;
             y = y * 1.6;
         }
+
+        if (keyMap[70] && renderer.viewDebugType !== "height") {
+            console.log("test")
+            renderer.viewDebugType = "height"
+        } else if (keyMap[78] && renderer.viewDebugType !== "normal") {
+            renderer.viewDebugType = "normal"
+        } else if (keyMap[71] && renderer.viewDebugType !== "warmth") {
+            renderer.viewDebugType = "warmth"
+        } else if (keyMap[72] && renderer.viewDebugType !== "damp") {
+            renderer.viewDebugType = "damp"
+        } else if (keyMap[74] && renderer.viewDebugType !== "tree") {
+            renderer.viewDebugType = "tree"
+        }
+
         return {x, y};
     }
 
@@ -104,6 +118,7 @@ class InputManager {
     keyDownProcessor(event) {
         var event = window.event || event;
         if (event.keyCode === 37 || event.keyCode === 39) return;
+        console.log(event.keyCode)
         keyMap[event.keyCode] = true;
     }
 

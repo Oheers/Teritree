@@ -24,6 +24,7 @@ class RenderEngine {
 
         this.uiMap = {};
         this.createSelector();
+        this._viewDebugType = "normal";
 
         window.addEventListener("blur", this.onBlur, false);
         window.addEventListener("focus", this.onFocus, false);
@@ -90,5 +91,15 @@ class RenderEngine {
 
     get verticalZoomLevel() {
         return this._verticalZoomLevel;
+    }
+
+
+    get viewDebugType() {
+        return this._viewDebugType;
+    }
+
+    set viewDebugType(value) {
+        console.log(value)
+        this._viewDebugType = value;
     }
 }

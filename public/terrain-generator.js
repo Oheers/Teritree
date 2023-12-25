@@ -182,6 +182,10 @@ class BackgroundElement extends Element {
         this.colourID = colour;
     }
 
+    setRawColour(colour) {
+        this.currentColour = colour;
+    }
+
     // Adds a tile to the update maps, to be cached in localStorage.
     cacheElement(realX, realY) {
         const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
@@ -244,15 +248,19 @@ class Chunk {
             for (let y=0; y < 32; y++) {
                 const tileX = (((32*this.chunkX) + x) + 4492);
                 const tileY = (((32*this.chunkY) - y) + 4492);
-                noise.seed(WORLD_SEED)
-                noise.numOctaves
-                const height = Math.abs(noise.simplex2(tileX / 400, tileY / 400));
-                noise.seed(WORLD_SEED + 1)
-                const warmth = Math.abs(noise.simplex2(tileX / 200, tileY / 200));
-                noise.seed(WORLD_SEED + 2)
-                const dampness = Math.abs(noise.simplex2(tileX / 0.005, tileY / 0.005));
-                let colour = "";
-                if (height < 0.25 * dampness) {
+
+                let colour = ""
+                /*if (treeSpread > 0.75) {
+                    colour = "rgb(255, 0, 0)"
+                } else if (treeSpread > 0.5) {
+                    colour = "rgb(255, 100, 0)"
+                } else if (treeSpread > 0.35) {
+                    colour = "rgb(255, 200, 50)"
+                } else if (treeSpread > 0.2) {
+                    colour
+                }*/
+
+                /*if (height < 0.25 * dampness) {
                     colour = "#73bed3"
                 }
                 else if (height < 0.15) {
@@ -272,11 +280,11 @@ class Chunk {
                     } else if (warmth < 0.2) {
                         colour = "#ebede9"
                     } else if (warmth < 0.8) {
-                        if (dampness < 0) {
+                        if (dampness < 0.5) {
                             colour = "#a8ca58"
-                        } else if (dampness < 0.65) {
+                        } else if (dampness < 0.75) {
                             colour = "#75a743"
-                        } else if (dampness < 0.8) {
+                        } else if (dampness < 0.85) {
                             colour = "#468232"
                         } else {
                             colour = "#25562e"
@@ -285,7 +293,8 @@ class Chunk {
                         colour = "#e8c170"
                     }
 
-                }
+                }*/
+                colour = standardColourRendering(tileX, tileY);
                 vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colour, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
@@ -314,7 +323,7 @@ class Chunk {
             }
         }
 
-        for (const i in this.updateMap) {
+        /*for (const i in this.updateMap) {
             const update = this.updateMap[i]
             const uX = (update.tileID % 9984) - 4492
             const uY = Math.floor(-update.tileID / 9984) + 4494
@@ -326,7 +335,7 @@ class Chunk {
             xRow[uY] ??= {};
             const correspondingTile = liveMap[uX][uY]
             decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, update.itemID)
-        }
+        }*/
     }
 
     unloadInMem(liveMap, cache) {

@@ -74,7 +74,7 @@ class RenderEngine {
     }
 
     createSelector() {
-        this.uiMap["selector"] ??= new UiElementSprite(100, 100, 0, 0, 40);
+        this.uiMap["selector"] ??= new UiElementSprite(100, 100, 0, 0, 117);
     }
 
     get isFocus() {
@@ -99,7 +99,6 @@ class RenderEngine {
     }
 
     set viewDebugType(value) {
-        console.log(value)
         this._viewDebugType = value;
     }
 }

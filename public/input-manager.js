@@ -16,6 +16,7 @@ class InputManager {
         window.addEventListener("mouseup", this.onMouseUp, false);
 
         moveSpeed = terrain.scaledSquareSize / 100;
+        moveSpeed = 20;
     }
 
     tick(timeDiff) {
@@ -89,8 +90,8 @@ class InputManager {
             y = y * 1.6;
         }
 
+        let reload = true;
         if (keyMap[70] && renderer.viewDebugType !== "height") {
-            console.log("test")
             renderer.viewDebugType = "height"
         } else if (keyMap[78] && renderer.viewDebugType !== "normal") {
             renderer.viewDebugType = "normal"
@@ -100,6 +101,14 @@ class InputManager {
             renderer.viewDebugType = "damp"
         } else if (keyMap[74] && renderer.viewDebugType !== "tree") {
             renderer.viewDebugType = "tree"
+        } else if (keyMap[75] && renderer.viewDebugType !== "random") {
+            renderer.viewDebugType = "random"
+        } else {
+            reload = false;
+        }
+
+        if (reload) {
+            terrain.loadStartingChunks(camCentreX, camCentreY)
         }
 
         return {x, y};
@@ -118,7 +127,6 @@ class InputManager {
     keyDownProcessor(event) {
         var event = window.event || event;
         if (event.keyCode === 37 || event.keyCode === 39) return;
-        console.log(event.keyCode)
         keyMap[event.keyCode] = true;
     }
 

@@ -67,7 +67,7 @@ class SpriteElement extends Element {
     constructor(_width, _height, _x, _y, _itemID) {
         const allocatedItem = sprites[_itemID];
         const x = _x + ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * PIXELS_WIDTH * 0.65);
-        const y = _y + ((Math.random() * (allocatedItem.tUp - allocatedItem.tDown) + allocatedItem.tDown) * PIXELS_HEIGHT * 0.55);
+        const y = _y + ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * PIXELS_HEIGHT * 0.55);
         super(_width, _height, x, y);
         this.sx = allocatedItem.sx;
         this.sy = allocatedItem.sy;
@@ -250,6 +250,8 @@ class Chunk {
                 const tileY = (((32*this.chunkY) - y) + 4492);
 
                 let colour = ""
+                let tree = -1;
+                let shrub = -1;
                 /*if (treeSpread > 0.75) {
                     colour = "rgb(255, 0, 0)"
                 } else if (treeSpread > 0.5) {
@@ -295,7 +297,16 @@ class Chunk {
 
                 }*/
                 colour = standardColourRendering(tileX, tileY);
+                tree = shouldPlaceTree(tileX, tileY, colour)
+                shrub = shouldPlaceShrubbery(tileX, tileY, colour)
                 vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colour, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
+                if (tree !== -1) {
+                    terrain.decorMap[tileX] ??= {}
+                    terrain.decorMap[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), tree)
+                } else if (shrub !== -1) {
+                    terrain.decorMap[tileX] ??= {}
+                    terrain.decorMap[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), shrub)
+                }
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
         }

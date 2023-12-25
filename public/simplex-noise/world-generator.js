@@ -12,26 +12,30 @@ const DRY = "#ad7757"
 const BURNT = "#884b2b";
 
 function standardColourRendering(tileX, tileY) {
-    console.log(tileX, tileY);
     noise.seed(WORLD_SEED)
     const height = Math.abs(noise.simplex2(tileX / 400, tileY / 400));
     noise.seed(WORLD_SEED + 1)
     const warmth = Math.abs(noise.simplex2(tileX / 1000, tileY / 1000));
     noise.seed(WORLD_SEED + 2)
     const dampness = Math.abs(noise.simplex2(tileX / 100, tileY / 100));
-    noise.seed(WORLD_SEED + 3)
-    const treeSpread = Math.abs(noise.simplex2(tileX / 50, tileY / 50));
 
     // HEIGHT
-    console.log(renderer.viewDebugType)
     if (renderer.viewDebugType === "height") return `rgb(${height * 256}, ${height * 256}, ${height * 256})`;
 
     // HEAT
     if (renderer.viewDebugType === "warmth") return `rgb(${warmth * 256}, 64, ${(1 - warmth) * 256})`
 
-    if (renderer.viewDebugType === "damp") return `rgb(${150 - (dampness * 100)}, ${150 - (dampness * 128)}, ${dampness * 256})`
+    if (renderer.viewDebugType === "damp") return `rgb(${(1 - dampness) * 256}, ${192 - (42 * dampness)}, ${256 * dampness})`
+
+    if (renderer.viewDebugType === "random") {
+        noise.seed(WORLD_SEED + 4);
+        const random = Math.abs(noise.simplex2(tileX, tileY));
+        return `rgb(0, ${(1 - random) * 256}, 0)`
+    }
 
     if (renderer.viewDebugType === "tree") {
+        noise.seed(WORLD_SEED + 3)
+        const treeSpread = Math.abs(noise.simplex2(tileX / 50, tileY / 50));
         if (treeSpread > 0.75) {
             return "rgb(255, 0, 0)"
         } else if (treeSpread > 0.5) {
@@ -86,4 +90,141 @@ function standardColourRendering(tileX, tileY) {
             }
         }
     }
+}
+
+function shouldPlaceTree(tileX, tileY, floor) {
+    noise.seed(WORLD_SEED + 3)
+    const treeSpread = Math.abs(noise.simplex2(tileX / 50, tileY / 50));
+    noise.seed(WORLD_SEED + 4);
+    const random = Math.abs(noise.simplex2(tileX + 0.53, tileY + 0.53));
+
+    if ((treeSpread > 0.75 && random > 0.75) ||
+        (treeSpread > 0.50 && random > 0.9) ||
+        (treeSpread > 0.35 && random > 0.95) ||
+        (random > 0.985)) {
+        return pickTree(random, floor);
+    } else {
+        return -1;
+    }
+}
+
+function pickTree(random, floor) {
+    if (floor === GRASS) {
+        return Math.floor(random * 100) % 3
+    } else if (floor === FOREST) {
+        return (Math.floor(random * 100) % 3) + 3;
+    } else if (floor === DARK_FOREST) {
+        return (Math.floor(random * 100) % 3) + 6;
+    } else if (floor === DARKER_FOREST) {
+        return (Math.floor(random * 100) % 3) + 9;
+    } else if (floor === SNOW) {
+        return (Math.floor(random * 100) % 3) + 12;
+    } else if (floor === ICE) {
+        return (Math.floor(random * 100) % 3) + 15;
+    } else if (floor === DRY) {
+        return (Math.floor(random * 100) % 6) + 18;
+    } else if (floor === SAND) {
+        return (Math.floor(random * 100) % 4) + 29;
+    } else if (floor === BURNT) {
+        const id = Math.floor(random * 100) % 9;
+        if (id < 6) {
+            return id + 18;
+        } else {
+            return 33 + (2 * (id - 6))
+        }
+    } else {
+        return -1;
+    }
+}
+
+function shouldPlaceShrubbery(tileX, tileY, floor) {
+    noise.seed(WORLD_SEED + 5);
+    const random = Math.abs(noise.simplex2(tileX + 0.53, tileY + 0.53));
+
+    if (random > 0.75) {
+        return pickShrub(random, floor);
+    } else return -1;
+}
+
+function pickShrub(random, floor) {
+    if (floor === GRASS) {
+        const id = Math.floor(random * 100) % 10
+        if (id < 6) {
+            return id + 45
+        } else {
+            return 72 + id;
+        }
+    } else if (floor === FOREST) {
+        const id = Math.floor(random * 100) % 10
+        if (id < 3) {
+            return id + 45
+        } else if (id < 6) {
+            return id + 48;
+        } else {
+            return 76 + id;
+        }
+    } else if (floor === DARK_FOREST) {
+        const id = Math.floor(random * 100) % 10
+        if (id < 3) {
+            return id + 45
+        } else if (id < 6) {
+            return id + 51;
+        } else {
+            return 80 + id;
+        }
+    } else if (floor === DARKER_FOREST) {
+        const id = Math.floor(random * 100) % 10
+        if (id < 3) {
+            return id + 45
+        } else if (id < 6) {
+            return id + 54;
+        } else {
+            return 84 + id;
+        }
+    } else if (floor === SNOW) {
+        const id = Math.floor(random * 100) % 10
+        if (id < 3) {
+            return id + 45
+        } else if (id < 6) {
+            return id + 57;
+        } else {
+            return 88 + id;
+        }
+    } else if (floor === ICE) {
+        const id = Math.floor(random * 100) % 10
+        if (id < 3) {
+            return id + 45
+        } else if (id < 6) {
+            return id + 60;
+        } else {
+            return 92 + id;
+        }
+    } else if (floor === DRY) {
+        const id = Math.floor(random * 100) % 13
+        if (id < 3) {
+            return id + 45
+        } else if (id < 9) {
+            return id + 63;
+        } else {
+            return 93 + id;
+        }
+    } else if (floor === BURNT) {
+        const id = Math.floor(random * 100) % 13
+        if (id < 3) {
+            return id + 45
+        } else if (id < 9) {
+            return id + 63;
+        } else {
+            return 97 + id;
+        }
+    } else if (floor === SAND) {
+        const id = Math.floor(random * 100) % 9
+        if (id < 3) {
+            return id + 45
+        } else {
+            return 69 + id;
+        }
+    }
+
+    return -1;
 }

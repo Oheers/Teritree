@@ -235,6 +235,7 @@ class Chunk {
     chunkY;
     chunkMap = {};
     updateMap = [];
+    chunkDecor = {};
     saveTime = 0;
 
     constructor(_chunkX, _chunkY) {
@@ -246,66 +247,25 @@ class Chunk {
         for (let x=0; x < 32; x++) {
             const vertical = {};
             for (let y=0; y < 32; y++) {
-                const tileX = (((32*this.chunkX) + x) + 4492);
-                const tileY = (((32*this.chunkY) - y) + 4492);
+                let tileX = (((32*this.chunkX) + x) + 4492);
+                let tileY = (((32*this.chunkY) - y) + 4492);
 
                 let colour = ""
                 let tree = -1;
                 let shrub = -1;
-                /*if (treeSpread > 0.75) {
-                    colour = "rgb(255, 0, 0)"
-                } else if (treeSpread > 0.5) {
-                    colour = "rgb(255, 100, 0)"
-                } else if (treeSpread > 0.35) {
-                    colour = "rgb(255, 200, 50)"
-                } else if (treeSpread > 0.2) {
-                    colour
-                }*/
 
-                /*if (height < 0.25 * dampness) {
-                    colour = "#73bed3"
-                }
-                else if (height < 0.15) {
-                    if (warmth < 0.2) {
-                        console.log(dampness)
-                        colour = "#ebede9"
-                    } else {
-                        if (dampness > 0.75) {
-                            colour = "#a4dddb"
-                        } else {
-                            colour = "#e8c170"
-                        }
-                    }
-                } else {
-                    if (warmth < 0.1) {
-                        colour = "#ebede9"
-                    } else if (warmth < 0.2) {
-                        colour = "#ebede9"
-                    } else if (warmth < 0.8) {
-                        if (dampness < 0.5) {
-                            colour = "#a8ca58"
-                        } else if (dampness < 0.75) {
-                            colour = "#75a743"
-                        } else if (dampness < 0.85) {
-                            colour = "#468232"
-                        } else {
-                            colour = "#25562e"
-                        }
-                    } else {
-                        colour = "#e8c170"
-                    }
-
-                }*/
                 colour = standardColourRendering(tileX, tileY);
                 tree = shouldPlaceTree(tileX, tileY, colour)
                 shrub = shouldPlaceShrubbery(tileX, tileY, colour)
                 vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colour, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
+                tileX -= 4492;
+                tileY -= 4492;
                 if (tree !== -1) {
-                    terrain.decorMap[tileX] ??= {}
-                    terrain.decorMap[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), tree)
+                    this.chunkDecor[tileX] ??= {}
+                    this.chunkDecor[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), tree)
                 } else if (shrub !== -1) {
-                    terrain.decorMap[tileX] ??= {}
-                    terrain.decorMap[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), shrub)
+                    this.chunkDecor[tileX] ??= {}
+                    this.chunkDecor[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), shrub)
                 }
             }
             this.chunkMap[(this.chunkX*32) + x] = vertical;
@@ -316,23 +276,8 @@ class Chunk {
     }
 
     loadInMem(liveMap, decorMap) {
-        for (const rowKey in this.chunkMap) {
-            if (this.chunkMap.hasOwnProperty(rowKey)) {
-                const row = this.chunkMap[rowKey];
-
-                // Check if the corresponding row exists in liveMap, create if not
-                if (!liveMap.hasOwnProperty(rowKey)) {
-                    liveMap[rowKey] = {};
-                }
-
-                // Loop through the columns of chunkMap
-                for (const colKey in row) {
-                    if (row.hasOwnProperty(colKey)) {
-                        liveMap[rowKey][colKey] = this.chunkMap[rowKey][colKey];
-                    }
-                }
-            }
-        }
+        this.unwrapMap(this.chunkMap, liveMap)
+        this.unwrapMap(this.chunkDecor, decorMap)
 
         /*for (const i in this.updateMap) {
             const update = this.updateMap[i]
@@ -349,12 +294,31 @@ class Chunk {
         }*/
     }
 
-    unloadInMem(liveMap, cache) {
-        if (cache) cacheChunk(this.chunkX, this.chunkY, this.updateMap, Date.now() + 86400000)
+    unwrapMap(wrappedMap, outMap) {
+        for (const rowKey in wrappedMap) {
+            if (wrappedMap.hasOwnProperty(rowKey)) {
+                const row = wrappedMap[rowKey];
+
+                // Check if the corresponding row exists in liveMap, create if not
+                if (!outMap.hasOwnProperty(rowKey)) {
+                    outMap[rowKey] = {};
+                }
+
+                // Loop through the columns of chunkMap
+                for (const colKey in row) {
+                    if (row.hasOwnProperty(colKey)) {
+                        outMap[rowKey][colKey] = wrappedMap[rowKey][colKey];
+                    }
+                }
+            }
+        }
+    }
+
+    unloadBackground() {
         for (const rowKey in this.chunkMap) {
-            if (this.chunkMap.hasOwnProperty(rowKey) && liveMap.hasOwnProperty(rowKey)) {
+            if (this.chunkMap.hasOwnProperty(rowKey) && terrain.terrainMap.hasOwnProperty(rowKey)) {
                 const chunkRow = this.chunkMap[rowKey];
-                const liveRow = liveMap[rowKey];
+                const liveRow = terrain.terrainMap[rowKey];
 
                 // Loop through the columns of chunkRow
                 for (const colKey in chunkRow) {
@@ -366,10 +330,34 @@ class Chunk {
 
                 // If liveRow is empty after removing entries, delete the entire row
                 if (Object.keys(liveRow).length === 0) {
-                    delete liveMap[rowKey];
+                    delete terrain.terrainMap[rowKey];
                 }
             }
         }
+    }
+
+    unloadDecor(cache) {
+        if (cache) cacheChunk(this.chunkX, this.chunkY, this.updateMap, Date.now() + 86400000)
+        for (const rowKey in this.chunkDecor) {
+            if (this.chunkDecor.hasOwnProperty(rowKey) && terrain.decorMap.hasOwnProperty(rowKey)) {
+                const chunkRow = this.chunkDecor[rowKey];
+                const liveRow = terrain.decorMap[rowKey];
+
+                // Loop through the columns of chunkRow
+                for (const colKey in chunkRow) {
+                    if (chunkRow.hasOwnProperty(colKey) && liveRow.hasOwnProperty(colKey)) {
+                        // Remove the entry from liveRow if it exists in chunkRow
+                        delete liveRow[colKey];
+                    }
+                }
+
+                // If liveRow is empty after removing entries, delete the entire row
+                if (Object.keys(liveRow).length === 0) {
+                    delete terrain.decorMap[rowKey];
+                }
+            }
+        }
+        console.log("new decor:", terrain.decorMap)
     }
 }
 
@@ -446,8 +434,8 @@ class TerrainGenerator {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].x === newRenderRegion.x - 2) {
                     const chunk = this.activeChunks[chunkID];
-                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
-                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
+                    chunk.chunk.unloadDecor(true) // Unloads sprite tiles from memory.
+                    chunk.chunk.unloadBackground() // Unloads background tiles from memory.
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
@@ -459,8 +447,8 @@ class TerrainGenerator {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].x === newRenderRegion.x + 1) {
                     const chunk = this.activeChunks[chunkID];
-                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
-                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
+                    chunk.chunk.unloadDecor(true) // Unloads sprite tiles from memory.
+                    chunk.chunk.unloadBackground() // Unloads background tiles from memory.
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
@@ -475,8 +463,8 @@ class TerrainGenerator {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].y === newRenderRegion.y - 1) {
                     const chunk = this.activeChunks[chunkID];
-                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
-                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
+                    chunk.chunk.unloadDecor(true) // Unloads sprite tiles from memory.
+                    chunk.chunk.unloadBackground() // Unloads background tiles from memory.
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }
@@ -488,8 +476,8 @@ class TerrainGenerator {
                 // Check if the current item meets the criteria, e.g., equal to 3
                 if (this.activeChunks.hasOwnProperty(chunkID) && this.activeChunks[chunkID].y === newRenderRegion.y + 2) {
                     const chunk = this.activeChunks[chunkID];
-                    chunk.chunk.unloadInMem(this.terrainMap, true) // Unloads base map from memory.
-                    chunk.chunk.unloadInMem(this.decorMap, false) // Unloads tiles from memory.
+                    chunk.chunk.unloadDecor(true) // Unloads sprite tiles from memory.
+                    chunk.chunk.unloadBackground() // Unloads background tiles from memory
                     delete this.activeChunks[chunkID]; // Remove the chunk
                 }
             }

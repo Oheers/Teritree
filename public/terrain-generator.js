@@ -66,8 +66,8 @@ class SpriteElement extends Element {
      */
     constructor(_width, _height, _x, _y, _itemID) {
         const allocatedItem = sprites[_itemID];
-        const x = _x + ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * PIXELS_WIDTH * 0.65);
-        const y = _y + ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * PIXELS_HEIGHT * 0.55);
+        const x = _x + ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * (100 / PIXELS_WIDTH));
+        const y = _y + ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * (100 / PIXELS_WIDTH));
         super(_width, _height, x, y);
         this.sx = allocatedItem.sx;
         this.sy = allocatedItem.sy;
@@ -357,7 +357,7 @@ class Chunk {
                 }
             }
         }
-        console.log("new decor:", terrain.decorMap)
+        console.log(terrain.decorMap)
     }
 }
 

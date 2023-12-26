@@ -20,7 +20,13 @@ function standardColourRendering(tileX, tileY) {
     const dampness = Math.abs(noise.simplex2(tileX / 100, tileY / 100));
 
     // HEIGHT
-    if (renderer.viewDebugType === "height") return `rgb(${height * 256}, ${height * 256}, ${height * 256})`;
+    if (renderer.viewDebugType === "height") {
+        if (height < 0.25 * dampness) {
+            return `rgb(${75 - (height * 75 * 4)}, ${150 - (height * 150 * 4)}, ${255 - (height * 255 * 4)})`
+        } else {
+            return `rgb(${height * 256}, ${height * 256}, ${height * 256})`;
+        }
+    }
 
     // HEAT
     if (renderer.viewDebugType === "warmth") return `rgb(${warmth * 256}, 64, ${(1 - warmth) * 256})`
@@ -218,11 +224,13 @@ function pickShrub(random, floor) {
             return 97 + id;
         }
     } else if (floor === SAND) {
-        const id = Math.floor(random * 100) % 9
-        if (id < 3) {
-            return id + 45
+        const id = Math.floor(random * 100) % 14
+        if (id < 5) {
+            return id + 24;
+        } else if (id < 8) {
+            return id + 40
         } else {
-            return 69 + id;
+            return 64 + id;
         }
     }
 

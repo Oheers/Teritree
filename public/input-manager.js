@@ -52,13 +52,13 @@ class InputManager {
     fetchMousePress() {
         if (draw) {
             const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
-            const tileY = Math.floor(mouseY / terrain.scaledSquareSize);
+            const tileY = -Math.floor(mouseY / terrain.scaledSquareSize);
             try {
                 terrain.decorMap[tileX] ??= {};
                 if (terrain.decorMap[tileX][tileY] === undefined) {
-                    const correspondingTile = terrain.terrainMap[tileX][tileY]
+                    const correspondingTile = terrain.terrainMap[tileX][-tileY]
                     terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, itemID)
-                    terrain.decorMap[tileX][tileY].cacheElement(tileX, tileY);
+                    terrain.decorMap[tileX][tileY].cacheElement(tileX, -tileY);
                 } else {
                     terrain.decorMap[tileX][tileY].changeSprite(itemID, true);
                 }

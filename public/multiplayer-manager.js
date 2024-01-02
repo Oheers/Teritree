@@ -6,17 +6,17 @@ socket.on("update_tile", (data) => {
     const playerRenderRegion = terrain.findRenderRegion(camCentreX, camCentreY);
     if (relevantRenderRegion.x === playerRenderRegion.x && relevantRenderRegion.y === relevantRenderRegion.y) {
         terrain.decorMap[data.x] ??= {}
-        if (terrain.decorMap[data.x][data.y] === undefined) {
+        if (terrain.decorMap[data.x][-data.y] === undefined) {
             const correspondingTile = terrain.terrainMap[data.x][data.y]
-            terrain.decorMap[data.x][data.y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, data.colour)
+            terrain.decorMap[data.x][-data.y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, data.colour)
         } else {
-            terrain.decorMap[data.x][data.y].changeSprite(data.colour, false);
+            terrain.decorMap[data.x][-data.y].changeSprite(data.colour, false);
         }
     }
 });
 
 socket.on("reset_position", (data) => {
-    //inputHandler.updatePositioning((camCentreX - data.x) * terrain.scaledSquareSize, (data.y - camCentreY) * terrain.scaledSquareSize, false);
+    inputHandler.updatePositioning((camCentreX - data.x) * terrain.scaledSquareSize, (data.y - camCentreY) * terrain.scaledSquareSize, false);
 });
 
 socket.on("chunk_resting", (data) => {
@@ -52,7 +52,6 @@ async function fetchWorldData() {
 
         terrain.seed = data.seed;
         terrain.lastWorldReset = data.lastWorldReset;
-        console.log(data);
 
         return true;
     } catch (error) {

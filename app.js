@@ -30,6 +30,7 @@ const weekStartMS = Date.now() - (((now.getDay() + 6) % 7) * 86400 +
     now.getHours() * 3600 +
     now.getMinutes() * 60 +
     now.getSeconds()) * 1000;
+
 app.get('/api/world/info', async (req, res) => {
     res.status(200).send({
         seed: 527,

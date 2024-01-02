@@ -25,8 +25,6 @@ async function init() {
             console.error("Error occurred whilst fetching data about the world.");
             renderer.error = true;
             return;
-        } else {
-            console.log("Data fetched successfully");
         }
 
         const uiElements = document.querySelectorAll('.ui');
@@ -81,4 +79,4 @@ function updateCoordinateTracker() {
     itemTracker.innerHTML = "[Holding] " + sprites[itemID].namedID + ":" + itemID;
 }
 
-init().then(r => console.log("Connection established."));
+init().then(r => console.log("Hello world."));

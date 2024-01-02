@@ -11,13 +11,13 @@
 </head>
 <body oncontextmenu="return false;">
 
-<div class="location">
+<div class="location ui">
     <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="tick-preview">{time}ms</span></p>
     <p><span id="item-preview">[Holding] {item}</span></p>
 </div>
-<div class="color-indicator" id="color-indicator"></div>
+<div class="color-indicator ui" id="color-indicator"></div>
 
 <img style="display:none;" id="sprites" src="resources/sprites.png" width="320" height="320">
 
@@ -33,7 +33,7 @@
 <script src="item-manager.js"></script>
 <script src="terrain-generator.js"></script>
 <script src="inventory-manager.js"></script>
-<script src="controller.js"></script>
 <script src="multiplayer-manager.js"></script>
+<script src="controller.js"></script>
 </body>
 </html>

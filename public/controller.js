@@ -3,10 +3,6 @@ const viewport = renderer.viewport;
 const terrain = new TerrainGenerator(1920, 1080);
 const inputHandler = new InputManager();
 
-const WORLD_SEED = 526;
-
-const socket = io();
-
 let lastUpdated = Date.now();
 
 const coordinateTracker = document.getElementById("location-preview");
@@ -18,13 +14,48 @@ let activeTile = null;
 let totalTicks = 0;
 let totalTickingTime = 0;
 
-function init() {
+async function init() {
+    const start = Date.now();
     viewport.start();
-    terrain.loadStartingChunks(camCentreX, camCentreY);
+
+    try {
+        const result = await fetchWorldData();
+
+        if (!result) {
+            console.error("Error occurred whilst fetching data about the world.");
+            renderer.error = true;
+            return;
+        } else {
+            console.log("Data fetched successfully");
+        }
+
+        const uiElements = document.querySelectorAll('.ui');
+
+        uiElements.forEach(element => {
+            element.style.display = 'block';
+        });
+
+        terrain.loadStartingChunks(camCentreX, camCentreY);
+        renderer.loading = false;
+    } catch (error) {
+        console.error(error);
+        // Handle error appropriately
+    }
 }
 
 function updateViewport() {
     viewport.clear();
+    if (renderer.loading) {
+        const ctx = renderer.viewportArea.context;
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        if (renderer.error) {
+            ctx.fillText("There was an error whilst fetching data about the world.", ctx.canvas.width / 2, ctx.canvas.height / 2);
+        } else {
+            ctx.fillText("Loading . . .", ctx.canvas.width / 2, ctx.canvas.height / 2);
+        }
+        return;
+    }
     const diff = Date.now() - lastUpdated;
     totalTicks += 1;
     totalTickingTime += diff;
@@ -50,4 +81,4 @@ function updateCoordinateTracker() {
     itemTracker.innerHTML = "[Holding] " + sprites[itemID].namedID + ":" + itemID;
 }
 
-init();
+init().then(r => console.log("Connection established."));

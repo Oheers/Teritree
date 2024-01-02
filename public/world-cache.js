@@ -13,6 +13,12 @@ function fetchCache(x, y) {
         };
     }
     const parsedData = JSON.parse(cachedData);
+    if (parsedData.saveTime < terrain.lastWorldReset) {
+        return {
+            map: [],
+            saveTime: 0
+        };
+    }
     const map = parsedData.map;
     const saveTime = parsedData.saveTime;
     return {

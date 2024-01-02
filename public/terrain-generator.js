@@ -279,7 +279,7 @@ class Chunk {
         this.unwrapMap(this.chunkMap, liveMap)
         this.unwrapMap(this.chunkDecor, decorMap)
 
-        /*for (const i in this.updateMap) {
+        for (const i in this.updateMap) {
             const update = this.updateMap[i]
             const uX = (update.tileID % 9984) - 4492
             const uY = Math.floor(-update.tileID / 9984) + 4494
@@ -291,7 +291,7 @@ class Chunk {
             xRow[uY] ??= {};
             const correspondingTile = liveMap[uX][uY]
             decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, update.itemID)
-        }*/
+        }
     }
 
     unwrapMap(wrappedMap, outMap) {
@@ -357,7 +357,6 @@ class Chunk {
                 }
             }
         }
-        console.log(terrain.decorMap)
     }
 }
 
@@ -368,6 +367,9 @@ class TerrainGenerator {
     decorMap = {};
     activeChunks = {}
     restingQueue = []
+
+    lastWorldReset = 0;
+    seed = -1;
 
     constructor(_windowWidth, _windowHeight) {
         windowWidth = _windowWidth;

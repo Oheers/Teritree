@@ -5,9 +5,13 @@ class RenderEngine {
 
         this.fetchRealCanvasResolution();
 
+        this.loading = true;
+        this.error = false;
+
         this.viewportArea = {
             canvas: document.getElementById("viewport"),
             start: function () {
+                this.loading = true;
                 this.canvas.width = 1920;
                 this.canvas.height = 1080;
                 this.context = this.canvas.getContext("2d");

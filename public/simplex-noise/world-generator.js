@@ -12,11 +12,11 @@ const DRY = "#ad7757"
 const BURNT = "#884b2b";
 
 function standardColourRendering(tileX, tileY) {
-    noise.seed(WORLD_SEED)
+    noise.seed(terrain.seed)
     const height = Math.abs(noise.simplex2(tileX / 400, tileY / 400));
-    noise.seed(WORLD_SEED + 1)
+    noise.seed(terrain.seed + 1)
     const warmth = Math.abs(noise.simplex2(tileX / 1000, tileY / 1000));
-    noise.seed(WORLD_SEED + 2)
+    noise.seed(terrain.seed + 2)
     const dampness = Math.abs(noise.simplex2(tileX / 100, tileY / 100));
 
     // HEIGHT
@@ -34,13 +34,13 @@ function standardColourRendering(tileX, tileY) {
     if (renderer.viewDebugType === "damp") return `rgb(${(1 - dampness) * 256}, ${192 - (42 * dampness)}, ${256 * dampness})`
 
     if (renderer.viewDebugType === "random") {
-        noise.seed(WORLD_SEED + 4);
+        noise.seed(terrain.seed + 4);
         const random = Math.abs(noise.simplex2(tileX, tileY));
         return `rgb(0, ${(1 - random) * 256}, 0)`
     }
 
     if (renderer.viewDebugType === "tree") {
-        noise.seed(WORLD_SEED + 3)
+        noise.seed(terrain.seed + 3)
         const treeSpread = Math.abs(noise.simplex2(tileX / 50, tileY / 50));
         if (treeSpread > 0.75) {
             return "rgb(255, 0, 0)"
@@ -99,9 +99,9 @@ function standardColourRendering(tileX, tileY) {
 }
 
 function shouldPlaceTree(tileX, tileY, floor) {
-    noise.seed(WORLD_SEED + 3)
+    noise.seed(terrain.seed + 3)
     const treeSpread = Math.abs(noise.simplex2(tileX / 50, tileY / 50));
-    noise.seed(WORLD_SEED + 4);
+    noise.seed(terrain.seed + 4);
     const random = Math.abs(noise.simplex2(tileX + 0.53, tileY + 0.53));
 
     if ((treeSpread > 0.75 && random > 0.75) ||
@@ -144,7 +144,7 @@ function pickTree(random, floor) {
 }
 
 function shouldPlaceShrubbery(tileX, tileY, floor) {
-    noise.seed(WORLD_SEED + 5);
+    noise.seed(terrain.seed + 5);
     const random = Math.abs(noise.simplex2(tileX + 0.53, tileY + 0.53));
 
     if (random > 0.75) {

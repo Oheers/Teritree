@@ -1,3 +1,5 @@
+const socket = io();
+
 socket.on("update_tile", (data) => {
     if (data.id === socket.id) return;
     const relevantRenderRegion = terrain.findRenderRegion(data.x, data.y);
@@ -37,4 +39,24 @@ function fetchRestingChunk(chunkID, saveTime) {
                 })
             }
         )
+}
+
+async function fetchWorldData() {
+    try {
+        const response = await fetch(`/api/world/info`);
+        const data = await response.json();
+
+        if (data === undefined) {
+            return false;
+        }
+
+        terrain.seed = data.seed;
+        terrain.lastWorldReset = data.lastWorldReset;
+        console.log(data);
+
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }

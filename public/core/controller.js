@@ -34,6 +34,7 @@ async function init() {
         });
 
         terrain.loadStartingChunks(camCentreX, camCentreY);
+        terrain.addNewPlayer(0, true, 0, 0, "ed", "lime")
         renderer.loading = false;
     } catch (error) {
         console.error(error);
@@ -63,7 +64,8 @@ function updateViewport() {
     updateCoordinateTracker();
     terrain.updateAll(terrain.terrainMap); // LAYER 1 - BASE LAYER, UNCHANGEABLE
     terrain.updateAll(terrain.decorMap); // LAYER 2 - DECOR MAP, WORLD UPDATES
-    terrain.updateAllUI(renderer.uiMap); // LAYER 3 - UI ELEMENTS
+    terrain.updateAllUI(renderer.uiMap); // LAYER 3 - UI ELEMENTS & PLAYERS
+    terrain.updateAllPlayers() // LAYER 3
     if (totalTicks % 30 === 0) terrain.cache();
 }
 

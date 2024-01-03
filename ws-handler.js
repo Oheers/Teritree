@@ -8,12 +8,21 @@ event.emitter.on("chunk_resting", function chunkResting(socketID, data) {
     emitToSocket(socketID, "chunk_resting", data);
 });
 
+event.emitter.on("player_move", function onMove(playerID, x, y) {
+    io.emit("player_move", {
+        id: playerID,
+        x: x,
+        y: y
+    })
+})
+
 function emitToSocket(socketID, message, data) {
     io.to(socketID).emit(message, data);
 }
 
 function disconnectPlayer(playerID) {
     event.emitter.emit("player_leave", playerID, dbBackend.getCoords(playerID))
+    io.emit("player_leave", {id: playerID})
     dbBackend.deletePlayer(playerID);
 }
 
@@ -36,9 +45,18 @@ function init(server) {
     io.on("connection", (socket) => {
         const x = 0;
         const y = 0;
-        const playerObject = new Player(526, 527, x, y, 10000, 2, "Oheers", 1, 1);
+        const playerObject = new Player(526, 527, x, y, 10000, 2, "ed", 1, 1);
         event.emitter.emit("player_join", socket.id, x, y)
         dbBackend.addPlayer(playerObject, socket.id)
+        io.emit("player_join", {
+            id: socket.id,
+            x: x,
+            y: y,
+            displayName: "ed",
+            colour: "red"
+        })
+
+        socket.emit("active_players", dbBackend.getPlayers());
 
         socket.on("disconnect", (reason) => {
             disconnectPlayer(socket.id);

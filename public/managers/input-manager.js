@@ -41,6 +41,7 @@ class InputManager {
         renderer.translate(x, y, terrain.terrainMap);
         renderer.translate(x, y, terrain.decorMap);
         renderer.translateUI(x, y, renderer.uiMap);
+        renderer.translatePlayers(x, y);
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
         if (!back || (x === 0 && y === 0)) return;
         socket.emit("move", {

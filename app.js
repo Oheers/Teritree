@@ -14,7 +14,7 @@ const port = 3000
 app.use(express.static('./public'));
 
 app.get('/', (req, res) => {
-    res.status(200).sendFile(path.resolve(__dirname, './public/index.html'))
+    res.status(200).sendFile(path.resolve(__dirname, './public/core/index.html'))
 })
 
 app.get('/api/world/chunk/:id', async (req, res) => {

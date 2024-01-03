@@ -68,9 +68,9 @@ function removePlayerFromCachedChunk(chunkID, playerID) {
     }
     const activeUsers = cachedChunk.users;
     if (activeUsers.length === 1) {
-        // This is the only player using this chunk, it can be unloaded from internal cache.
+        // ^ This is the only player using this chunk, it can be unloaded from internal cache.
         if (activeUsers[0] === playerID) {
-            // Belt & braces safety check in the if statement above, we really don't want to un-cache a chunk if a
+            // ^ Belt & braces safety check in the if statement above, we really don't want to un-cache a chunk if a
             // player's using it. Set to only drop the data completely to stop the player moving between render regions
             // and causing lots of reads/writes.
             cachedChunk.users = []
@@ -102,10 +102,9 @@ event.emitter.on("player_join", function playerJoin(socketID, x, y) {
 });
 
 event.emitter.on("player_leave", function playerLeave(socketID, coords) {
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32), Math.ceil(coords.y/-32)), socketID)
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32) - 1, Math.ceil(coords.y/-32) + 1), socketID)
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32), Math.ceil(coords.y/-32) + 1), socketID)
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32) - 1, Math.ceil(coords.y/-32)), socketID)
+    for (const chunk in cache) {
+        removePlayerFromCachedChunk(chunk, socketID)
+    }
 })
 
 async function downloadChunk(chunkID) {

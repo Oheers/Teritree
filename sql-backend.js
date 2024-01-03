@@ -1,6 +1,7 @@
 const auth = require('./auth-account.js')
 const dbManager = require("./database.js")
 const utils = require("./utils.js");
+const event = require("./event-manager.js");
 const { changeInternalCache, onTileChange} = require("./world-handler");
 
 const activeUsers = {}
@@ -13,6 +14,20 @@ const maxSpeed = 1000000
 
 function addPlayer(player, socketID) {
     activeUsers[socketID] = player;
+}
+
+function getPlayers() {
+    const returningPlayers = {};
+    for (const socketID in activeUsers) {
+        const player = activeUsers[socketID];
+        returningPlayers[socketID] = {
+            x: player.x,
+            y: -player.y,
+            displayName: player.displayName,
+            id: socketID
+        }
+    }
+    return returningPlayers;
 }
 
 function getCoords(socketID) {
@@ -56,9 +71,9 @@ function onMove(newX, newY, playerID) {
         changeInternalCache(newRenderRegion, oldRenderRegion, playerID)
     }
     player.lastMoveTime = Date.now();
+    event.emitter.emit("player_move", playerID, newX - player.x, player.y - newY)
     player.x = newX;
     player.y = newY;
-
     return shouldRecalibrate(player);
 }
 
@@ -79,7 +94,7 @@ function getItemID(colour) {
 }
 
 module.exports = {
-    onNewColour, onMove, addPlayer, deletePlayer, getCoords
+    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers
 }
 
 // Items, the index of each item is the id of the item.

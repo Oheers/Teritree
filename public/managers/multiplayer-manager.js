@@ -19,6 +19,15 @@ socket.on("reset_position", (data) => {
     inputHandler.updatePositioning((camCentreX - data.x) * terrain.scaledSquareSize, (data.y - camCentreY) * terrain.scaledSquareSize, false);
 });
 
+socket.on("active_players", (data) => {
+    for (const playerID in data) {
+        const player = data[playerID]
+        if (playerID === socket.id) continue;
+        terrain.addNewPlayer(playerID, false, player.x * terrain.scaledSquareSize, player.y * terrain.scaledSquareSize, "not ed", "red")
+    }
+
+})
+
 socket.on("chunk_resting", (data) => {
     if (data in terrain.activeChunks) {
         const chunk = terrain.activeChunks[data];
@@ -26,6 +35,24 @@ socket.on("chunk_resting", (data) => {
     } else {
         terrain.restingQueue.push(data)
     }
+})
+
+socket.on("player_join", (data) => {
+    if (data.id !== socket.id) {
+        terrain.addNewPlayer(data.id, false, data.x - (camCentreX * terrain.scaledSquareSize), data.y + (camCentreY * terrain.scaledSquareSize), data.displayName, data.colour)
+    }
+})
+
+socket.on("player_move", (data) => {
+    if (data.id === socket.id) return;
+    const player = terrain.players[data.id];
+    if (player === undefined) return;
+    player.element.move(data.x * terrain.scaledSquareSize, data.y * terrain.scaledSquareSize)
+})
+
+socket.on("player_leave", (data) => {
+    if (data.id === socket.id) return;
+    delete terrain.players[data.id]
 })
 
 function fetchRestingChunk(chunkID, saveTime) {

@@ -229,6 +229,34 @@ class StaticUiBackgroundElement extends BackgroundElement {
     }
 }
 
+class PlayerElement extends Element {
+    constructor(x, y, colour) {
+        super(50, 50, x, y);
+        this.colour = colour;
+        this.facing = 'e';
+    }
+
+    update() {
+        this.ctx = renderer.viewportArea.context;
+        this.ctx.fillStyle = this.colour;
+        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+    }
+
+    move(x, y) {
+        this.x += x;
+        this.y += y;
+    }
+
+    setColour(colour) {
+        this.colour = colour
+    }
+
+    get getCurrentColour() {
+        return this.colour;
+    }
+}
+
+
 class Chunk {
 
     chunkX;
@@ -366,9 +394,12 @@ class Chunk {
 class TerrainGenerator {
 
     scaledSquareSize = 0;
+
     terrainMap = {}
     decorMap = {};
     activeChunks = {}
+    players = {}
+
     restingQueue = []
 
     lastWorldReset = 0;
@@ -489,6 +520,21 @@ class TerrainGenerator {
         }
     }
 
+    addNewPlayer(playerID, self, x, y, displayName, colour) {
+        this.players[playerID] = {
+            x: x,
+            y: y,
+            self: self,
+            displayName: displayName,
+            colour: colour,
+            element: new PlayerElement(x, y, colour)
+        }
+    }
+
+    removePlayer(playerID) {
+        delete this.players[playerID];
+    }
+
     updateAll(map) {
         for (const rowKey in map) {
             if (map.hasOwnProperty(rowKey)) {
@@ -505,6 +551,12 @@ class TerrainGenerator {
     updateAllUI(map) {
         for (const element in map) {
             map[element].update();
+        }
+    }
+
+    updateAllPlayers() {
+        for (const playerID in this.players) {
+            this.players[playerID].element.update();
         }
     }
 

@@ -25,7 +25,7 @@ canvas {
     color: black;
 }
 
-.color-indicator {
+.colour-indicator {
     width: 4vw; /* Set the width of the cropped area */
     height: 4vw; /* Set the height of the cropped area */
     background-image: url('sprites.png'); /* Replace 'path/to/your/image.jpg' with your image path */

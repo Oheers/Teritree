@@ -189,7 +189,7 @@ function decreaseItemID() {
 }
 
 function changeHotbar() {
-    const hotbar = document.getElementById("color-indicator");
+    const hotbar = document.getElementById("colour-indicator");
     const coords = getImageCoords(itemID);
     hotbar.style.backgroundPosition = `calc(4vw * ${coords.sx / -16}) calc(4vw * ${coords.sy / -16})`;
 }

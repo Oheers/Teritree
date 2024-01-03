@@ -16,6 +16,10 @@ function addPlayer(player, socketID) {
     activeUsers[socketID] = player;
 }
 
+function getPlayer(playerID) {
+    return activeUsers[playerID]
+}
+
 function getPlayers() {
     const returningPlayers = {};
     for (const socketID in activeUsers) {
@@ -94,7 +98,7 @@ function getItemID(colour) {
 }
 
 module.exports = {
-    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers
+    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer
 }
 
 // Items, the index of each item is the id of the item.

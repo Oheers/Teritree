@@ -19,13 +19,16 @@ socket.on("reset_position", (data) => {
     inputHandler.updatePositioning((camCentreX - data.x) * terrain.scaledSquareSize, (data.y - camCentreY) * terrain.scaledSquareSize, false);
 });
 
-socket.on("active_players", (data) => {
-    for (const playerID in data) {
-        const player = data[playerID]
-        if (playerID === socket.id) continue;
-        terrain.addNewPlayer(playerID, false, player.x * terrain.scaledSquareSize, player.y * terrain.scaledSquareSize, "not ed", "red")
+// new player coming into range
+socket.on("player_ir", (data) => {
+    if (data.id !== socket.id) {
+        terrain.addNewPlayer(data.id, false, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.displayName, data.colour)
     }
+})
 
+// player out of range, no longer within the current render region.
+socket.on("player_oor", (data) => {
+    delete terrain.players[data.id];
 })
 
 socket.on("chunk_resting", (data) => {

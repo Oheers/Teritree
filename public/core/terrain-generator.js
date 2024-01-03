@@ -239,7 +239,7 @@ class PlayerElement extends Element {
     update() {
         this.ctx = renderer.viewportArea.context;
         this.ctx.fillStyle = this.colour;
-        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width, this.height);
     }
 
     move(x, y) {

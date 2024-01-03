@@ -8,9 +8,7 @@ const activeUsers = {}
 const userLocations = {}
 const activeChunks = {}
 
-//const maxSpeed = 0.0019
-// Change back to re-enable anticheat @TODO
-const maxSpeed = 1000000
+const maxSpeed = 0.0019
 
 function addPlayer(player, socketID) {
     activeUsers[socketID] = player;

@@ -57,7 +57,12 @@ class RenderEngine {
     translatePlayers(x, y) {
         for (const playerID in terrain.players) {
             if (!terrain.players[playerID].self) {
-                terrain.players[playerID].element.translate(x, y)
+                terrain.players[playerID].element.translate(x, y);
+            } else {
+                terrain.players[playerID].element.calculateDirection(-x, -y);
+                if (x !== 0 || y !== 0) {
+                    terrain.players[playerID].element.startAnimation();
+                }
             }
         }
     }

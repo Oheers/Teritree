@@ -34,7 +34,7 @@ async function init() {
         });
 
         terrain.loadStartingChunks(camCentreX, camCentreY);
-        terrain.addNewPlayer(0, true, 0, 0, "ed", "lime")
+        terrain.addNewPlayer(0, true, 0, 0, "ed", 0)
         renderer.loading = false;
     } catch (error) {
         console.error(error);

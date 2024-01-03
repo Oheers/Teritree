@@ -230,29 +230,70 @@ class StaticUiBackgroundElement extends BackgroundElement {
 }
 
 class PlayerElement extends Element {
-    constructor(x, y, colour) {
-        super(50, 50, x, y);
-        this.colour = colour;
-        this.facing = 'e';
+    constructor(x, y, character) {
+        super(80, 80, x, y);
+        this.character = character;
+        this.facing = 2; // 0 = south, 1 = north, 2 = east, 3 = west
+        this.img = document.getElementById("character_sprites");
+        this.sx = 0
+        this.sy = character * PIXELS_HEIGHT
+
+        this.moved = false;
+        this.movedAgain = false;
+        this.leg = 0;
     }
 
     update() {
         this.ctx = renderer.viewportArea.context;
-        this.ctx.fillStyle = this.colour;
-        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width, this.height);
+        this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x + windowWidth / 2, this.y + windowHeight / 2, this.width, this.height)
     }
 
     move(x, y) {
         this.x += x;
         this.y += y;
+        this.calculateDirection(x, y)
+        this.startAnimation();
     }
 
-    setColour(colour) {
-        this.colour = colour
+    startAnimation() {
+        if (!this.moved) {
+            this.moved = true;
+            this.leg = 1;
+            setTimeout(() => this.recheckMove(), 1000);
+        } else {
+            this.movedAgain = true;
+        }
     }
 
-    get getCurrentColour() {
-        return this.colour;
+    recheckMove = async () => {
+        if (this.movedAgain) {
+            this.movedAgain = false;
+            this.leg === 1 ? this.leg = 3 : this.leg = 1;
+            setTimeout(() => this.recheckMove(), 1000);
+        } else {
+            this.leg = 0;
+            this.moved = false;
+            this.sx = ((this.facing * 5) + this.leg) * PIXELS_WIDTH;
+        }
+    };
+
+    calculateDirection(x, y) {
+        if (y === 0) {
+            if (x === 0) return;
+            else if (x > 0) {
+                this.facing = 2;
+            } else {
+                this.facing = 3;
+            }
+        } else {
+            if (y < 0) {
+                this.facing = 1;
+            } else {
+                this.facing = 0;
+            }
+        }
+
+        this.sx = ((this.facing * 5) + this.leg) * PIXELS_WIDTH;
     }
 }
 
@@ -520,14 +561,14 @@ class TerrainGenerator {
         }
     }
 
-    addNewPlayer(playerID, self, x, y, displayName, colour) {
+    addNewPlayer(playerID, self, x, y, displayName, character) {
         this.players[playerID] = {
             x: x,
             y: y,
             self: self,
             displayName: displayName,
-            colour: colour,
-            element: new PlayerElement(x, y, colour)
+            colour: character,
+            element: new PlayerElement(x, y, character)
         }
     }
 

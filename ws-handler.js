@@ -11,7 +11,9 @@ event.emitter.on("chunk_resting", function chunkResting(socketID, data) {
 });
 
 event.emitter.on("player_move", function onMove(playerID, x, y) {
-    playerLinks[playerID].forEach(player => {
+    const linkedPlayers = playerLinks[playerID]
+    if (linkedPlayers === undefined) return;
+    linkedPlayers.forEach(player => {
         emitToSocket(player, "player_move", {
             id: playerID,
             x: x,
@@ -29,9 +31,8 @@ event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
         x: mover.x,
         y: mover.y,
         displayName: "ed",
-        colour: "red"
+        character: 0
     })
-    console.log("new relations:", playerLinks)
 })
 
 event.emitter.on("player_out_range", function inRange(newPlayerID, moverID) {
@@ -39,17 +40,20 @@ event.emitter.on("player_out_range", function inRange(newPlayerID, moverID) {
     emitToSocket(newPlayerID, "player_oor", {
         id: moverID
     })
-    console.log("new relations:", playerLinks)
 })
 
 function emitToSocket(socketID, message, data) {
     io.to(socketID).emit(message, data);
 }
 
-function disconnectPlayer(playerID) {
-    event.emitter.emit("player_leave", playerID, dbBackend.getCoords(playerID))
-    io.emit("player_leave", {id: playerID})
-    dbBackend.deletePlayer(playerID);
+function disconnectPlayer(userID) {
+    event.emitter.emit("player_leave", userID, dbBackend.getCoords(userID))
+    for (const playerID in playerLinks) {
+        playerLinks[playerID] = playerLinks[playerID].filter(linkedPlayer => linkedPlayer !== userID);
+    }
+    delete playerLinks[userID]
+    io.emit("player_leave", {id: userID})
+    dbBackend.deletePlayer(userID);
 }
 
 function updateColour(x, y, colour) {
@@ -79,7 +83,7 @@ function init(server) {
             x: x,
             y: y,
             displayName: "ed",
-            colour: "red"
+            character: 0
         })
 
         socket.on("disconnect", (reason) => {

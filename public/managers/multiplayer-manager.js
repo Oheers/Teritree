@@ -22,7 +22,7 @@ socket.on("reset_position", (data) => {
 // new player coming into range
 socket.on("player_ir", (data) => {
     if (data.id !== socket.id) {
-        terrain.addNewPlayer(data.id, false, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.displayName, data.colour)
+        terrain.addNewPlayer(data.id, false, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.displayName, data.character)
     }
 })
 
@@ -42,7 +42,7 @@ socket.on("chunk_resting", (data) => {
 
 socket.on("player_join", (data) => {
     if (data.id !== socket.id) {
-        terrain.addNewPlayer(data.id, false, data.x - (camCentreX * terrain.scaledSquareSize), data.y + (camCentreY * terrain.scaledSquareSize), data.displayName, data.colour)
+        terrain.addNewPlayer(data.id, false, data.x - (camCentreX * terrain.scaledSquareSize), data.y + (camCentreY * terrain.scaledSquareSize), data.displayName, data.character)
     }
 })
 

@@ -59,6 +59,7 @@ class InputManager {
                     const correspondingTile = terrain.terrainMap[tileX][-tileY]
                     terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, itemID)
                     terrain.decorMap[tileX][tileY].cacheElement(tileX, -tileY);
+                    socket.emit("new_colour", {x: tileX, y: -tileY, colour: itemID, id: socket.id})
                 } else {
                     terrain.decorMap[tileX][tileY].changeSprite(itemID, true);
                 }

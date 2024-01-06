@@ -1,6 +1,7 @@
 const socket = io();
 
 socket.on("update_tile", (data) => {
+    console.log("update tile notice:", data)
     if (data.id === socket.id) return;
     const relevantRenderRegion = terrain.findRenderRegion(data.x, data.y);
     const playerRenderRegion = terrain.findRenderRegion(camCentreX, camCentreY);

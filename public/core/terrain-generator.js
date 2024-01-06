@@ -259,7 +259,7 @@ class PlayerElement extends Element {
         if (!this.moved) {
             this.moved = true;
             this.leg = 1;
-            setTimeout(() => this.recheckMove(), 1000);
+            setTimeout(() => this.recheckMove(), 400);
         } else {
             this.movedAgain = true;
         }
@@ -269,7 +269,7 @@ class PlayerElement extends Element {
         if (this.movedAgain) {
             this.movedAgain = false;
             this.leg === 1 ? this.leg = 3 : this.leg = 1;
-            setTimeout(() => this.recheckMove(), 1000);
+            setTimeout(() => this.recheckMove(), 400);
         } else {
             this.leg = 0;
             this.moved = false;

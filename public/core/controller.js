@@ -11,6 +11,8 @@ const tickTracker = document.getElementById("tick-preview");
 const itemTracker = document.getElementById("item-preview");
 let activeTile = null;
 
+const PLAYER_WIDTH = 80;
+
 let totalTicks = 0;
 let totalTickingTime = 0;
 
@@ -34,7 +36,7 @@ async function init() {
         });
 
         terrain.loadStartingChunks(camCentreX, camCentreY);
-        terrain.addNewPlayer(0, true, 0, 0, "ed", 0)
+        terrain.addNewPlayer("You", true, 0, 0, "ed", 0)
         renderer.loading = false;
     } catch (error) {
         console.error(error);

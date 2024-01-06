@@ -8,16 +8,27 @@ class Element {
         this.height = _height;
         this.x = _x;
         this.y = _y;
+        this.subElements = []
     }
 
     update() {
         this.ctx = renderer.viewportArea.context;
         this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+        this.subElements.forEach(function (element) {
+            element.update();
+        })
     }
 
     translate(x, y) {
         this.x += x;
         this.y += y;
+        this.subElements.forEach(function (element) {
+            element.translate(x, y);
+        })
+    }
+
+    addSubElement(element) {
+        this.subElements.push(element);
     }
 
     get getX() {
@@ -35,10 +46,10 @@ class UiElementStroke extends Element {
         super(_width, _height, _x, _y);
         this.colour = _colour;
         this.thickness = _thickness;
+        this.ctx = renderer.viewportArea.context;
     }
 
     update() {
-        this.ctx = renderer.viewportArea.context;
         this.ctx.lineWidth = this.thickness
         this.ctx.strokeStyle = this.colour;
         this.ctx.strokeRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
@@ -134,6 +145,7 @@ class StaticUiElementSprite extends SpriteElement {
 
     constructor(_width, _height, _x, _y, _itemID) {
         super(_width, _height, _x, _y, _itemID);
+        this.ctx = renderer.viewportArea.context;
     }
 
     translate(x, y) {
@@ -141,81 +153,72 @@ class StaticUiElementSprite extends SpriteElement {
     }
 
     update() {
-        this.ctx = renderer.viewportArea.context;
         this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x, this.y, this.width, this.height)
     }
 }
 
 class BackgroundElement extends Element {
-    constructor(_width, _height, _originalColour, _x, _y) {
-        super(_width, _height, _x, _y);
-        this.baseColour = _originalColour;
-        this.currentColour = _originalColour;
-        this.colourID = 1;
-        this.highlighted = false;
+    constructor(width, height, colour, opacity, x, y) {
+        super(width, height, x, y);
+        this._colour = colour;
+        this._opacity = opacity;
+        this.ctx = renderer.viewportArea.context;
     }
 
     update() {
-        this.ctx = renderer.viewportArea.context;
-        /*if (activeTile === this) {
-            this.ctx.fillStyle = item.color;
-        } else {*/
-            this.ctx.fillStyle = this.currentColour;
-        //}d
+        this.ctx.fillStyle = this.colour;
+        this.ctx.globalAlpha = this._opacity;
         this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+        this.ctx.globalAlpha = 1;
     }
 
-    highlight(state) {
-        if (!state) this.setColour(this.baseColour)
-        else this.setColour(itemID);
-
-        const realX = Math.floor(mouseX/terrain.scaledSquareSize)
-        const realY = Math.floor(mouseY/terrain.scaledSquareSize)
-
-        this.highlighted = !this.highlighted;
-        this.cacheElement(realX, realY);
-        socket.emit("new_colour", {x: realX, y: realY, colour: this.colourID, id: socket.id})
+    changeColour(colour) {
+        this.colour = colour;
     }
 
-    setColour(colour) {
-        this.currentColour = colours[colour - 1].colour
-        this.colourID = colour;
+    get colour() {
+        return this._colour;
     }
 
-    setRawColour(colour) {
-        this.currentColour = colour;
+
+    get opacity() {
+        return this._opacity;
+    }
+}
+
+class TextElement extends Element {
+    constructor(width, height, x, y, text, font, textAlign, colour) {
+        super(width, height, x, y);
+        this._text = text;
+        this._font = font;
+        this._colour = colour;
+        this.ctx = renderer.viewportArea.context;
     }
 
-    // Adds a tile to the update maps, to be cached in localStorage.
-    cacheElement(realX, realY) {
-        const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
-        const tileID = ((4493 - realY) * 9984) + (realX + 4492)
-        for (let i = 0; i < updateMap.length; i++) {
-
-            if (updateMap[i].tileID === tileID) {
-                updateMap[i] = {
-                    tileID: tileID,
-                    itemID: this.colourID
-                }
-                return;
-            }
-        }
-
-        updateMap.push({
-            tileID: tileID,
-            itemID: this.colourID
-        })
+    update() {
+        this.ctx.font = this._font;
+        this.ctx.fillStyle = this._colour
+        this.ctx.textAlign = "center";
+        this.ctx.fillText(this._text, this.x + windowWidth / 2, this.y + windowHeight / 2);
     }
 
-    get getCurrentColour() {
-        return this.currentColour;
+    get textWidth() {
+        return this.ctx.measureText(this._text).width
+    }
+
+    set text(text) {
+        this._text = text;
+    }
+
+    set font(font) {
+        this._font = font;
     }
 }
 
 class StaticUiBackgroundElement extends BackgroundElement {
 
-    constructor(_width, _height, _colour, _x, _y) {
-        super(_width, _height, _x, _y);
+    constructor(_width, _height, _colour, _opacity, _x, _y) {
+        super(_width, _height, _opacity, _x, _y);
         this.colour = _colour;
     }
 
@@ -231,7 +234,7 @@ class StaticUiBackgroundElement extends BackgroundElement {
 
 class PlayerElement extends Element {
     constructor(x, y, character) {
-        super(80, 80, x, y);
+        super(PLAYER_WIDTH, PLAYER_WIDTH, x, y);
         this.character = character;
         this.facing = 2; // 0 = south, 1 = north, 2 = east, 3 = west
         this.img = document.getElementById("character_sprites");
@@ -246,6 +249,9 @@ class PlayerElement extends Element {
     update() {
         this.ctx = renderer.viewportArea.context;
         this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x + windowWidth / 2, this.y + windowHeight / 2, this.width, this.height)
+        this.subElements.forEach(function (element) {
+            element.update();
+        })
     }
 
     move(x, y) {
@@ -253,6 +259,9 @@ class PlayerElement extends Element {
         this.y += y;
         this.calculateDirection(x, y)
         this.startAnimation();
+        this.subElements.forEach(function (element) {
+            element.translate(x, y);
+        })
     }
 
     startAnimation() {
@@ -326,7 +335,7 @@ class Chunk {
                 colour = standardColourRendering(tileX, tileY);
                 tree = shouldPlaceTree(tileX, tileY, colour)
                 shrub = shouldPlaceShrubbery(tileX, tileY, colour)
-                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colour, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
+                vertical[y - (this.chunkY*32)] = (new BackgroundElement(squareSize, squareSize, colour, 1, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY)));
                 tileX -= 4492;
                 tileY -= 4492;
                 if (tree !== -1) {
@@ -562,13 +571,18 @@ class TerrainGenerator {
     }
 
     addNewPlayer(playerID, self, x, y, displayName, character) {
+        const element = new PlayerElement(x, y, character)
+        const text = new TextElement(200, 50, x + (PLAYER_WIDTH / 2), y - 12.5, playerID, "24px Arial", "center", "black")
+        const width = text.textWidth * 2.5 + 12
+        element.addSubElement(text)
+        element.addSubElement(new BackgroundElement(width, 35, "black", 0.2, x + (PLAYER_WIDTH / 2) - (width / 2), y - 38.75))
         this.players[playerID] = {
             x: x,
             y: y,
             self: self,
             displayName: displayName,
             colour: character,
-            element: new PlayerElement(x, y, character)
+            element: element
         }
     }
 

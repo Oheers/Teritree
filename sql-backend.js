@@ -8,7 +8,7 @@ const activeUsers = {}
 const userLocations = {}
 const activeChunks = {}
 
-const maxSpeed = 0.0019
+const maxSpeed = 0.0025
 
 function addPlayer(player, socketID) {
     activeUsers[socketID] = player;

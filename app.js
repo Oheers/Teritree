@@ -33,13 +33,10 @@ const weekStartMS = Date.now() - (((now.getDay() + 6) % 7) * 86400 +
 
 app.get('/api/world/info', async (req, res) => {
     res.status(200).send({
-        seed: 527,
+        seed: 535,
         lastWorldReset: weekStartMS
     })
 })
-
-const users = { }
-const { Player } = require("./objects/player.js")
 
 server.listen(port, () => {
     console.log("Server Initiated.");

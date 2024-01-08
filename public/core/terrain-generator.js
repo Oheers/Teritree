@@ -481,7 +481,7 @@ class TerrainGenerator {
     actionRestUpdate(tileID, itemID) {
         // Recovering x and y from compressed tileID form
         const x = (tileID % 9984) - 4492
-        const y = 4493 - Math.floor(tileID / 9984)
+        const y = Math.floor(tileID / 9984) - 4493
 
         // Actioning the colour changing
         terrain.decorMap[x] ??= {}

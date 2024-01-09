@@ -1,7 +1,7 @@
 function cacheChunk(x, y, localMap, saveTime) {
-    /*localStorage.setItem(getChunkID(x, y), JSON.stringify({
+    localStorage.setItem(getChunkID(x, y), JSON.stringify({
         map: localMap, saveTime: saveTime
-    }));*/
+    }));
 }
 
 function fetchCache(x, y) {

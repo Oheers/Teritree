@@ -478,7 +478,7 @@ class TerrainGenerator {
         }
     }
 
-    actionRestUpdate(tileID, itemID) {
+    actionRestUpdate(tileID, itemID, chunkID) {
         // Recovering x and y from compressed tileID form
         const x = (tileID % 9984) - 4492
         const y = Math.floor(tileID / 9984) - 4493
@@ -491,6 +491,22 @@ class TerrainGenerator {
         } else {
             terrain.decorMap[x][y].changeSprite(itemID, false);
         }
+
+        const updateMap = terrain.activeChunks[chunkID].chunk.updateMap;
+        for (let i = 0; i < updateMap.length; i++) {
+            if (updateMap[i].tileID === tileID) {
+                updateMap[i] = {
+                    tileID: tileID,
+                    itemID: itemID
+                }
+                return;
+            }
+        }
+
+        updateMap.push({
+            tileID: tileID,
+            itemID: itemID
+        })
     }
 
     /**

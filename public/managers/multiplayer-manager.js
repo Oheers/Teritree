@@ -65,7 +65,7 @@ function fetchRestingChunk(chunkID, saveTime) {
         })
         .then(tileList => {
                 tileList.forEach(tile => {
-                    terrain.actionRestUpdate(tile.tileID, tile.itemID)
+                    terrain.actionRestUpdate(tile.tileID, tile.itemID, chunkID)
                 })
             }
         )

@@ -52,6 +52,7 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
 
     if (newRenderRegion.y === oldRenderRegion.y) {} // Stopping the else statement triggering if moving up/down
     else if (newRenderRegion.y > oldRenderRegion.y) {
+        console.log("North movement!")
         // Player has moved NORTH into a new render region
         const chunk1 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y + 1)
         const chunk2 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y + 1)
@@ -214,6 +215,7 @@ function cacheNewChunks(chunk1, chunk2, socketID) {
 }
 
 function cacheNewChunk(chunk, socketID) {
+    console.log("Caching new chunk for:", socketID, ":", chunk)
     if (!existsInCache(chunk)) {
         downloadChunk(chunk, 0).then(r => {
             cache[chunk] = {
@@ -241,6 +243,9 @@ function onTileChange(chunkID, tileID, colourID) {
     const start = Date.now();
     if (cache[chunkID] === undefined) console.error(`Fatal error while writing to ${chunkID}.`)
     const updateMap = cache[chunkID].chunk;
+    if (updateMap === null) {
+
+    }
     const time = Date.now();
     if (updateMap === null) return;
     cacheUpdateTimes[tileID] = time;

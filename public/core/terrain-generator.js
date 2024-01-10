@@ -367,8 +367,7 @@ class Chunk {
 
             // Creates new decoration on the map.
             if (xRow[-uY] === undefined) {
-                const correspondingTile = liveMap[uX][uY]
-                decorMap[uX][-uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, update.itemID)
+                decorMap[uX][-uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (uX - camCentreX) * terrain.scaledSquareSize, (uY + camCentreY) * terrain.scaledSquareSize, update.itemID)
             } else {
                 decorMap[uX][-uY].setItem(update.itemID)
             }
@@ -486,8 +485,7 @@ class TerrainGenerator {
         // Actioning the colour changing
         terrain.decorMap[x] ??= {}
         if (terrain.decorMap[x][y] === undefined) {
-            const correspondingTile = terrain.terrainMap[x][-y]
-            terrain.decorMap[x][y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, itemID)
+            terrain.decorMap[x][y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (x - camCentreX) * terrain.scaledSquareSize, (y + camCentreY) * terrain.scaledSquareSize, itemID)
         } else {
             terrain.decorMap[x][y].changeSprite(itemID, false);
         }

@@ -22,6 +22,7 @@ app.get('/api/world/chunk/:id', async (req, res) => {
     let viewTime = req.query.time;
     if (viewTime < weekStartMS) viewTime = weekStartMS
     const chunk = await worldHandler.restChunk(chunkID, viewTime);
+    console.log("Sending data down REST:", chunk)
     res.status(200).send(chunk)
 })
 

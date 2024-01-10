@@ -5,12 +5,13 @@ socket.on("update_tile", (data) => {
     const relevantRenderRegion = terrain.findRenderRegion(data.x, data.y);
     const playerRenderRegion = terrain.findRenderRegion(camCentreX, camCentreY);
     if (relevantRenderRegion.x === playerRenderRegion.x && relevantRenderRegion.y === relevantRenderRegion.y) {
+        console.log("data from WS inbound, x:", data.x, "y:", data.y)
         terrain.decorMap[data.x] ??= {}
         if (terrain.decorMap[data.x][data.y] === undefined) {
-            const correspondingTile = terrain.terrainMap[data.x][-data.y]
-            terrain.decorMap[data.x][data.y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, correspondingTile.x, correspondingTile.y, data.colour)
+            terrain.decorMap[data.x][data.y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.colour)
+            terrain.decorMap[data.x][data.y].cacheElement(data.x, data.y)
         } else {
-            terrain.decorMap[data.x][data.y].changeSprite(data.colour, false);
+            terrain.decorMap[data.x][data.y].changeSprite(data.colour, data.x, data.y, false);
         }
     }
 });
@@ -65,7 +66,7 @@ function fetchRestingChunk(chunkID, saveTime) {
         })
         .then(tileList => {
                 tileList.forEach(tile => {
-                    terrain.actionRestUpdate(tile.tileID, tile.itemID, chunkID)
+                    terrain.actionRestUpdate(tile.tileID, tile.itemID)
                 })
             }
         )

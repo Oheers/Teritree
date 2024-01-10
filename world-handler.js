@@ -261,9 +261,8 @@ function onTileChange(chunkID, tileID, colourID) {
         itemID: colourID,
         epochTime: time
     })
-    if (Object.keys(cacheUpdateTimes).length > 10) {
-        cacheAllChunks();
-    }
+    // Preventing server crash from deleting data. @TODO IMPLEMENT PROPER WORLD SAVING
+    cacheAllChunks();
 }
 
 async function cacheAllChunks() {

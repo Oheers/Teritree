@@ -98,14 +98,12 @@ class SpriteElement extends Element {
         this.sy = allocatedItem.sy;
     }
 
-    changeSprite(itemID, emitToSocket) {
+    changeSprite(itemID, x, y, emitToSocket) {
         this.setItem(itemID);
 
-        const realX = Math.floor(mouseX/terrain.scaledSquareSize)
-        const realY = Math.floor(mouseY/terrain.scaledSquareSize)
-
-        this.cacheElement(realX, realY);
-        if (emitToSocket) socket.emit("new_colour", {x: realX, y: realY, colour: this.itemID, id: socket.id})
+        this.cacheElement(x, y);
+        console.log("outbound tile change to:", itemID, "at x:", x, "y:", y)
+        if (emitToSocket) socket.emit("new_colour", {x: x, y: y, colour: this.itemID, id: socket.id})
     }
 
     // Adds a tile to the update maps, to be cached in localStorage.
@@ -365,11 +363,12 @@ class Chunk {
             decorMap[uX] ??= {}
             const xRow = decorMap[uX]
 
+            console.log("loading in mem, where x:", uX, "y:", -uY)
             // Creates new decoration on the map.
-            if (xRow[-uY] === undefined) {
-                decorMap[uX][-uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (uX - camCentreX) * terrain.scaledSquareSize, (uY + camCentreY) * terrain.scaledSquareSize, update.itemID)
+            if (xRow[uY] === undefined) {
+                decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (uX - camCentreX) * terrain.scaledSquareSize, (-uY + camCentreY) * terrain.scaledSquareSize, update.itemID)
             } else {
-                decorMap[uX][-uY].setItem(update.itemID)
+                decorMap[uX][uY].setItem(update.itemID)
             }
         }
     }
@@ -477,34 +476,20 @@ class TerrainGenerator {
         }
     }
 
-    actionRestUpdate(tileID, itemID, chunkID) {
+    actionRestUpdate(tileID, itemID) {
         // Recovering x and y from compressed tileID form
         const x = (tileID % 9984) - 4492
         const y = Math.floor(tileID / 9984) - 4493
 
         // Actioning the colour changing
         terrain.decorMap[x] ??= {}
+        console.log("actioning rest update, where x:", x, "y:", -y)
         if (terrain.decorMap[x][y] === undefined) {
-            terrain.decorMap[x][y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (x - camCentreX) * terrain.scaledSquareSize, (y + camCentreY) * terrain.scaledSquareSize, itemID)
+            terrain.decorMap[x][y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (x - camCentreX) * terrain.scaledSquareSize, (-y + camCentreY) * terrain.scaledSquareSize, itemID)
+            terrain.decorMap[x][y].cacheElement(x, y);
         } else {
-            terrain.decorMap[x][y].changeSprite(itemID, false);
+            terrain.decorMap[x][y].changeSprite(itemID, x, y, false);
         }
-
-        const updateMap = terrain.activeChunks[chunkID].chunk.updateMap;
-        for (let i = 0; i < updateMap.length; i++) {
-            if (updateMap[i].tileID === tileID) {
-                updateMap[i] = {
-                    tileID: tileID,
-                    itemID: itemID
-                }
-                return;
-            }
-        }
-
-        updateMap.push({
-            tileID: tileID,
-            itemID: itemID
-        })
     }
 
     /**

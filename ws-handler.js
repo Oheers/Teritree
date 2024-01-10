@@ -92,7 +92,7 @@ function init(server) {
 
         socket.on("new_colour", (data) => {
             console.log("new colour:", data)
-            updateColour(data.x, data.y, data.colour);
+            updateColour(data.x, -data.y, data.colour);
             io.emit("update_tile", data);
         })
 

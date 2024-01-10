@@ -27,10 +27,12 @@ app.get('/api/world/chunk/:id', async (req, res) => {
 })
 
 const now = new Date();
-const weekStartMS = Date.now() - (((now.getDay() + 6) % 7) * 86400 +
+const weekStartMS2 = Date.now() - (((now.getDay() + 6) % 7) * 86400 +
     now.getHours() * 3600 +
     now.getMinutes() * 60 +
     now.getSeconds()) * 1000;
+
+const weekStartMS = 1704920744000;
 
 app.get('/api/world/info', async (req, res) => {
     res.status(200).send({

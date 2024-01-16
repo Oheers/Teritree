@@ -19,11 +19,9 @@ function fetchCache(x, y) {
             saveTime: 0
         };
     }
-    const map = parsedData.map;
-    const saveTime = parsedData.saveTime;
     return {
-        map: map,
-        saveTime: saveTime
+        map: parsedData.map,
+        saveTime: parsedData.saveTime
     };
 }
 

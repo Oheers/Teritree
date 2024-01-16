@@ -77,7 +77,7 @@ function getTerrainGenerator() {
 
 
 function updateCoordinateTracker() {
-    coordinateTracker.innerHTML = "[Camera] X: "+ (Math.round(camCentreX*2)/2).toFixed(1) +" Y: "+ (Math.round(camCentreY*2)/2).toFixed(1);
+    coordinateTracker.innerHTML = "[Tile] X: "+ Math.floor(mouseX / terrain.scaledSquareSize) +" Y: "+ -Math.floor(mouseY / terrain.scaledSquareSize);
     mouseTracker.innerHTML = "[Mouse] X: "+ (Math.round(mouseX*2)/2).toFixed(1) +" Y: "+ (Math.round(mouseY*2)/2).toFixed(1);
     tickTracker.innerHTML = "[Avg Tick] " + Math.round(10*(totalTickingTime / totalTicks))/10 + "ms"
     itemTracker.innerHTML = "[Holding] " + sprites[itemID].namedID + ":" + itemID;

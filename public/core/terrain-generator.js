@@ -108,7 +108,7 @@ class SpriteElement extends Element {
 
     // Adds a tile to the update maps, to be cached in localStorage.
     cacheElement(realX, realY) {
-        const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(realY/-32))].chunk.updateMap;
+        const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(-realY/-32))].chunk.updateMap;
         const tileID = ((4493 - realY) * 9984) + (realX + 4492)
         for (let i = 0; i < updateMap.length; i++) {
             if (updateMap[i].tileID === tileID) {
@@ -338,9 +338,11 @@ class Chunk {
                 tileY -= 4492;
                 if (tree !== -1) {
                     this.chunkDecor[tileX] ??= {}
+                    console.log("Placing tree, x:", tileX, "y:", tileY);
                     this.chunkDecor[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), tree)
                 } else if (shrub !== -1) {
                     this.chunkDecor[tileX] ??= {}
+                    console.log("Placing shrub, x:", tileX, "y:", tileY);
                     this.chunkDecor[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), shrub)
                 }
             }
@@ -363,7 +365,6 @@ class Chunk {
             decorMap[uX] ??= {}
             const xRow = decorMap[uX]
 
-            console.log("loading in mem, where x:", uX, "y:", -uY)
             // Creates new decoration on the map.
             if (xRow[uY] === undefined) {
                 decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (uX - camCentreX) * terrain.scaledSquareSize, (-uY + camCentreY) * terrain.scaledSquareSize, update.itemID)
@@ -416,7 +417,7 @@ class Chunk {
     }
 
     unloadDecor(cache) {
-        if (cache) cacheChunk(this.chunkX, this.chunkY, this.updateMap, Date.now() + 86400000)
+        if (cache) cacheChunk(this.chunkX, this.chunkY, this.updateMap, Date.now())
         for (const rowKey in this.chunkDecor) {
             if (this.chunkDecor.hasOwnProperty(rowKey) && terrain.decorMap.hasOwnProperty(rowKey)) {
                 const chunkRow = this.chunkDecor[rowKey];
@@ -471,6 +472,7 @@ class TerrainGenerator {
         }
         const index = this.restingQueue.indexOf(chunkID);
         if (index !== -1) {
+            console.log("fetching from terrain generator:", newChunk.saveTime)
             fetchRestingChunk(chunkID, newChunk.saveTime);
             this.restingQueue.splice(index, 1)
         }

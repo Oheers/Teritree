@@ -4,7 +4,7 @@ let mouseX = 0;
 let mouseY = 0;
 let draw = false;
 let keyMap = {};
-let moveSpeed = 4 // default = 1
+let moveSpeed = 4
 
 class InputManager {
 
@@ -51,21 +51,25 @@ class InputManager {
 
     fetchMousePress() {
         if (draw) {
+            console.log("drawing")
             const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
             const tileY = -Math.floor(mouseY / terrain.scaledSquareSize);
             try {
                 terrain.decorMap[tileX] ??= {};
                 console.log("fetching mouse press, where tileX:", tileX, "tileY:", tileY)
                 if (terrain.decorMap[tileX][tileY] === undefined) {
+                    console.log("hello test 123")
                     terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (tileX - camCentreX) * terrain.scaledSquareSize, (-tileY + camCentreY) * terrain.scaledSquareSize, itemID)
                     terrain.decorMap[tileX][tileY].cacheElement(tileX, tileY);
-                    console.log("outbound tile change to:", itemID, "at x:", tileX, "y:", tileY)
+                    console.log("alerting server of new colour")
                     socket.emit("new_colour", {x: tileX, y: tileY, colour: itemID, id: socket.id})
                 } else {
+                    console.log("changing tile where decorMap undefined")
                     terrain.decorMap[tileX][tileY].changeSprite(itemID, tileX, tileY, true);
                 }
             } catch (error) {
-
+                console.log(terrain.activeChunks, getChunkID(Math.floor(tileX/32), Math.ceil(tileY/-32)))
+                console.log("error:", error)
             }
             draw = false;
         }

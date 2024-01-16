@@ -27,16 +27,16 @@ app.get('/api/world/chunk/:id', async (req, res) => {
 })
 
 const now = new Date();
-const weekStartMS2 = Date.now() - (((now.getDay() + 6) % 7) * 86400 +
-    now.getHours() * 3600 +
-    now.getMinutes() * 60 +
-    now.getSeconds()) * 1000;
+const weekStartMS = Date.now() - (((now.getDay() + 6) % 7) * 86400000 +
+    now.getHours() * 3600000 +
+    now.getMinutes() * 60000 +
+    now.getSeconds() * 1000);
 
-const weekStartMS = 1704920744000;
+console.log("weekStartMS:", weekStartMS)
 
 app.get('/api/world/info', async (req, res) => {
     res.status(200).send({
-        seed: 535,
+        seed: 537,
         lastWorldReset: weekStartMS
     })
 })

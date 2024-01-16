@@ -46,8 +46,9 @@ function deletePlayer(socketID) {
 
 // Processes the x, y, and colour variables and sends them to the database backend.
 function onNewColour(x, y, colourID) {
-    const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(y / 32));
+    const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(-y / 32));
     const tileID = utils.getTileID(x, y);
+    console.log("new colour notif:", tileID, chunkID, x, y, colourID)
     onTileChange(chunkID, tileID, colourID);
     //dbManager.sendTileUpdate(chunkID, tileID, colourID, Date.now());
 }

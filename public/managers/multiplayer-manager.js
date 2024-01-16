@@ -35,6 +35,7 @@ socket.on("player_oor", (data) => {
 socket.on("chunk_resting", (data) => {
     if (data in terrain.activeChunks) {
         const chunk = terrain.activeChunks[data];
+        console.log("fetching from REST:", chunk.chunk.saveTime)
         fetchRestingChunk(data, chunk.chunk.saveTime)
     } else {
         terrain.restingQueue.push(data)

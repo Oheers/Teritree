@@ -42,6 +42,17 @@ event.emitter.on("player_out_range", function inRange(newPlayerID, moverID) {
     })
 })
 
+event.emitter.on("tile_change", function tileChange(playerID, tileID, itemID, senderID) {
+    const tileX = (tileID % 9984) - 4492
+    const tileY = Math.floor(tileID / 9984) - 4493
+    emitToSocket(playerID, "update_tile", {
+        x: tileX,
+        y: tileY,
+        colour: itemID,
+        id: senderID
+    })
+})
+
 function emitToSocket(socketID, message, data) {
     io.to(socketID).emit(message, data);
 }
@@ -56,8 +67,8 @@ function disconnectPlayer(userID) {
     dbBackend.deletePlayer(userID);
 }
 
-function updateColour(x, y, colour) {
-    dbBackend.onNewColour(x, y, colour);
+function updateColour(x, y, colour, senderID) {
+    dbBackend.onNewColour(x, y, colour, senderID);
 }
 
 function movePlayer(newX, newY, playerID) {
@@ -92,8 +103,7 @@ function init(server) {
 
         socket.on("new_colour", (data) => {
             console.log("new colour:", data)
-            updateColour(data.x, -data.y, data.colour);
-            io.emit("update_tile", data);
+            updateColour(data.x, -data.y, data.colour, data.id);
         })
 
         socket.on("move", (data) => {

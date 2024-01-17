@@ -239,15 +239,16 @@ function uncacheChunks(chunk1, chunk2, socketID) {
     }
 }
 
-function onTileChange(chunkID, tileID, colourID) {
-    const start = Date.now();
+function onTileChange(chunkID, tileID, colourID, senderID) {
     if (cache[chunkID] === undefined) console.error(`Fatal error while writing to ${chunkID}.`)
     const updateMap = cache[chunkID].chunk;
-    if (updateMap === null) {
-
-    }
+    if (updateMap === null) { }
     const time = Date.now();
     if (updateMap === null) return;
+    // Sends a message down the WS server to all players currently viewing the chunk.
+    cache[chunkID].users.forEach(userID => {
+        event.emitter.emit("tile_change", userID, tileID, colourID, senderID)
+    })
     cacheUpdateTimes[tileID] = time;
     for (let i=0; i < updateMap.length; i++) {
         if (updateMap[i].tileID === tileID) {

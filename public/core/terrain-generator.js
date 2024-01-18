@@ -55,10 +55,6 @@ class UiElementStroke extends Element {
         this.ctx.strokeRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
     }
 
-    setColour(colourID) {
-        this.colour = colours[colourID - 1].colour
-    }
-
     changeTile(tileX, tileY) {
         this.x = tileX;
         this.y = tileY;
@@ -84,8 +80,8 @@ class SpriteElement extends Element {
         this.sy = allocatedItem.sy;
         this.xDiff = xDiff;
         this.yDiff = yDiff;
-        this.itemID = _itemID;
         this.img = document.getElementById("sprites");
+        this._itemID = _itemID;
     }
 
     update() {
@@ -94,7 +90,7 @@ class SpriteElement extends Element {
     }
 
     setItem(itemID) {
-        this.itemID = itemID;
+        this._itemID = itemID;
         const allocatedItem = sprites[itemID];
         this.x -= this.xDiff;
         this.y -= this.yDiff;
@@ -131,6 +127,11 @@ class SpriteElement extends Element {
             tileID: tileID,
             itemID: this.itemID
         })
+    }
+
+
+    get itemID() {
+        return this._itemID;
     }
 }
 
@@ -374,8 +375,13 @@ class Chunk {
 
             // Creates new decoration on the map.
             if (xRow[uY] === undefined) {
+                if (update.itemID === -1) continue;
                 decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (uX - camCentreX) * terrain.scaledSquareSize, (-uY + camCentreY) * terrain.scaledSquareSize, update.itemID)
             } else {
+                if (update.itemID === -1) {
+                    delete decorMap[uX][uY];
+                    continue;
+                }
                 decorMap[uX][uY].setItem(update.itemID)
             }
         }

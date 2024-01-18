@@ -1,34 +1,28 @@
-class Item {
+// If currentItem = -1, the player is holding nothing.
+let itemID = -1;
 
-    constructor(name, colour, colourID) {
-        this._colour = colour;
-        this._name = name;
-        this._colourID = colourID;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get colour() {
-        return this._colour;
-    }
-
-    get colourID() {
-        return this._colourID;
-    }
+function setItemID(itemID) {
+    this.itemID = itemID;
+    console.log("new itemID:", this.itemID)
 }
 
-const colours = [
-    new Item("Red", "red", 1),
-    new Item("Orange", "#fecc02", 2),
-    new Item("Yellow", "yellow", 3),
-    new Item("Lime", "lime", 4),
-    new Item("Green", "green", 5),
-    new Item("Aqua", "aqua", 6),
-    new Item("Blue", "#006aa7", 7),
-    new Item("Black", "black", 8),
-    new Item("Gray", "gray", 9),
-    new Item("Grass", "#a8ca58", 10),
-    new Item("Purple", "#cc00ff", 11)
-]
+function increaseItemID() {
+    // length - 1 to prevent selector being chosen.
+    if (itemID + 1 < Object.keys(sprites).length - 1) {
+        itemID += 1;
+    }
+    changeHotbar()
+}
+
+function decreaseItemID() {
+    if (itemID - 1 >= 0) {
+        itemID--;
+    }
+    changeHotbar()
+}
+
+function changeHotbar() {
+    const hotbar = document.getElementById("colour-indicator");
+    const coords = getImageCoords(itemID);
+    hotbar.style.backgroundPosition = `calc(4vw * ${coords.sx / -16}) calc(4vw * ${coords.sy / -16})`;
+}

@@ -32,13 +32,12 @@ canvas {
     background-image: url('sprites.png'); /* Replace 'path/to/your/image.jpg' with your image path */
     background-size: calc(4vw * 20) calc(4vw * 20); /* Set background size to 1600% of the sprite sheet (20x20 sprites) */
     background-repeat: no-repeat; /* Prevent repeating the sprite */
-    background-position: calc(4vw * 0) calc(4vw * 0); /* Position the desired sprite using negative values */
+    background-position: calc(4vw * 1) calc(4vw * 1); /* Position the desired sprite using negative values */
     position: absolute;
     image-rendering: pixelated;
     bottom: 0;
     left: 50%;
     margin-bottom: 2vw;
-    transition: background-position 200ms ease;
     transform: translateX(-50%);
     border: 4px solid black;
     background-color: rgba(255, 255, 255, 0.2);

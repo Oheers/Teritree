@@ -51,41 +51,39 @@ class InputManager {
 
     fetchMousePress() {
         if (draw) {
+            draw = false;
             console.log("drawing")
             const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
             const tileY = -Math.floor(mouseY / terrain.scaledSquareSize);
             try {
                 terrain.decorMap[tileX] ??= {};
                 console.log("fetching mouse press, where tileX:", tileX, "tileY:", tileY)
-                if (terrain.decorMap[tileX][tileY] === undefined) {
-                    console.log("hello test 123")
+                if (terrain.decorMap[tileX][tileY] === undefined || terrain.decorMap[tileX][tileY].itemID === -1) {
+                    if (itemID === -1) return;
                     terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (tileX - camCentreX) * terrain.scaledSquareSize, (-tileY + camCentreY) * terrain.scaledSquareSize, itemID)
                     terrain.decorMap[tileX][tileY].cacheElement(tileX, tileY);
                     console.log("alerting server of new colour")
+                    itemID = -1;
+                    changeHotbar();
                     socket.emit("new_colour", {x: tileX, y: tileY, colour: itemID, id: socket.id})
                 } else {
+                    if (itemID !== -1) {
+                        return;
+                    }
+                    itemID = terrain.decorMap[tileX][tileY].itemID;
+                    changeHotbar();
                     console.log("changing tile where decorMap undefined")
-                    terrain.decorMap[tileX][tileY].changeSprite(itemID, tileX, tileY, true);
+                    terrain.decorMap[tileX][tileY].changeSprite(-1, tileX, tileY, true);
                 }
             } catch (error) {
                 console.log(terrain.activeChunks, getChunkID(Math.floor(tileX/32), Math.ceil(tileY/-32)))
                 console.log("error:", error)
             }
-            draw = false;
         }
     }
 
     fetchKeyPress() {
         let x = 0, y = 0;
-
-        if (keyMap[39]) {
-            increaseItemID()
-            keyMap[39] = false;
-        }
-        else if (keyMap[37]) {
-            decreaseItemID();
-            keyMap[37] = false;
-        }
 
         if (keyMap[87]) y = 4; // W
         if (keyMap[65]) x = 4; // A

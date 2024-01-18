@@ -58,6 +58,7 @@ class Sprite {
 
 const sprites = {};
 
+sprites[-1] = new Sprite(-1, 0, 0, 0, 0, "nothing", "Nothing")
 sprites[0] = new Sprite(0, 0, 0.75, 0.75, 0.75, "normal_tree1", "Tree")
 sprites[1] = new Sprite(1, 0, 0.9, 0.75, 0.75, "normal_tree2", "Tree")
 sprites[2] = new Sprite(2, 0, 0.5, 0.5, 0.5, "normal_tree3", "Tree")
@@ -169,30 +170,6 @@ sprites[107] = new Sprite(107, 4, 4, 2, 2, "burnt_pebbles", "Burnt Pebbles")
 sprites[108] = new Sprite(108, 4, 3, 3, 2, "burnt_leaves1", "Burnt Leaves")
 sprites[109] = new Sprite(109, 4, 3, 3, 2, "burnt_leaves2", "Burnt Leaves")
 sprites[117] = new Sprite(117, 0, 0, 0, 0, "selector_icon", "Selector")
-
-
-let itemID = 0;
-
-function increaseItemID() {
-    // length - 1 to prevent selector being chosen.
-    if (itemID + 1 < Object.keys(sprites).length - 1) {
-        itemID += 1;
-    }
-    changeHotbar()
-}
-
-function decreaseItemID() {
-    if (itemID - 1 >= 0) {
-        itemID--;
-    }
-    changeHotbar()
-}
-
-function changeHotbar() {
-    const hotbar = document.getElementById("colour-indicator");
-    const coords = getImageCoords(itemID);
-    hotbar.style.backgroundPosition = `calc(4vw * ${coords.sx / -16}) calc(4vw * ${coords.sy / -16})`;
-}
 
 function getImageCoords(itemID) {
     return {

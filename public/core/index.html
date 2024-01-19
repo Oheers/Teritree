@@ -12,12 +12,14 @@
 <body oncontextmenu="return false;">
 
 <div class="location ui">
+    <p><span id="player-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="tick-preview">{time}ms</span></p>
     <p><span id="item-preview">[Holding] {item}</span></p>
 </div>
 <div class="colour-indicator ui" id="colour-indicator"></div>
+<div class="colour-indicator-outline ui" id="colour-indicator-outline"></div>
 
 <img style="display:none;" id="sprites" src="../resources/sprites.png" width="320" height="320">
 <img style="display:none;" id="character_sprites" src="../resources/character_sprites.png" width="320" height="320">

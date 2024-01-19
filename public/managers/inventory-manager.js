@@ -22,7 +22,7 @@ function decreaseItemID() {
 }
 
 function changeHotbar() {
-    const hotbar = document.getElementById("colour-indicator");
+    const hotbar = document.getElementById("colour-indicator-outline");
     const coords = getImageCoords(itemID);
-    hotbar.style.backgroundPosition = `calc(4vw * ${coords.sx / -16}) calc(4vw * ${coords.sy / -16})`;
+    hotbar.style.backgroundPosition = `calc((5vw - 16px) * ${coords.sx / -16}) calc((5vw - 16px) * ${coords.sy / -16})`;
 }

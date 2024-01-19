@@ -82,11 +82,14 @@ class SpriteElement extends Element {
         this.yDiff = yDiff;
         this.img = document.getElementById("sprites");
         this._itemID = _itemID;
+        this._opacity = 1;
     }
 
     update() {
         this.ctx = renderer.viewportArea.context;
+        this.ctx.globalAlpha = this._opacity;
         this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x + windowWidth / 2, this.y + windowHeight / 2, this.width, this.height)
+        this.ctx.globalAlpha = 1;
     }
 
     setItem(itemID) {
@@ -132,6 +135,10 @@ class SpriteElement extends Element {
 
     get itemID() {
         return this._itemID;
+    }
+
+    set opacity(opacity) {
+        this._opacity = opacity;
     }
 }
 

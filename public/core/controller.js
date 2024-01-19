@@ -6,6 +6,7 @@ const inputHandler = new InputManager();
 let lastUpdated = Date.now();
 
 const coordinateTracker = document.getElementById("location-preview");
+const playerTracker = document.getElementById("player-preview");
 const mouseTracker = document.getElementById("mouse-preview");
 const tickTracker = document.getElementById("tick-preview");
 const itemTracker = document.getElementById("item-preview");
@@ -77,7 +78,8 @@ function getTerrainGenerator() {
 
 
 function updateCoordinateTracker() {
-    coordinateTracker.innerHTML = "[Tile] X: "+ Math.floor(mouseX / terrain.scaledSquareSize) +" Y: "+ -Math.floor(mouseY / terrain.scaledSquareSize);
+    coordinateTracker.innerHTML = "[Tile] X: "+ Math.floor(mouseX / terrain.scaledSquareSize) +" Y: "+ Math.floor(mouseY / terrain.scaledSquareSize);
+    playerTracker.innerHTML = "[Player] X: "+ Math.floor(camCentreX) +" Y: "+ Math.floor(camCentreY);
     mouseTracker.innerHTML = "[Mouse] X: "+ (Math.round(mouseX*2)/2).toFixed(1) +" Y: "+ (Math.round(mouseY*2)/2).toFixed(1);
     tickTracker.innerHTML = "[Avg Tick] " + Math.round(10*(totalTickingTime / totalTicks))/10 + "ms"
     itemTracker.innerHTML = "[Holding] " + sprites[itemID].namedID + ":" + itemID;

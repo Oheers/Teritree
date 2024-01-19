@@ -43,6 +43,9 @@ class InputManager {
         renderer.translatePlayers(x, y);
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
         if (!back || (x === 0 && y === 0)) return;
+        Math.abs(Math.floor(camCentreX + 0.5) - Math.floor(mouseX / terrain.scaledSquareSize)) > 1
+        || Math.abs(Math.floor(camCentreY + 0.5) + Math.floor(mouseY / terrain.scaledSquareSize)) > 1 ?
+            renderer.uiMap["selector"].opacity = 0.2 : renderer.uiMap["selector"].opacity = 1;
         socket.emit("move", {
             newX: camCentreX,
             newY: camCentreY
@@ -55,6 +58,8 @@ class InputManager {
             console.log("drawing")
             const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
             const tileY = -Math.floor(mouseY / terrain.scaledSquareSize);
+            if (Math.abs(Math.floor(camCentreX + 0.5) - tileX) > 1
+                || Math.abs(Math.floor(camCentreY + 0.5) - tileY) > 1) return;
             try {
                 terrain.decorMap[tileX] ??= {};
                 console.log("fetching mouse press, where tileX:", tileX, "tileY:", tileY)
@@ -152,6 +157,11 @@ class InputManager {
             if (keyMap["mouse_L"] || keyMap["mouse_R"]) {
                 draw = true;
             }
+
+            // Graying out the selector if the player is unable to place or pick up in this tile.
+            Math.abs(Math.floor(camCentreX + 0.5) - Math.floor(mouseX / terrain.scaledSquareSize)) > 1
+                || Math.abs(Math.floor(camCentreY + 0.5) + Math.floor(mouseY / terrain.scaledSquareSize)) > 1 ?
+                renderer.uiMap["selector"].opacity = 0.2 : renderer.uiMap["selector"].opacity = 1;
         }
     }
 

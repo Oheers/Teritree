@@ -27,6 +27,7 @@ async function init() {
         if (!result) {
             console.error("Error occurred whilst fetching data about the world.");
             renderer.error = true;
+            renderer.errorMSG = "There was an error whilst fetching data about the world.";
             return;
         }
 
@@ -51,11 +52,16 @@ function updateViewport() {
         const ctx = renderer.viewportArea.context;
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
-        if (renderer.error) {
-            ctx.fillText("There was an error whilst fetching data about the world.", ctx.canvas.width / 2, ctx.canvas.height / 2);
-        } else {
-            ctx.fillText("Loading . . .", ctx.canvas.width / 2, ctx.canvas.height / 2);
-        }
+        ctx.fillText("Loading . . .", ctx.canvas.width / 2, ctx.canvas.height / 2);
+        return;
+    } else if (renderer.error) {
+        document.querySelectorAll('.ui').forEach(element => {
+            element.style.display = 'none';
+        });
+        const ctx = renderer.viewportArea.context;
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(renderer.errorMSG, ctx.canvas.width / 2, ctx.canvas.height / 2);
         return;
     }
     const diff = Date.now() - lastUpdated;

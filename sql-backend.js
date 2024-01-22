@@ -33,7 +33,9 @@ function getPlayers() {
 }
 
 function getCoords(socketID) {
+    console.log("getting coordinates for:", socketID)
     const user = activeUsers[socketID];
+    if (user === undefined) return undefined;
     return {
         x: user.x,
         y: user.y
@@ -41,11 +43,15 @@ function getCoords(socketID) {
 }
 
 function deletePlayer(socketID) {
-    delete activeUsers[socketID];
+    console.log("deleting player")
+    if (activeUsers.hasOwnProperty(socketID)) {
+        delete activeUsers[socketID];
+    }
 }
 
 // Processes the x, y, and colour variables and sends them to the database backend.
 function onNewColour(x, y, colourID, senderID) {
+    activeUsers[senderID].setActive();
     const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(-y / 32));
     const tileID = utils.getTileID(x, y);
     console.log("new colour notif:", tileID, chunkID, x, y, colourID)
@@ -59,6 +65,7 @@ function onMove(newX, newY, playerID) {
     }
 
     const player = activeUsers[playerID];
+    player.setActive();
 
     const timeDiff = Date.now() - player.lastMoveTime;
     if (timeDiff === 0) return null;
@@ -90,6 +97,20 @@ function shouldRecalibrate(player) {
     } else return null;
 }
 
+function kickAFKPlayers() {
+    for (const user in activeUsers) {
+        if (isPlayerAFK(activeUsers[user])) {
+            console.log("Player is AFK")
+            event.emitter.emit("afk_player", activeUsers[user].accountID)
+            // @TODO DISCONNECT USER FROM SOCKET.IO SERVER
+        }
+    }
+}
+
+function isPlayerAFK(player) {
+    return Date.now() - player._lastActiveTime >= 5000;
+}
+
 function getItemID(colour) {
     return itemMap.findIndex(function (item) {
         return item === colour;
@@ -97,7 +118,7 @@ function getItemID(colour) {
 }
 
 module.exports = {
-    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer
+    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers
 }
 
 // Items, the index of each item is the id of the item.

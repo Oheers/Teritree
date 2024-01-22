@@ -53,11 +53,21 @@ event.emitter.on("tile_change", function tileChange(playerID, tileID, itemID, se
     })
 })
 
+event.emitter.on("afk_player", function afkPlayer(playerID) {
+    emitToSocket(playerID, "kick_player", {
+        msg:"You have been kicked for being AFK."
+    })
+    disconnectPlayer(playerID);
+})
+
 function emitToSocket(socketID, message, data) {
     io.to(socketID).emit(message, data);
 }
 
 function disconnectPlayer(userID) {
+    const coords = dbBackend.getCoords(userID);
+    // The user has already been removed from the server.
+    if (coords === undefined) return;
     event.emitter.emit("player_leave", userID, dbBackend.getCoords(userID))
     for (const playerID in playerLinks) {
         playerLinks[playerID] = playerLinks[playerID].filter(linkedPlayer => linkedPlayer !== userID);
@@ -86,7 +96,7 @@ function init(server) {
     io.on("connection", (socket) => {
         const x = 0;
         const y = 0;
-        const playerObject = new Player(526, 527, x, y, 10000, 2, "ed", 1, 1);
+        const playerObject = new Player(socket.id, 527, x, y, 10000, 2, "ed", 1, 1);
         dbBackend.addPlayer(playerObject, socket.id)
         event.emitter.emit("player_join", socket.id, x, y)
         io.emit("player_join", {
@@ -98,6 +108,7 @@ function init(server) {
         })
 
         socket.on("disconnect", (reason) => {
+            console.log("player leaving of own accord")
             disconnectPlayer(socket.id);
         })
 
@@ -109,7 +120,12 @@ function init(server) {
         socket.on("move", (data) => {
             movePlayer(data.newX, data.newY, socket.id);
         })
+        setInterval(timeoutCheck, 1000);
     })
+}
+
+function timeoutCheck() {
+    dbBackend.kickAFKPlayers();
 }
 
 module.exports = {

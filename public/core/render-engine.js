@@ -5,13 +5,14 @@ class RenderEngine {
 
         this.fetchRealCanvasResolution();
 
-        this.loading = true;
-        this.error = false;
+        this._loading = true;
+        this._error = false;
+        this._errorMSG = "";
 
         this.viewportArea = {
             canvas: document.getElementById("viewport"),
             start: function () {
-                this.loading = true;
+                this._loading = true;
                 this.canvas.width = 1920;
                 this.canvas.height = 1080;
                 this.context = this.canvas.getContext("2d");
@@ -110,12 +111,35 @@ class RenderEngine {
         return this._verticalZoomLevel;
     }
 
-
     get viewDebugType() {
         return this._viewDebugType;
     }
 
+    get loading() {
+        return this._loading;
+    }
+
+    set loading(value) {
+        this._loading = value;
+    }
+
+    get error() {
+        return this._error;
+    }
+
+    get errorMSG() {
+        return this._errorMSG;
+    }
+
     set viewDebugType(value) {
         this._viewDebugType = value;
+    }
+
+    set error(value) {
+        this._error = value;
+    }
+
+    set errorMSG(value) {
+        this._errorMSG = value;
     }
 }

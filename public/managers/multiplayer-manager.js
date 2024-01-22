@@ -40,6 +40,12 @@ socket.on("chunk_resting", (data) => {
     }
 })
 
+socket.on("kick_player", (data) => {
+    renderer.loading = false;
+    renderer.error = true;
+    renderer.errorMSG = data.msg;
+})
+
 socket.on("player_join", (data) => {
     if (data.id !== socket.id) {
         terrain.addNewPlayer(data.id, false, data.x - (camCentreX * terrain.scaledSquareSize), data.y + (camCentreY * terrain.scaledSquareSize), data.displayName, data.character)

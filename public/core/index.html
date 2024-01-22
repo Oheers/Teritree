@@ -11,13 +11,21 @@
 </head>
 <body oncontextmenu="return false;">
 
+<div class="leaderboard ui">
+    <p style="font-size: 32pt"><b>Leaderboard</b></p>
+</div>
+<div class ="leaderboard-outline ui"></div>
+
 <div class="location ui">
-    <p><span id="player-preview">X: ${x} Y: ${y}</span></p>
+    <p class="gui-header"><b>World #4</b></p>
+    <p><span class="first-gui-text" id="player-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
     <p><span id="tick-preview">{time}ms</span></p>
     <p><span id="item-preview">[Holding] {item}</span></p>
 </div>
+<div class ="location-outline ui"></div>
+
 <div class="colour-indicator ui" id="colour-indicator"></div>
 <div class="colour-indicator-outline ui" id="colour-indicator-outline"></div>
 

@@ -6,12 +6,17 @@ class Player {
         this._x = x;
         this._y = y;
         this._lastMoveTime = Date.now();
+        this._lastActiveTime = Date.now();
         this._joinEpoch = joinEpoch;
         this._competitionsWon = competitionsWon;
         this._displayName = displayName;
         this._townRank = townRank;
         this._serverRank = serverRank;
         this._lastPositionRecalibration = Date.now();
+    }
+
+    setActive() {
+        this._lastActiveTime = Date.now();
     }
 
     get accountID() {

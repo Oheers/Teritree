@@ -85,6 +85,8 @@ function checkSocketIOConnection() {
     if (!socket.connected) {
         renderer.error = true;
         renderer.errorMSG = "Disconnected from server."
+    } else {
+        renderer.error = false;
     }
 }
 

@@ -13,6 +13,10 @@ const port = 3000
 
 app.use(express.static('./public'));
 
+app.get('/play', (req, res) => {
+    res.status(200).sendFile(path.resolve(__dirname, './public/core/auth.html'))
+})
+
 app.get('/', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, './public/core/index.html'))
 })

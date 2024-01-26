@@ -19,8 +19,6 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
         const chunk1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y)
         const chunk2 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y + 1)
         cacheNewChunks(chunk1, chunk2, socketID)
-        console.log("caching new chunk:", chunk1, ":", newRenderRegion.x, "y:", newRenderRegion.y)
-        console.log("caching new chunk:", chunk2, ":", newRenderRegion.x, "y:", newRenderRegion.y + 1)
 
         // Removing player from unloaded chunks and deleting chunk if no longer needed.
         const unload1 = utils.getChunkID(newRenderRegion.x - 2, newRenderRegion.y);
@@ -52,7 +50,6 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
 
     if (newRenderRegion.y === oldRenderRegion.y) {} // Stopping the else statement triggering if moving up/down
     else if (newRenderRegion.y > oldRenderRegion.y) {
-        console.log("North movement!")
         // Player has moved NORTH into a new render region
         const chunk1 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y + 1)
         const chunk2 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y + 1)
@@ -114,9 +111,7 @@ function getActivePlayers(chunkID) {
 
 function removePlayerFromCachedChunk(chunkID, playerID) {
     const cachedChunk = cache[chunkID];
-    console.log("Beginning uncache process for:", chunkID, "on behalf of:", playerID, "cache[chunkID] =", cachedChunk)
     if (cachedChunk === undefined) {
-        console.log("CRASH PROTECTION: UNDEFINED CACHED CHUNK. DETAILS ON SESSION:\n", "cache:", cache, "chunkID:", chunkID, "playerID:", playerID, "cachedChunk:", cachedChunk)
         return;
     }
     const activeUsers = cachedChunk.users;
@@ -126,29 +121,23 @@ function removePlayerFromCachedChunk(chunkID, playerID) {
             // ^ Belt & braces safety check in the if statement above, we really don't want to un-cache a chunk if a
             // player's using it. Set to only drop the data completely to stop the player moving between render regions
             // and causing lots of reads/writes.
-            console.log(`${playerID} is the only player in the chunk ${chunkID}, starting timeout to delete chunk.`)
             cachedChunk.users = []
             setTimeout(() => {
                 if (cachedChunk.users.length === 0) {
-                    console.log(`Users in ${chunkID} still at 0, deleting internally.`)
                     if (cachedChunk.chunk.length === 0) {
                         delete cache[chunkID];
                         return;
                     }
                     dbManager.cacheChunk(chunkID, cachedChunk.chunk, cacheUpdateTimes).then(
                         r => delete cache[chunkID])
-                } else {
-                    console.log(`new player presence found in ${chunkID}, where players active:`, cachedChunk.users, `original user: ${playerID}`)
                 }
             }, 60000);
         }
     } else {
-        console.log(`Players existing within the chunk beside ${playerID}, removing just player.`)
         const index = cachedChunk.users.indexOf(playerID);
         if (index !== -1) {
             // Delete user from cache dictionary reference but leave other players in
             cachedChunk.users.splice(index, 1);
-            console.log(`New current users in chunk: ${cachedChunk.users}`)
         }
     }
 }
@@ -215,7 +204,6 @@ function cacheNewChunks(chunk1, chunk2, socketID) {
 }
 
 function cacheNewChunk(chunk, socketID) {
-    console.log("Caching new chunk for:", socketID, ":", chunk)
     if (!existsInCache(chunk)) {
         downloadChunk(chunk, 0).then(r => {
             cache[chunk] = {
@@ -242,9 +230,8 @@ function uncacheChunks(chunk1, chunk2, socketID) {
 function onTileChange(chunkID, tileID, colourID, senderID) {
     if (cache[chunkID] === undefined) console.error(`Fatal error while writing to ${chunkID}.`)
     const updateMap = cache[chunkID].chunk;
-    if (updateMap === null) { }
-    const time = Date.now();
     if (updateMap === null) return;
+    const time = Date.now();
     // Sends a message down the WS server to all players currently viewing the chunk.
     cache[chunkID].users.forEach(userID => {
         event.emitter.emit("tile_change", userID, tileID, colourID, senderID)

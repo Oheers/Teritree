@@ -8,7 +8,8 @@ const activeUsers = {}
 const userLocations = {}
 const activeChunks = {}
 
-const maxSpeed = 0.0025
+const maxSpeed = 0.0025;
+const afk_timer = 300000;
 
 function addPlayer(player, socketID) {
     activeUsers[socketID] = player;
@@ -33,7 +34,6 @@ function getPlayers() {
 }
 
 function getCoords(socketID) {
-    console.log("getting coordinates for:", socketID)
     const user = activeUsers[socketID];
     if (user === undefined) return undefined;
     return {
@@ -43,7 +43,6 @@ function getCoords(socketID) {
 }
 
 function deletePlayer(socketID) {
-    console.log("deleting player")
     if (activeUsers.hasOwnProperty(socketID)) {
         delete activeUsers[socketID];
     }
@@ -54,9 +53,7 @@ function onNewColour(x, y, colourID, senderID) {
     activeUsers[senderID].setActive();
     const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(-y / 32));
     const tileID = utils.getTileID(x, y);
-    console.log("new colour notif:", tileID, chunkID, x, y, colourID)
     onTileChange(chunkID, tileID, colourID, senderID);
-    //dbManager.sendTileUpdate(chunkID, tileID, colourID, Date.now());
 }
 
 function onMove(newX, newY, playerID) {
@@ -100,7 +97,6 @@ function shouldRecalibrate(player) {
 function kickAFKPlayers() {
     for (const user in activeUsers) {
         if (isPlayerAFK(activeUsers[user])) {
-            console.log("Player is AFK")
             event.emitter.emit("afk_player", activeUsers[user].accountID)
             // @TODO DISCONNECT USER FROM SOCKET.IO SERVER
         }
@@ -108,7 +104,7 @@ function kickAFKPlayers() {
 }
 
 function isPlayerAFK(player) {
-    return Date.now() - player._lastActiveTime >= 5000;
+    return Date.now() - player._lastActiveTime >= afk_timer;
 }
 
 function getItemID(colour) {

@@ -1,9 +1,7 @@
 const socket = io();
 
 socket.on("update_tile", (data) => {
-    console.log("updating tile", data.x, data.y, camCentreX, camCentreY)
     if (data.id === socket.id) return;
-    console.log("data from WS inbound, x:", data.x, "y:", data.y)
     terrain.decorMap[data.x] ??= {}
     if (terrain.decorMap[data.x][data.y] === undefined) {
         terrain.decorMap[data.x][data.y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.colour)
@@ -30,10 +28,8 @@ socket.on("player_oor", (data) => {
 })
 
 socket.on("chunk_resting", (data) => {
-    console.log("terrain:", terrain)
     if (data in terrain.activeChunks) {
         const chunk = terrain.activeChunks[data];
-        console.log("fetching from REST:", chunk.chunk.saveTime)
         fetchRestingChunk(data, chunk.chunk.saveTime)
     } else {
         terrain.restingQueue.push(data)

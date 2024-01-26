@@ -108,7 +108,6 @@ class SpriteElement extends Element {
     changeSprite(itemID, x, y, emitToSocket) {
         this.setItem(itemID);
         this.cacheElement(x, y);
-        console.log("outbound tile change to:", itemID, "at x:", x, "y:", y)
         if (emitToSocket) socket.emit("new_colour", {x: x, y: y, colour: this.itemID, id: socket.id})
     }
 
@@ -353,11 +352,9 @@ class Chunk {
                 tileY -= 4492;
                 if (tree !== -1) {
                     this.chunkDecor[tileX] ??= {}
-                    console.log("Placing tree, x:", tileX, "y:", tileY);
                     this.chunkDecor[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), tree)
                 } else if (shrub !== -1) {
                     this.chunkDecor[tileX] ??= {}
-                    console.log("Placing shrub, x:", tileX, "y:", tileY);
                     this.chunkDecor[tileX][tileY] ??= new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, squareSize * ((32*this.chunkX) + x - camCentreX), squareSize * ((y - (this.chunkY*32)) + camCentreY), shrub)
                 }
             }
@@ -492,7 +489,6 @@ class TerrainGenerator {
         }
         const index = this.restingQueue.indexOf(chunkID);
         if (index !== -1) {
-            console.log("fetching from terrain generator:", newChunk.saveTime)
             fetchRestingChunk(chunkID, newChunk.saveTime);
             this.restingQueue.splice(index, 1)
         }
@@ -505,7 +501,6 @@ class TerrainGenerator {
 
         // Actioning the colour changing
         terrain.decorMap[x] ??= {}
-        console.log("actioning rest update, where x:", x, "y:", -y)
         if (terrain.decorMap[x][y] === undefined) {
             terrain.decorMap[x][y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (x - camCentreX) * terrain.scaledSquareSize, (-y + camCentreY) * terrain.scaledSquareSize, itemID)
             terrain.decorMap[x][y].cacheElement(x, y);

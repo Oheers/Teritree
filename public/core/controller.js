@@ -5,11 +5,9 @@ const inputHandler = new InputManager();
 
 let lastUpdated = Date.now();
 
-const coordinateTracker = document.getElementById("location-preview");
-const playerTracker = document.getElementById("player-preview");
-const mouseTracker = document.getElementById("mouse-preview");
-const tickTracker = document.getElementById("tick-preview");
-const itemTracker = document.getElementById("item-preview");
+const xTracker = document.getElementById("x-preview");
+const yTracker = document.getElementById("y-preview");
+const townTracker = document.getElementById("town-preview");
 let activeTile = null;
 
 const PLAYER_WIDTH = 80;
@@ -48,6 +46,7 @@ async function init() {
 
 function updateViewport() {
     viewport.clear();
+    checkSocketIOConnection()
     if (renderer.loading) {
         const ctx = renderer.viewportArea.context;
         ctx.font = "30px Arial";
@@ -82,13 +81,17 @@ function getTerrainGenerator() {
     return this.terrain;
 }
 
+function checkSocketIOConnection() {
+    if (!socket.connected) {
+        renderer.error = true;
+        renderer.errorMSG = "Disconnected from server."
+    }
+}
 
 function updateCoordinateTracker() {
-    coordinateTracker.innerHTML = "[Tile] X: "+ Math.floor(mouseX / terrain.scaledSquareSize) +" Y: "+ Math.floor(mouseY / terrain.scaledSquareSize);
-    playerTracker.innerHTML = "[Player] X: "+ Math.floor(camCentreX) +" Y: "+ Math.floor(camCentreY);
-    mouseTracker.innerHTML = "[Mouse] X: "+ (Math.round(mouseX*2)/2).toFixed(1) +" Y: "+ (Math.round(mouseY*2)/2).toFixed(1);
-    tickTracker.innerHTML = "[Avg Tick] " + Math.round(10*(totalTickingTime / totalTicks))/10 + "ms"
-    itemTracker.innerHTML = "[Holding] " + sprites[itemID].namedID + ":" + itemID;
+    xTracker.innerHTML = "<b>X:</b> "+ Math.floor(camCentreX);
+    yTracker.innerHTML = "<b>Y:</b> "+ Math.floor(camCentreY);
+    townTracker.innerHTML = "<b>Town:</b> "+ "None";
 }
 
 init().then(r => console.log("Hello world."));

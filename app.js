@@ -22,7 +22,6 @@ app.get('/api/world/chunk/:id', async (req, res) => {
     let viewTime = req.query.time;
     if (viewTime < weekStartMS) viewTime = weekStartMS
     const chunk = await worldHandler.restChunk(chunkID, viewTime);
-    console.log("Sending data down REST:", chunk)
     res.status(200).send(chunk)
 })
 
@@ -32,11 +31,9 @@ const weekStartMS = Date.now() - (((now.getDay() + 6) % 7) * 86400000 +
     now.getMinutes() * 60000 +
     now.getSeconds() * 1000);
 
-console.log("weekStartMS:", weekStartMS)
-
 app.get('/api/world/info', async (req, res) => {
     res.status(200).send({
-        seed: 537,
+        seed: 55030,
         lastWorldReset: weekStartMS
     })
 })

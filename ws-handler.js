@@ -94,6 +94,7 @@ function movePlayer(newX, newY, playerID) {
 function init(server) {
     io = new Server(server);
     io.on("connection", (socket) => {
+        console.log("New player joining of id:", socket.id, "IP:", socket.request.connection.remoteAddress);
         const x = 0;
         const y = 0;
         const playerObject = new Player(socket.id, 527, x, y, 10000, 2, "ed", 1, 1);
@@ -108,12 +109,10 @@ function init(server) {
         })
 
         socket.on("disconnect", (reason) => {
-            console.log("player leaving of own accord")
             disconnectPlayer(socket.id);
         })
 
         socket.on("new_colour", (data) => {
-            console.log("new colour:", data)
             updateColour(data.x, -data.y, data.colour, data.id);
         })
 

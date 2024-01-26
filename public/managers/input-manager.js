@@ -55,29 +55,25 @@ class InputManager {
     fetchMousePress() {
         if (draw) {
             draw = false;
-            console.log("drawing")
             const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
             const tileY = -Math.floor(mouseY / terrain.scaledSquareSize);
             if (Math.abs(Math.floor(camCentreX + 0.5) - tileX) > 1
                 || Math.abs(Math.floor(camCentreY + 0.5) - tileY) > 1) return;
             try {
                 terrain.decorMap[tileX] ??= {};
-                console.log("fetching mouse press, where tileX:", tileX, "tileY:", tileY)
                 if (terrain.decorMap[tileX][tileY] === undefined || terrain.decorMap[tileX][tileY].itemID === -1) {
                     if (itemID === -1) return;
                     terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (tileX - camCentreX) * terrain.scaledSquareSize, (-tileY + camCentreY) * terrain.scaledSquareSize, itemID)
                     terrain.decorMap[tileX][tileY].cacheElement(tileX, tileY);
-                    console.log("alerting server of new colour")
+                    socket.emit("new_colour", {x: tileX, y: tileY, colour: itemID, id: socket.id})
                     itemID = -1;
                     changeHotbar();
-                    socket.emit("new_colour", {x: tileX, y: tileY, colour: itemID, id: socket.id})
                 } else {
-                    if (itemID !== -1) {
+                    if (itemID !== -1 || !sprites[terrain.decorMap[tileX][tileY].itemID].movable) {
                         return;
                     }
                     itemID = terrain.decorMap[tileX][tileY].itemID;
                     changeHotbar();
-                    console.log("changing tile where decorMap undefined")
                     terrain.decorMap[tileX][tileY].changeSprite(-1, tileX, tileY, true);
                 }
             } catch (error) {

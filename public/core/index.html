@@ -12,19 +12,43 @@
 <body oncontextmenu="return false;">
 
 <div class="leaderboard ui">
-    <p style="font-size: 32pt"><b>Leaderboard</b></p>
+    <p class="gui-header ui"><b>Leaderboard</b></p>
+    <div class="leaderboard-element-main ui">
+        <p class="first-leaderboard-item ui"><span id="leaderboard-1"><b>1: <span style="color: #ff4444;">Marcus Rashford</span></b></span></p>
+        <p class="leaderboard-stat ui"><span id="leaderboard-1-stat">6,091 Trees</span></p>
+    </div>
+    <div class="leaderboard-element-main ui">
+        <p class="leaderboard-item ui"><span id="leaderboard-2"><b>2: <span style="color: #ff7700;">David Bowie</span></b></span></p>
+        <p class="leaderboard-stat ui"><span id="leaderboard-2-stat">5,992 Trees</span></p>
+    </div>
+    <div class="leaderboard-element-main ui">
+        <p class="leaderboard-item ui"><span id="leaderboard-3"><b>3: <span style="color: #44ff44;">Mr Chambers</span></b></span></p>
+        <p class="leaderboard-stat ui"><span id="leaderboard-3-stat">4,611 Trees</span></p>
+    </div>
+    <div class="leaderboard-element-main ui">
+        <p class="leaderboard-item ui"><span id="leaderboard-4"><b>4: <span style="color: #ff7700;">Paul Hollywood</span></b></span></p>
+        <p class="leaderboard-stat ui"><span id="leaderboard-4-stat">2,918 Trees</span></p>
+    </div>
+    <div class="leaderboard-element-main ui">
+        <p class="leaderboard-item ui"><span id="leaderboard-5"><b>5: <span style="color: #44ff44;">Usain Bolt</span></b></span></p>
+        <p class="leaderboard-stat ui"><span id="leaderboard-5-stat">691 Trees</span></p>
+    </div>
+    <div class="leaderboard-element-main ui">
+        <p class="leaderboard-item ui"><span id="leaderboard-6"><b>67: <span style="color: #ebede9;">You</span></b></span></p>
+        <p class="leaderboard-stat ui"><span id="leaderboard-6-stat">41 Trees</span></p>
+    </div>
 </div>
 <div class ="leaderboard-outline ui"></div>
 
 <div class="location ui">
     <p class="gui-header"><b>World #4</b></p>
-    <p><span class="first-gui-text" id="player-preview">X: ${x} Y: ${y}</span></p>
-    <p><span id="location-preview">X: ${x} Y: ${y}</span></p>
-    <p><span id="mouse-preview">X: ${x} Y: ${y}</span></p>
-    <p><span id="tick-preview">{time}ms</span></p>
-    <p><span id="item-preview">[Holding] {item}</span></p>
+    <p class="first-gui-text"><span id="x-preview">X: ${x} Y: ${y}</span></p>
+    <p class="location-element"><span id="y-preview">X: ${x} Y: ${y}</span></p>
+    <p class="location-element"><span id="town-preview">X: ${x} Y: ${y}</span></p>
 </div>
 <div class ="location-outline ui"></div>
+
+<div class="colour-name ui" id="colour-name">Nothing</div>
 
 <div class="colour-indicator ui" id="colour-indicator"></div>
 <div class="colour-indicator-outline ui" id="colour-indicator-outline"></div>

@@ -46,7 +46,6 @@ async function init() {
 
 function updateViewport() {
     viewport.clear();
-    checkSocketIOConnection()
     if (renderer.loading) {
         const ctx = renderer.viewportArea.context;
         ctx.font = "30px Arial";
@@ -85,8 +84,10 @@ function checkSocketIOConnection() {
     if (!socket.connected) {
         renderer.error = true;
         renderer.errorMSG = "Disconnected from server."
+        return false;
     } else {
         renderer.error = false;
+        return true;
     }
 }
 

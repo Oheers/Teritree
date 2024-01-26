@@ -60,6 +60,17 @@ socket.on("player_leave", (data) => {
     delete terrain.players[data.id]
 })
 
+socket.on("connect", () => {
+    document.querySelectorAll('.ui').forEach(element => {
+        element.style.display = 'block';
+    });
+})
+
+socket.on("disconnect", () => {
+    renderer.error = true;
+    renderer.errorMSG = "Disconnected from server."
+})
+
 function fetchRestingChunk(chunkID, saveTime) {
     fetch(`/api/world/chunk/${chunkID}?time=${saveTime}`)
         .then(r => {

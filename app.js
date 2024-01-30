@@ -11,14 +11,14 @@ const worldHandler = require("./world-handler.js");
 
 const port = 3000
 
-app.use(express.static('./public'));
-
-app.get('/play', (req, res) => {
-    res.status(200).sendFile(path.resolve(__dirname, './public/core/auth.html'))
-})
+app.use(express.static('./public/'));
 
 app.get('/', (req, res) => {
-    res.status(200).sendFile(path.resolve(__dirname, './public/core/index.html'))
+    res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/auth.html'))
+})
+
+app.get('/play', (req, res) => {
+    res.status(200).sendFile(path.resolve(__dirname, './public/main/core/index.html'))
 })
 
 app.get('/api/world/chunk/:id', async (req, res) => {
@@ -37,7 +37,7 @@ const weekStartMS = Date.now() - (((now.getDay() + 6) % 7) * 86400000 +
 
 app.get('/api/world/info', async (req, res) => {
     res.status(200).send({
-        seed: 55030,
+        seed: 55035,
         lastWorldReset: weekStartMS
     })
 })

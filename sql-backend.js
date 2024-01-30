@@ -8,7 +8,7 @@ const activeUsers = {}
 const userLocations = {}
 const activeChunks = {}
 
-const maxSpeed = 0.0025;
+const maxSpeed = 0.25;
 const afk_timer = 300000;
 
 function addPlayer(player, socketID) {

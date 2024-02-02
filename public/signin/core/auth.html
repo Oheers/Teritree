@@ -24,38 +24,31 @@
                 <div id="text-signin-header" class="gui-header">
                     Sign In to Teritree
                 </div>
-                <button type="button" id="log-in" class="sign-type-button login">Log In</button><br>
-                <button type="button" id="sign-up" class="sign-type-button signup">Sign Up</button>
+
+                <button type="button" onclick="startLogin()" id="log-in" class="sign-type-button login">Log In</button><br>
+                <button type="button" onclick="startSignup()" id="sign-up" class="sign-type-button signup">Sign Up</button>
+
+                <form id="sign-in-form">
+                    <input type="text" onclick="clearWarnings()" class="input-box" id="username" name="username" placeholder="Username"> <br>
+                    <div id="username-warning" class="input-warning" style="display: none"></div>
+                    <input type="password" onclick="clearWarnings()" class="input-box" id="password" name="password" placeholder="Password">
+                    <div id="password-warning" class="input-warning" style="display: none"></div>
+                </form>
+
+                <tr id="signin-bottom-buttons">
+                    <td><button type="button" onclick="signin()" id="sign-in-complete" class="sign-type-confirm bottom-signin">Sign In</button></td>
+                    <td><button type="button" id="sign-in-google-auth" class="mini-button-auth bottom-signin third-p-auth">G</button></td>
+                    <td><button type="button" id="sign-in-microsoft-auth" class="mini-button-auth bottom-signin third-p-auth">M</button></td>
+                </tr>
+
+                <tr id="signup-bottom-buttons">
+                    <td><button type="button" onclick="signup()" id="sign-up-complete" class="sign-type-confirm bottom-signin">Sign Up</button></td>
+                    <td><button type="button" id="sign-up-google-auth" class="mini-button-auth bottom-signin third-p-auth">G</button></td>
+                    <td><button type="button" id="sign-up-microsoft-auth" class="mini-button-auth bottom-signin third-p-auth">M</button></td>
+                </tr>
             </div>
         </div>
     </body>
 
-    <script>
-        // Adjust the video container size on window resize
-        window.addEventListener('resize', adjustVideoContainerSize);
-
-        function adjustVideoContainerSize() {
-            const video = document.getElementById('video-background');
-
-            const containerWidth = window.innerWidth;
-            const containerHeight = window.innerHeight;
-
-            const videoWidth = video.videoWidth || 1920; // Use a default width if videoWidth is not available
-            const videoHeight = video.videoHeight || 1080; // Use a default height if videoHeight is not available
-
-            const containerRatio = containerWidth / containerHeight;
-            const videoRatio = videoWidth / videoHeight;
-
-            if (containerRatio > videoRatio) {
-                video.style.width = '110%';
-                video.style.height = 'auto';
-            } else {
-                video.style.width = 'auto';
-                video.style.height = '110%';
-            }
-        }
-
-        // Initial adjustment on page load
-        window.addEventListener('load', adjustVideoContainerSize);
-    </script>
+    <script src="signin/resources/script.js"></script>
 </html>

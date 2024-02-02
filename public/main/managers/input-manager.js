@@ -63,6 +63,7 @@ class InputManager {
                 terrain.decorMap[tileX] ??= {};
                 if (terrain.decorMap[tileX][tileY] === undefined || terrain.decorMap[tileX][tileY].itemID === -1) {
                     if (itemID === -1) return;
+                    if (this.placingOnOcean(tileX, tileY)) return;
                     terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (tileX - camCentreX) * terrain.scaledSquareSize, (-tileY + camCentreY) * terrain.scaledSquareSize, itemID)
                     terrain.decorMap[tileX][tileY].cacheElement(tileX, tileY);
                     socket.emit("new_colour", {x: tileX, y: tileY, colour: itemID, id: socket.id})
@@ -117,6 +118,14 @@ class InputManager {
         }
 
         return {x, y};
+    }
+
+    // @TODO add in actual stopping from placing on the ocean floor.
+    placingOnOcean(tileX, tileY) {
+        const chunkID = getChunkID(Math.floor(tileX/32), Math.ceil(-tileY/-32));
+        const colour = terrain.activeChunks[chunkID].chunk.chunkMap[tileX][-tileY].colour;
+        return colour === "#73bed3" || colour === "#4f8fba" || colour === "#3c5e8b";
+
     }
 
     selectTile() {

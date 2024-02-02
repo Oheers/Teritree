@@ -51,6 +51,73 @@ body {
     color: #fff;
 }
 
+#sign-in-form {
+    display: none;
+    height: 21.1%;
+    margin-top: 4.6%;
+}
+
+.input-warning{
+    font-size: 10pt;
+    color: #999999;
+    margin: 1.5% 0 0 19%;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+}
+
+.third-p-auth {
+    margin-left: 1.6%;
+    width: 16.6%;
+}
+
+.bottom-signin {
+    display: none;
+    margin-top: 8.8%;
+    height: 14.9%;
+    border-style: solid;
+    background-color: white;
+    border-color: white;
+    border-radius: 0;
+    font-size: 18pt;
+    text-align: center;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+}
+
+.bottom-signin:hover {
+    background-color: #dddddd;
+    border-color: #dddddd;
+    cursor: pointer;
+}
+
+.bottom-signin:active {
+    background-color: #bbbbbb;
+    border-color: #bbbbbb;
+}
+
+.sign-type-confirm {
+    width: 32.5%;
+    margin-left: 14.1%;
+}
+
+#password {
+    margin-top: 5.1%;
+}
+
+.input-box {
+    background-color: rgba(0, 32, 12, 0.9);
+    margin: 0 0 0 19%;
+    width: 56%;
+    height: 38.9%;
+    border-style: solid;
+    border-color: rgba(0, 32, 12, 0.9);
+    color: white;
+    font-size: 14pt;
+    padding-left: 16px;
+}
+
+.input-box:active {
+    border-color: rgba(0, 32, 12, 0.9);
+}
+
 .main-signin {
     font-family: 'calibriteritree', 'Arial Hebrew', serif;
     font-size: 36pt;
@@ -96,7 +163,7 @@ body {
 }
 
 .gui-header {
-    margin-top: 7%;
+    margin-top: 12%;
     font-size: 36pt;
     font-weight: bold;
     color: white;
@@ -141,9 +208,9 @@ body {
 }
 
 .login {
-    margin-top: 18.3%;
+    margin-top: 8.2%;
 }
 
 .signup {
-    margin-top: 9.1%
+    margin-top: 5%
 }

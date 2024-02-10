@@ -25,6 +25,7 @@ function adjustVideoContainerSize() {
 function startLogin() {
     document.getElementById("log-in").style.display = "none";
     document.getElementById("sign-up").style.display = "none";
+    document.getElementById("experian").style.display = "none";
     document.getElementById("sign-in-form").style.display = "block";
     document.getElementById("sign-in-complete").style.display = "table-cell";
     document.getElementById("sign-in-google-auth").style.display = "table-cell";
@@ -34,6 +35,7 @@ function startLogin() {
 function startSignup() {
     document.getElementById("log-in").style.display = "none";
     document.getElementById("sign-up").style.display = "none";
+    document.getElementById("experian").style.display = "none";
     document.getElementById("sign-in-form").style.display = "block";
     document.getElementById("username-warning").style.display = "block";
     document.getElementById("sign-up-complete").style.display = "table-cell";
@@ -43,18 +45,74 @@ function startSignup() {
 }
 
 function validationChecks() {
-    if (!validate_usernameLength()) return false;
     if (!validate_usernameCharacters()) return false;
     if (!validate_passwordLength()) return false;
     return true;
 }
 
-function signin() {
+async function signin() {
     if (!validationChecks()) return;
+    await postUsernameAndPassword("login");
 }
 
-function signup() {
+async function signup() {
     if (!validationChecks()) return;
+    if (!validate_usernameLength()) return;
+    await postUsernameAndPassword("signup");
+}
+
+async function experian() {
+    window.location.href = `/play?id=${"experian-auth"}`
+}
+
+async function postUsernameAndPassword(type) {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    console.log("stringing:", JSON.stringify({
+        username: username,
+        password: password}))
+    const response = await fetch(`/${type}`, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, *same-origin, omit
+        headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify({
+            username: username,
+            password: password
+        }) // body data type must match "Content-Type" header
+    }).then(response => {
+        return response.json();
+    }).then(jsonResponse => {
+        if (type === "login") {
+            if (!jsonResponse.auth) {
+                displayInputError("username", "Incorrect username or password.", "#ff2222")
+            } else {
+                console.log("logging in request received")
+                window.location.href = `/play?id=${jsonResponse.token}`
+                setCookie("authToken", jsonResponse.token, 90);
+            }
+        } else {
+            if (!jsonResponse.auth) {
+                displayInputError("username", "This username already exists.", "#ff2222")
+            } else {
+                window.location.href = `/play?id=${jsonResponse.token}`
+                setCookie("authToken", jsonResponse.token, 90);
+            }
+        }
+    })
+}
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
 function validate_usernameLength() {

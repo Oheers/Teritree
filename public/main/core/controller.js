@@ -36,7 +36,7 @@ async function init() {
         });
 
         terrain.loadStartingChunks(camCentreX, camCentreY);
-        terrain.addNewPlayer("You", true, 0, 0, "ed", 0)
+        terrain.addNewPlayer("You", true, 0, 0, "You", 0)
         renderer.loading = false;
     } catch (error) {
         console.error(error);

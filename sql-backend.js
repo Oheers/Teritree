@@ -3,8 +3,10 @@ const dbManager = require("./database.js")
 const utils = require("./utils.js");
 const event = require("./event-manager.js");
 const { changeInternalCache, onTileChange} = require("./world-handler");
+const {Player} = require("./objects/player");
 
 const activeUsers = {}
+const pendingAuth = {}
 const userLocations = {}
 const activeChunks = {}
 
@@ -97,7 +99,7 @@ function shouldRecalibrate(player) {
 function kickAFKPlayers() {
     for (const user in activeUsers) {
         if (isPlayerAFK(activeUsers[user])) {
-            event.emitter.emit("afk_player", activeUsers[user].accountID)
+            event.emitter.emit("afk_player", activeUsers[user].displayName)
             // @TODO DISCONNECT USER FROM SOCKET.IO SERVER
         }
     }
@@ -113,8 +115,69 @@ function getItemID(colour) {
     });
 }
 
+function addPendingAuthUser(tokenID, id, username) {
+    console.log("new pending auth user:", tokenID)
+    pendingAuth[tokenID] = {
+        id: id,
+        username: username
+    }
+}
+
+function verifyAuthUser(tokenID, socketID, x, y) {
+    console.log("auth token:", tokenID, "successfully verified.");
+    if (pendingAuth.hasOwnProperty(tokenID)) {
+        const playerObject = new Player(socketID, 527, x, y, 10000, 2, pendingAuth[tokenID].username, 1, 1);
+        addPlayer(playerObject, socketID)
+        console.log("players:", activeUsers)
+    }
+}
+
+async function createAccount(username, password, authToken) {
+    return new Promise((resolve) => {
+        dbManager.getAccount(username).then(r => {
+            if (r[0][0] !== undefined) {
+                resolve(false);
+            } else {
+                dbManager.newAccount(username, password, authToken)
+                    .then(result => {  resolve(true); })
+            }
+        });
+    })
+}
+
+async function signin(username, password) {
+    return new Promise((resolve) => {
+        dbManager.getAccount(username).then(r => {
+            if (r[0][0] === undefined) {
+                resolve({auth: false});
+            } else if (password !== r[0][0].password) {
+                resolve({auth: false});
+            } else {
+                resolve({auth: true, token: r[0][0].token});
+            }
+        });
+    })
+}
+
+async function fetchAccount(authToken) {
+    return new Promise((resolve) => {
+        dbManager.getAccountFromAuthToken(authToken).then(r => {
+            if (authToken === "experian-auth") {
+                addPendingAuthUser(authToken, 52600, "Experian Account")
+                resolve({auth: true, username: "Experian Account"})
+            } else if (r[0][0] === undefined) {
+                resolve({auth: false});
+            } else {
+                addPendingAuthUser(authToken, r[0][0].id, r[0][0].username)
+                resolve({auth: true, username: r[0][0].username, accountID: r[0][0].id})
+            }
+        })
+    })
+}
+
 module.exports = {
-    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers
+    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
+    fetchAccount, verifyAuthUser
 }
 
 // Items, the index of each item is the id of the item.

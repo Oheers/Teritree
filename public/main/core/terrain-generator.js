@@ -589,7 +589,7 @@ class TerrainGenerator {
 
     addNewPlayer(playerID, self, x, y, displayName, character) {
         const element = new PlayerElement(x, y, character)
-        const text = new TextElement(200, 50, x + (PLAYER_WIDTH / 2), y - 12.5, playerID, "24px Arial", "center", "black")
+        const text = new TextElement(200, 50, x + (PLAYER_WIDTH / 2), y - 12.5, displayName, "24px Arial", "center", "black")
         const width = text.textWidth * 2.5 + 12
         element.addSubElement(text)
         element.addSubElement(new BackgroundElement(width, 35, "black", 0.2, x + (PLAYER_WIDTH / 2) - (width / 2), y - 38.75))

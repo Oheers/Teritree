@@ -1,5 +1,6 @@
 const mysql = require("mysql2/promise");
 const auth = require('./auth-account.js')
+const {user} = require("./auth-account");
 
 const connection = mysql.createPool({
     host     : auth.host,
@@ -20,7 +21,7 @@ async function sendTileUpdate(chunkID, tileID, itemID, epochTime) {
 }
 
 async function fetchChunkUpdates(chunkID) {
-    return await connection.query(`SELECT tileID, itemID, epochTime FROM teritree_world WHERE chunkID = ${chunkID}`);
+    return connection.query(`SELECT tileID, itemID, epochTime FROM teritree_world WHERE chunkID = ${chunkID}`);
 }
 
 async function cacheChunk(chunkID, updateMap, updateTimes) {
@@ -43,6 +44,19 @@ async function cacheChunk(chunkID, updateMap, updateTimes) {
     await connection.query(query);
 }
 
+async function newAccount(username, password, authToken) {
+    console.log("token:", authToken)
+    return connection.query(`INSERT INTO teritree_users (username, password, token) VALUES ("${username}", "${password}", "${authToken}")`);
+}
+
+async function getAccount(username) {
+    return connection.query(`SELECT username, password, token FROM teritree_users WHERE username = "${username}"`);
+}
+
+async function getAccountFromAuthToken(authToken) {
+    return connection.query(`SELECT username, id FROM teritree_users WHERE token = "${authToken}"`);
+}
+
 module.exports = {
-    sendTileUpdate, fetchChunkUpdates, cacheChunk
+    sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken
 }

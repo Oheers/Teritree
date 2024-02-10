@@ -1,5 +1,26 @@
 const socket = io();
 
+const authToken = getCookie("authToken");
+socket.emit("auth", {
+    token: authToken
+})
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 socket.on("update_tile", (data) => {
     if (data.id === socket.id) return;
     terrain.decorMap[data.x] ??= {}
@@ -49,6 +70,7 @@ socket.on("player_join", (data) => {
 })
 
 socket.on("player_move", (data) => {
+    console.log("player move:", data)
     if (data.id === socket.id) return;
     const player = terrain.players[data.id];
     if (player === undefined) return;

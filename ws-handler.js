@@ -30,7 +30,7 @@ event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
         id: moverID,
         x: mover.x,
         y: mover.y,
-        displayName: "ed",
+        displayName: mover.displayName,
         character: 0
     })
 })
@@ -95,17 +95,21 @@ function init(server) {
     io = new Server(server);
     io.on("connection", (socket) => {
         console.log("New player joining of id:", socket.id, "IP:", socket.request.connection.remoteAddress);
-        const x = 0;
-        const y = 0;
-        const playerObject = new Player(socket.id, 527, x, y, 10000, 2, "ed", 1, 1);
-        dbBackend.addPlayer(playerObject, socket.id)
-        event.emitter.emit("player_join", socket.id, x, y)
-        io.emit("player_join", {
-            id: socket.id,
-            x: x,
-            y: y,
-            displayName: "ed",
-            character: 0
+
+        socket.on("auth", (data) => {
+            console.log("auth request received.")
+            const token = data.token;
+            const x = 0;
+            const y = 0;
+            dbBackend.verifyAuthUser(token, socket.id, x, y)
+            event.emitter.emit("player_join", socket.id, x, y)
+            io.emit("player_join", {
+                id: socket.id,
+                x: x,
+                y: y,
+                displayName: "ed",
+                character: 0
+            })
         })
 
         socket.on("disconnect", (reason) => {

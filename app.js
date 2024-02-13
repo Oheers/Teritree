@@ -74,7 +74,7 @@ const weekStartMS = Date.now() - (((now.getDay() + 6) % 7) * 86400000 +
 
 app.get('/api/world/info', async (req, res) => {
     res.status(200).send({
-        seed: 55035,
+        seed: 521,
         lastWorldReset: weekStartMS
     })
 })

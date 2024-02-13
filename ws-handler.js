@@ -26,6 +26,7 @@ event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
     if (newPlayerID === moverID) return;
     newPlayerID in playerLinks ? playerLinks[newPlayerID].push(moverID) : playerLinks[newPlayerID] = [moverID];
     const mover = dbBackend.getPlayer(moverID)
+    console.log("new player in range:", moverID, mover);
     emitToSocket(newPlayerID, "player_ir", {
         id: moverID,
         x: mover.x,
@@ -101,13 +102,13 @@ function init(server) {
             const token = data.token;
             const x = 0;
             const y = 0;
-            dbBackend.verifyAuthUser(token, socket.id, x, y)
+            const player = dbBackend.verifyAuthUser(token, socket.id, x, y);
             event.emitter.emit("player_join", socket.id, x, y)
             io.emit("player_join", {
                 id: socket.id,
                 x: x,
                 y: y,
-                displayName: "ed",
+                displayName: player.displayName,
                 character: 0
             })
         })

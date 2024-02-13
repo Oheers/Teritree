@@ -14,10 +14,13 @@ const maxSpeed = 0.25;
 const afk_timer = 300000;
 
 function addPlayer(player, socketID) {
+    console.log("adding new player:", player, socketID)
     activeUsers[socketID] = player;
+    console.log("new active users:", activeUsers)
 }
 
 function getPlayer(playerID) {
+    console.log(`getting player (${playerID}):`, activeUsers)
     return activeUsers[playerID]
 }
 
@@ -129,6 +132,10 @@ function verifyAuthUser(tokenID, socketID, x, y) {
         const playerObject = new Player(socketID, 527, x, y, 10000, 2, pendingAuth[tokenID].username, 1, 1);
         addPlayer(playerObject, socketID)
         console.log("players:", activeUsers)
+        return playerObject;
+    } else {
+        console.log("no auth happening :(", pendingAuth)
+        return undefined;
     }
 }
 
@@ -162,13 +169,11 @@ async function signin(username, password) {
 async function fetchAccount(authToken) {
     return new Promise((resolve) => {
         dbManager.getAccountFromAuthToken(authToken).then(r => {
-            if (authToken === "experian-auth") {
-                addPendingAuthUser(authToken, 52600, "Experian Account")
-                resolve({auth: true, username: "Experian Account"})
-            } else if (r[0][0] === undefined) {
+            if (r[0][0] === undefined) {
                 resolve({auth: false});
             } else {
                 addPendingAuthUser(authToken, r[0][0].id, r[0][0].username)
+                console.log("Adding pending auth user")
                 resolve({auth: true, username: r[0][0].username, accountID: r[0][0].id})
             }
         })

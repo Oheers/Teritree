@@ -26,7 +26,6 @@ event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
     if (newPlayerID === moverID) return;
     newPlayerID in playerLinks ? playerLinks[newPlayerID].push(moverID) : playerLinks[newPlayerID] = [moverID];
     const mover = dbBackend.getPlayer(moverID)
-    console.log("new player in range:", moverID, mover);
     emitToSocket(newPlayerID, "player_ir", {
         id: moverID,
         x: mover.x,
@@ -57,6 +56,13 @@ event.emitter.on("tile_change", function tileChange(playerID, tileID, itemID, se
 event.emitter.on("afk_player", function afkPlayer(playerID) {
     emitToSocket(playerID, "kick_player", {
         msg:"You have been kicked for being AFK."
+    })
+    disconnectPlayer(playerID);
+})
+
+event.emitter.on("user_already_logged_in", function afkPlayer(playerID) {
+    emitToSocket(playerID, "kick_player", {
+        msg:"You have logged in from another location."
     })
     disconnectPlayer(playerID);
 })
@@ -95,10 +101,8 @@ function movePlayer(newX, newY, playerID) {
 function init(server) {
     io = new Server(server);
     io.on("connection", (socket) => {
-        console.log("New player joining of id:", socket.id, "IP:", socket.request.connection.remoteAddress);
 
         socket.on("auth", (data) => {
-            console.log("auth request received.")
             const token = data.token;
             const x = 0;
             const y = 0;

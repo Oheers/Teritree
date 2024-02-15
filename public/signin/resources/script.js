@@ -1,6 +1,11 @@
 // Adjust the video container size on window resize
 window.addEventListener('resize', adjustVideoContainerSize);
 
+const authToken = getCookie("authToken");
+if (authToken !== undefined) {
+    autoLogin(authToken)
+}
+
 function adjustVideoContainerSize() {
     const video = document.getElementById('video-background');
 
@@ -87,12 +92,34 @@ async function experian() {
     })
 }
 
+async function autoLogin(authToken) {
+    const response = await fetch(`/login-auth-token`, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, *same-origin, omit
+        headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify({
+            token: authToken
+        }) // body data type must match "Content-Type" header
+    }).then(response => {
+        return response.json();
+    }).then(jsonResponse => {
+        if (jsonResponse.auth) {
+            setCookie("authToken", jsonResponse.token, 90);
+            window.location.href = `/play?id=${authToken}`
+        }
+    })
+}
+
 async function postUsernameAndPassword(type) {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
-    console.log("stringing:", JSON.stringify({
-        username: username,
-        password: password}))
     const response = await fetch(`/${type}`, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin
@@ -115,7 +142,6 @@ async function postUsernameAndPassword(type) {
             if (!jsonResponse.auth) {
                 displayInputError("username", "Incorrect username or password.", "#ff2222")
             } else {
-                console.log("logging in request received")
                 setCookie("authToken", jsonResponse.token, 90);
                 window.location.href = `/play?id=${jsonResponse.token}`
             }
@@ -135,6 +161,22 @@ function setCookie(cname, cvalue, exdays) {
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     let expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
 
 function validate_usernameLength() {

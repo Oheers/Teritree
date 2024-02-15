@@ -21,10 +21,10 @@ app.get('/', (req, res) => {
 
 app.get('/play', (req, res) => {
     dbBackend.fetchAccount(req.query.id).then(r => {
+        dbBackend.checkPlayerAlreadyLoggedIn(r.accountID)
         if (r.auth) {
             res.status(200).sendFile(path.resolve(__dirname, './public/main/core/index.html'))
         } else {
-            console.log("not authed, signing to sign in:")
             res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/auth.html'))
         }
     })
@@ -55,7 +55,17 @@ app.post('/signup', bodyParser.json(), (req, res) => {
             })
         }
     })
-    console.log("req:", req.body);
+})
+
+app.post('/login-auth-token', bodyParser.json(), (req, res) => {
+    const body = req.body;
+    const authToken = body.token;
+    dbBackend.selectPlayer(authToken).then(r => {
+        res.json({
+            auth: r.auth,
+            token: authToken
+        })
+    })
 })
 
 app.get('/api/world/chunk/:id', async (req, res) => {

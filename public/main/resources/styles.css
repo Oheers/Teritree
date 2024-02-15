@@ -83,6 +83,39 @@ canvas {
     top: calc(47.4% + 4px);
 }
 
+.sign-out {
+    position: absolute;
+    margin: 1%;
+    left: 0;
+    z-index: 1;
+    width: 25.5%;
+    height: 75%;
+}
+
+.medium-button {
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    padding: 0.025% 1.75%;
+    background-color: rgb(0, 32, 12, 0.9);
+    border-color: rgb(0, 32, 12, 0.9);
+    color: white;
+    text-align: center;
+    border-style: solid;
+    height: 7%;
+    width: 25%;
+}
+
+.medium-button:hover {
+    cursor: pointer;
+    background-color: rgba(30, 62, 42, 0.9);
+    border-color: rgba(30, 62, 42, 0.9);
+}
+
+.medium-button:active {
+    background-color: rgba(40, 72, 52, 0.9);
+    border-color: rgba(40, 72, 52, 0.9);
+}
+
 .leaderboard {
     position: absolute;
     margin: 1%;

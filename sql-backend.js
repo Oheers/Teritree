@@ -14,13 +14,10 @@ const maxSpeed = 0.25;
 const afk_timer = 300000;
 
 function addPlayer(player, socketID) {
-    console.log("adding new player:", player, socketID)
     activeUsers[socketID] = player;
-    console.log("new active users:", activeUsers)
 }
 
 function getPlayer(playerID) {
-    console.log(`getting player (${playerID}):`, activeUsers)
     return activeUsers[playerID]
 }
 
@@ -102,7 +99,7 @@ function shouldRecalibrate(player) {
 function kickAFKPlayers() {
     for (const user in activeUsers) {
         if (isPlayerAFK(activeUsers[user])) {
-            event.emitter.emit("afk_player", activeUsers[user].displayName)
+            event.emitter.emit("afk_player", user)
             // @TODO DISCONNECT USER FROM SOCKET.IO SERVER
         }
     }
@@ -119,7 +116,6 @@ function getItemID(colour) {
 }
 
 function addPendingAuthUser(tokenID, id, username) {
-    console.log("new pending auth user:", tokenID)
     pendingAuth[tokenID] = {
         id: id,
         username: username
@@ -127,14 +123,12 @@ function addPendingAuthUser(tokenID, id, username) {
 }
 
 function verifyAuthUser(tokenID, socketID, x, y) {
-    console.log("auth token:", tokenID, "successfully verified.");
     if (pendingAuth.hasOwnProperty(tokenID)) {
-        const playerObject = new Player(socketID, 527, x, y, 10000, 2, pendingAuth[tokenID].username, 1, 1);
+        const userID = pendingAuth[tokenID].id;
+        const playerObject = new Player(userID, 527, x, y, 10000, 2, pendingAuth[tokenID].username, 1, 1);
         addPlayer(playerObject, socketID)
-        console.log("players:", activeUsers)
         return playerObject;
     } else {
-        console.log("no auth happening :(", pendingAuth)
         return undefined;
     }
 }
@@ -160,9 +154,23 @@ async function signin(username, password) {
             } else if (password !== r[0][0].password) {
                 resolve({auth: false});
             } else {
+                // @todo add x and y to this return.
                 resolve({auth: true, token: r[0][0].token});
             }
         });
+    })
+}
+
+async function selectPlayer(authToken) {
+    return new Promise((resolve) => {
+        dbManager.getAccountFromAuthToken(authToken).then(r => {
+            if (r[0][0] === undefined) {
+                resolve({auth: false});
+            } else {
+                // @todo add x and y to this return.
+                resolve({auth: true})
+            }
+        })
     })
 }
 
@@ -173,20 +181,22 @@ async function fetchAccount(authToken) {
                 resolve({auth: false});
             } else {
                 addPendingAuthUser(authToken, r[0][0].id, r[0][0].username)
-                console.log("Adding pending auth user")
                 resolve({auth: true, username: r[0][0].username, accountID: r[0][0].id})
             }
         })
     })
 }
 
-module.exports = {
-    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
-    fetchAccount, verifyAuthUser
+// Checks if the user is only logged in one location, kicking the old user if they are.
+function checkPlayerAlreadyLoggedIn(accountID) {
+    Object.entries(activeUsers).forEach(user => {
+        if (user[1].accountID === accountID) {
+            event.emitter.emit("user_already_logged_in", user[0])
+        }
+    })
 }
 
-// Items, the index of each item is the id of the item.
-const itemMap = [
-    "red", "#fecc02", "yellow", "lime", "green", "aqua", "#006aa7", "black",
-    "gray", "white", "#cc00ff"
-]
+module.exports = {
+    onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
+    fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer
+}

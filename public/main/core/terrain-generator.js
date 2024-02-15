@@ -366,7 +366,6 @@ class Chunk {
     }
 
     loadInMem(liveMap, decorMap) {
-        console.log("map:", terrain.terrainMap)
         this.unwrapMap(this.chunkMap, liveMap)
         this.unwrapMap(this.chunkDecor, decorMap)
 

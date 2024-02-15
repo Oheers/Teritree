@@ -21,6 +21,10 @@ function getCookie(cname) {
     return "";
 }
 
+function deleteCookie(cname) {
+    document.cookie = cname + "=X;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/";
+}
+
 socket.on("update_tile", (data) => {
     if (data.id === socket.id) return;
     terrain.decorMap[data.x] ??= {}
@@ -70,7 +74,6 @@ socket.on("player_join", (data) => {
 })
 
 socket.on("player_move", (data) => {
-    console.log("player move:", data)
     if (data.id === socket.id) return;
     const player = terrain.players[data.id];
     if (player === undefined) return;
@@ -92,6 +95,11 @@ socket.on("disconnect", () => {
     renderer.error = true;
     renderer.errorMSG = "Disconnected from server."
 })
+
+function signout() {
+    deleteCookie("authToken")
+    window.location.href = `/`
+}
 
 function fetchRestingChunk(chunkID, saveTime) {
     fetch(`/api/world/chunk/${chunkID}?time=${saveTime}`)

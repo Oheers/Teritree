@@ -5,16 +5,23 @@ const event = require("./event-manager.js");
 const { changeInternalCache, onTileChange} = require("./world-handler");
 const {Player} = require("./objects/player");
 
-const activeUsers = {}
-const pendingAuth = {}
-const userLocations = {}
-const activeChunks = {}
+const activeUsers = {};
+const pendingAuth = {};
+
+const sessionPlayers = {};
 
 const maxSpeed = 0.25;
 const afk_timer = 300000;
 
-function addPlayer(player, socketID) {
+async function addPlayer(player, socketID) {
     activeUsers[socketID] = player;
+    sessionPlayers[player.accountID] ??= {
+        accountID: player.accountID,
+        displayName: player.displayName,
+        x: player.x,
+        y: player.y,
+        lastKnownTime: Date.now()
+    };
 }
 
 function getPlayer(playerID) {
@@ -33,6 +40,11 @@ function getPlayers() {
         }
     }
     return returningPlayers;
+}
+
+function writePlayer(socketID) {
+    const player = sessionPlayers[activeUsers[socketID].accountID];
+    dbManager.updatePlayerRecord(player.accountID, player.x, player.y)
 }
 
 function getCoords(socketID) {
@@ -83,6 +95,9 @@ function onMove(newX, newY, playerID) {
     event.emitter.emit("player_move", playerID, newX - player.x, player.y - newY)
     player.x = newX;
     player.y = newY;
+    sessionPlayers[player.accountID].x = newX;
+    sessionPlayers[player.accountID].y = newY;
+    sessionPlayers[player.accountID].lastKnownTime = Date.now();
     return shouldRecalibrate(player);
 }
 
@@ -109,24 +124,26 @@ function isPlayerAFK(player) {
     return Date.now() - player._lastActiveTime >= afk_timer;
 }
 
-function getItemID(colour) {
-    return itemMap.findIndex(function (item) {
-        return item === colour;
-    });
-}
+function addPendingAuthUser(tokenID, id, username, x, y) {
+    if (sessionPlayers[id] !== undefined) {
+        x = sessionPlayers[id].x;
+        y = sessionPlayers[id].y;
+    }
 
-function addPendingAuthUser(tokenID, id, username) {
     pendingAuth[tokenID] = {
         id: id,
-        username: username
+        username: username,
+        x: x,
+        y: y
     }
 }
 
-function verifyAuthUser(tokenID, socketID, x, y) {
+function verifyAuthUser(tokenID, socketID) {
     if (pendingAuth.hasOwnProperty(tokenID)) {
         const userID = pendingAuth[tokenID].id;
-        const playerObject = new Player(userID, 527, x, y, 10000, 2, pendingAuth[tokenID].username, 1, 1);
+        const playerObject = new Player(userID, 527, pendingAuth[tokenID].x, pendingAuth[tokenID].y, 10000, 2, pendingAuth[tokenID].username, 1, 1);
         addPlayer(playerObject, socketID)
+        delete pendingAuth[tokenID];
         return playerObject;
     } else {
         return undefined;
@@ -139,7 +156,7 @@ async function createAccount(username, password, authToken) {
             if (r[0][0] !== undefined) {
                 resolve(false);
             } else {
-                dbManager.newAccount(username, password, authToken)
+                dbManager.newAccount(username, password, authToken, 0, 0)
                     .then(result => {  resolve(true); })
             }
         });
@@ -155,7 +172,7 @@ async function signin(username, password) {
                 resolve({auth: false});
             } else {
                 // @todo add x and y to this return.
-                resolve({auth: true, token: r[0][0].token});
+                resolve({auth: true, token: r[0][0].token, x: r[0][0].x, y: r[0][0].y});
             }
         });
     })
@@ -180,8 +197,8 @@ async function fetchAccount(authToken) {
             if (r[0][0] === undefined) {
                 resolve({auth: false});
             } else {
-                addPendingAuthUser(authToken, r[0][0].id, r[0][0].username)
-                resolve({auth: true, username: r[0][0].username, accountID: r[0][0].id})
+                addPendingAuthUser(authToken, r[0][0].id, r[0][0].username, r[0][0].x, r[0][0].y)
+                resolve({auth: true, username: r[0][0].username, accountID: r[0][0].id, x: r[0][0].x, y: r[0][0].y})
             }
         })
     })
@@ -198,5 +215,5 @@ function checkPlayerAlreadyLoggedIn(accountID) {
 
 module.exports = {
     onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
-    fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer
+    fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer, writePlayer
 }

@@ -44,18 +44,22 @@ async function cacheChunk(chunkID, updateMap, updateTimes) {
     await connection.query(query);
 }
 
-async function newAccount(username, password, authToken) {
-    return connection.query(`INSERT INTO teritree_users (username, password, token) VALUES ("${username}", "${password}", "${authToken}")`);
+async function newAccount(username, password, authToken, x, y) {
+    return connection.query(`INSERT INTO teritree_users (username, password, token, x, y) VALUES ("${username}", "${password}", "${authToken}", "${x}", "${y}")`);
 }
 
 async function getAccount(username) {
-    return connection.query(`SELECT username, password, token FROM teritree_users WHERE username = "${username}"`);
+    return connection.query(`SELECT username, password, token, x, y FROM teritree_users WHERE username = "${username}"`);
 }
 
 async function getAccountFromAuthToken(authToken) {
-    return connection.query(`SELECT username, id FROM teritree_users WHERE token = "${authToken}"`);
+    return connection.query(`SELECT username, id, x, y FROM teritree_users WHERE token = "${authToken}"`);
+}
+
+async function updatePlayerRecord(userID, x, y) {
+    return connection.query(`UPDATE teritree_users SET x = ${Math.round(x)}, y = ${Math.round(y)} WHERE id = ${userID}`);
 }
 
 module.exports = {
-    sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken
+    sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken, updatePlayerRecord
 }

@@ -67,12 +67,6 @@ socket.on("kick_player", (data) => {
     renderer.errorMSG = data.msg;
 })
 
-socket.on("player_join", (data) => {
-    if (data.id !== socket.id) {
-        terrain.addNewPlayer(data.id, false, data.x - (camCentreX * terrain.scaledSquareSize), data.y + (camCentreY * terrain.scaledSquareSize), data.displayName, data.character)
-    }
-})
-
 socket.on("player_move", (data) => {
     if (data.id === socket.id) return;
     const player = terrain.players[data.id];
@@ -83,6 +77,12 @@ socket.on("player_move", (data) => {
 socket.on("player_leave", (data) => {
     if (data.id === socket.id) return;
     delete terrain.players[data.id]
+})
+
+socket.on("auth_verify", (data) => {
+    camCentreX = data.x;
+    camCentreY = data.y;
+    loadWorld();
 })
 
 socket.on("connect", () => {

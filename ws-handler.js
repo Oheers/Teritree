@@ -26,6 +26,7 @@ event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
     if (newPlayerID === moverID) return;
     newPlayerID in playerLinks ? playerLinks[newPlayerID].push(moverID) : playerLinks[newPlayerID] = [moverID];
     const mover = dbBackend.getPlayer(moverID)
+    if (mover === undefined) return;
     emitToSocket(newPlayerID, "player_ir", {
         id: moverID,
         x: mover.x,
@@ -36,6 +37,7 @@ event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
 })
 
 event.emitter.on("player_out_range", function inRange(newPlayerID, moverID) {
+    if (playerLinks[newPlayerID] === undefined) return;
     playerLinks[newPlayerID] = playerLinks[newPlayerID].filter(player => player !== moverID);
     emitToSocket(newPlayerID, "player_oor", {
         id: moverID
@@ -75,6 +77,7 @@ function disconnectPlayer(userID) {
     const coords = dbBackend.getCoords(userID);
     // The user has already been removed from the server.
     if (coords === undefined) return;
+    dbBackend.writePlayer(userID);
     event.emitter.emit("player_leave", userID, dbBackend.getCoords(userID))
     for (const playerID in playerLinks) {
         playerLinks[playerID] = playerLinks[playerID].filter(linkedPlayer => linkedPlayer !== userID);
@@ -104,17 +107,20 @@ function init(server) {
 
         socket.on("auth", (data) => {
             const token = data.token;
-            const x = 0;
-            const y = 0;
-            const player = dbBackend.verifyAuthUser(token, socket.id, x, y);
-            event.emitter.emit("player_join", socket.id, x, y)
-            io.emit("player_join", {
-                id: socket.id,
-                x: x,
-                y: y,
-                displayName: player.displayName,
-                character: 0
+            const player = dbBackend.verifyAuthUser(token, socket.id);
+            if (player === undefined) {
+                io.emit("kick_player", {
+                    msg: "Authorization token expired. Please log in again."
+                })
+                return;
+            }
+
+            socket.emit("auth_verify", {
+                x: player.x,
+                y: player.y
             })
+
+            event.emitter.emit("player_join", socket.id, player.x, player.y)
         })
 
         socket.on("disconnect", (reason) => {

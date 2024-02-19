@@ -33,6 +33,12 @@ class InputManager {
     updatePositioning(x, y, back) {
         const oldX = camCentreX;
         const oldY = camCentreY;
+        if (Math.abs(camCentreX + x) > 20) {
+            //x = (Math.abs(camCentreX - (-20)) < Math.abs(camCentreX - 20)) ? camCentreX - 20 : camCentreX + 20;
+        }
+        if (Math.abs(camCentreY + y) > 20) {
+            //y = (Math.abs(camCentreY - (-20)) < Math.abs(camCentreY - 20)) ? camCentreY + 20 : camCentreY - 20;
+        }
         camCentreX += (-(x / terrain.scaledSquareSize));
         camCentreY += (y / terrain.scaledSquareSize);
         mouseX -= (x);
@@ -84,6 +90,11 @@ class InputManager {
         }
     }
 
+    setZoom(scaledSquareSize) {
+        terrain.scaledSquareSize = scaledSquareSize;
+        moveSpeed = terrain.scaledSquareSize / 100;
+    }
+
     fetchKeyPress() {
         let x = 0, y = 0;
 
@@ -97,18 +108,12 @@ class InputManager {
         }
 
         let reload = true;
-        if (keyMap[70] && renderer.viewDebugType !== "height") {
-            renderer.viewDebugType = "height"
-        } else if (keyMap[78] && renderer.viewDebugType !== "normal") {
-            renderer.viewDebugType = "normal"
-        } else if (keyMap[71] && renderer.viewDebugType !== "warmth") {
-            renderer.viewDebugType = "warmth"
-        } else if (keyMap[72] && renderer.viewDebugType !== "damp") {
-            renderer.viewDebugType = "damp"
-        } else if (keyMap[74] && renderer.viewDebugType !== "tree") {
-            renderer.viewDebugType = "tree"
-        } else if (keyMap[75] && renderer.viewDebugType !== "random") {
-            renderer.viewDebugType = "random"
+        if (keyMap[70]) {
+            this.setZoom(80)
+        } else if (keyMap[78]) {
+            this.setZoom(60)
+        } else if (keyMap[71]) {
+            this.setZoom(40)
         } else {
             reload = false;
         }

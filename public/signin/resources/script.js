@@ -191,7 +191,7 @@ function validate_usernameLength() {
 
 function validate_usernameCharacters() {
     const username = document.getElementById("username").value;
-    if (/^[a-zA-Z0-9_]{3,16}$/.test(username)) {
+    if (/^[a-zA-Z0-9_]{2,16}$/.test(username)) {
         return true;
     }
     displayInputError("username", "Username must be alphanumeric.", "#ff2222");

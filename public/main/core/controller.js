@@ -34,14 +34,16 @@ async function init() {
         uiElements.forEach(element => {
             element.style.display = 'block';
         });
-
-        terrain.loadStartingChunks(camCentreX, camCentreY);
-        terrain.addNewPlayer("You", true, 0, 0, "You", 0)
-        renderer.loading = false;
     } catch (error) {
         console.error(error);
         // Handle error appropriately
     }
+}
+
+async function loadWorld() {
+    terrain.loadStartingChunks(camCentreX, camCentreY);
+    terrain.addNewPlayer("You", true, 0, 0, "You", 0)
+    renderer.loading = false;
 }
 
 function updateViewport() {

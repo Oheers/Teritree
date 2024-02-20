@@ -75,12 +75,14 @@ class InputManager {
                     socket.emit("new_colour", {x: tileX, y: tileY, colour: itemID, id: socket.id})
                     itemID = -1;
                     changeHotbar();
+                    changePlayerItem("You", itemID)
                 } else {
                     if (itemID !== -1 || !sprites[terrain.decorMap[tileX][tileY].itemID].movable) {
                         return;
                     }
                     itemID = terrain.decorMap[tileX][tileY].itemID;
                     changeHotbar();
+                    changePlayerItem("You", itemID)
                     terrain.decorMap[tileX][tileY].changeSprite(-1, tileX, tileY, true);
                 }
             } catch (error) {
@@ -109,7 +111,7 @@ class InputManager {
 
         let reload = true;
         if (keyMap[70]) {
-            this.setZoom(80)
+            terrain.players
         } else if (keyMap[78]) {
             this.setZoom(60)
         } else if (keyMap[71]) {

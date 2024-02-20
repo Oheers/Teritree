@@ -20,6 +20,7 @@ async function addPlayer(player, socketID) {
         displayName: player.displayName,
         x: player.x,
         y: player.y,
+        item: player.itemID,
         lastKnownTime: Date.now()
     };
 }
@@ -44,7 +45,7 @@ function getPlayers() {
 
 function writePlayer(socketID) {
     const player = sessionPlayers[activeUsers[socketID].accountID];
-    dbManager.updatePlayerRecord(player.accountID, player.x, player.y)
+    dbManager.updatePlayerRecord(player.accountID, player.x, player.y, player.item)
 }
 
 function getCoords(socketID) {
@@ -63,8 +64,11 @@ function deletePlayer(socketID) {
 }
 
 // Processes the x, y, and colour variables and sends them to the database backend.
-function onNewColour(x, y, colourID, senderID) {
-    activeUsers[senderID].setActive();
+function onNewColour(x, y, colourID, oldColour, senderID) {
+    const player = activeUsers[senderID];
+    if (oldColour === undefined) oldColour = -1;
+    sessionPlayers[player.accountID].item = oldColour;
+    activeUsers[senderID].itemID = oldColour;
     const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(-y / 32));
     const tileID = utils.getTileID(x, y);
     onTileChange(chunkID, tileID, colourID, senderID);
@@ -124,26 +128,28 @@ function isPlayerAFK(player) {
     return Date.now() - player._lastActiveTime >= afk_timer;
 }
 
-function addPendingAuthUser(tokenID, id, username, x, y) {
+function addPendingAuthUser(tokenID, id, username, x, y, itemID) {
     if (sessionPlayers[id] !== undefined) {
         x = sessionPlayers[id].x;
         y = sessionPlayers[id].y;
+        itemID = sessionPlayers[id].item;
     }
 
     pendingAuth[tokenID] = {
         id: id,
         username: username,
         x: x,
-        y: y
+        y: y,
+        itemID: itemID
     }
 }
 
 function verifyAuthUser(tokenID, socketID) {
     if (pendingAuth.hasOwnProperty(tokenID)) {
         const userID = pendingAuth[tokenID].id;
-        const playerObject = new Player(userID, 527, pendingAuth[tokenID].x, pendingAuth[tokenID].y, 10000, 2, pendingAuth[tokenID].username, 1, 1);
+        const playerObject = new Player(userID, 527, pendingAuth[tokenID].x, pendingAuth[tokenID].y, 10000, 2, pendingAuth[tokenID].username, 1, 1, pendingAuth[tokenID].itemID);
         addPlayer(playerObject, socketID)
-        delete pendingAuth[tokenID];
+       delete pendingAuth[tokenID];
         return playerObject;
     } else {
         return undefined;
@@ -197,7 +203,7 @@ async function fetchAccount(authToken) {
             if (r[0][0] === undefined) {
                 resolve({auth: false});
             } else {
-                addPendingAuthUser(authToken, r[0][0].id, r[0][0].username, r[0][0].x, r[0][0].y)
+                addPendingAuthUser(authToken, r[0][0].id, r[0][0].username, r[0][0].x, r[0][0].y, r[0][0].itemID)
                 resolve({auth: true, username: r[0][0].username, accountID: r[0][0].id, x: r[0][0].x, y: r[0][0].y})
             }
         })

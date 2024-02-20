@@ -1,6 +1,6 @@
 class Player {
 
-    constructor (accountID, townID, x, y, joinEpoch, competitionsWon, displayName, townRank, serverRank) {
+    constructor (accountID, townID, x, y, joinEpoch, competitionsWon, displayName, townRank, serverRank, itemID) {
         this._accountID = accountID;
         this._townID = townID;
         this._x = x;
@@ -12,6 +12,7 @@ class Player {
         this._displayName = displayName;
         this._townRank = townRank;
         this._serverRank = serverRank;
+        this._itemID = itemID;
         this._lastPositionRecalibration = Date.now();
     }
 
@@ -97,6 +98,15 @@ class Player {
 
     set lastPositionRecalibration(time) {
         this._lastPositionRecalibration = time;
+    }
+
+    get itemID() {
+        return this._itemID;
+    }
+
+    set itemID(value) {
+        this._itemID = value;
+        this.setActive()
     }
 }
 

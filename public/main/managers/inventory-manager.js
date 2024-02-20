@@ -37,3 +37,11 @@ function changeHotbar() {
     const coords = getImageCoords(itemID);
     hotbar.style.backgroundPosition = `calc((5vw - 16px) * ${coords.sx / -16}) calc((5vw - 16px) * ${coords.sy / -16})`;
 }
+
+function changePlayerItem(id, item) {
+    for (let element in terrain.players[id].element.subElements) {
+        if (terrain.players[id].element.subElements[element] instanceof UiElementSprite) {
+            terrain.players[id].element.subElements[element].changeItem(item);
+        }
+    }
+}

@@ -143,10 +143,11 @@ function removePlayerFromCachedChunk(chunkID, playerID) {
 }
 
 event.emitter.on("player_join", function playerJoin(socketID, x, y) {
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32)), socketID)
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32) + 1), socketID)
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32) + 1), socketID)
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32)), socketID)
+    const currentRenderRegion = utils.findRenderRegion(x, y);
+    cacheNewChunk(utils.getChunkID(currentRenderRegion.x - 1, currentRenderRegion.y + 1), socketID)
+    cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y + 1), socketID)
+    cacheNewChunk(utils.getChunkID(currentRenderRegion.x -1, currentRenderRegion.y), socketID)
+    cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y), socketID)
 
     const nearbyPlayers = new Set()
     getActivePlayers(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32))).forEach((playerID) => {
@@ -228,7 +229,7 @@ function uncacheChunks(chunk1, chunk2, socketID) {
 }
 
 function onTileChange(chunkID, tileID, colourID, senderID) {
-    if (cache[chunkID] === undefined) console.error(`Fatal error while writing to ${chunkID}.`)
+    if (cache[chunkID] === undefined) console.error(`Fatal error while writing to ${chunkID}, loaded cache:`, cache)
     const updateMap = cache[chunkID].chunk;
     if (updateMap === null) return;
     const time = Date.now();

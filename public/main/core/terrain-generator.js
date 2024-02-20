@@ -106,9 +106,9 @@ class SpriteElement extends Element {
     }
 
     changeSprite(itemID, x, y, emitToSocket) {
+        if (emitToSocket) socket.emit("new_colour", {x: x, y: y, colour: itemID, oldColour: this.itemID, id: socket.id})
         this.setItem(itemID);
         this.cacheElement(x, y);
-        if (emitToSocket) socket.emit("new_colour", {x: x, y: y, colour: this.itemID, id: socket.id})
     }
 
     // Adds a tile to the update maps, to be cached in localStorage.
@@ -150,6 +150,10 @@ class UiElementSprite extends SpriteElement {
     changeTile(tileX, tileY) {
         this.x = tileX;
         this.y = tileY;
+    }
+
+    changeItem(itemID) {
+        this.setItem(itemID);
     }
 }
 
@@ -215,7 +219,8 @@ class TextElement extends Element {
     }
 
     get textWidth() {
-        return this.ctx.measureText(this._text).width
+        const originalWidth = this.ctx.measureText(this._text).width
+        return (originalWidth * 2.5) + 18;
     }
 
     set text(text) {
@@ -586,18 +591,20 @@ class TerrainGenerator {
         }
     }
 
-    addNewPlayer(playerID, self, x, y, displayName, character) {
+    addNewPlayer(playerID, self, x, y, displayName, character, itemID) {
         const element = new PlayerElement(x, y, character)
         const text = new TextElement(200, 50, x + (PLAYER_WIDTH / 2), y - 12.5, displayName, "24px Arial", "center", "black")
-        const width = text.textWidth * 2.5 + 12
+        const width = text.textWidth
         element.addSubElement(text)
-        element.addSubElement(new BackgroundElement(width, 35, "black", 0.2, x + (PLAYER_WIDTH / 2) - (width / 2), y - 38.75))
+        element.addSubElement(new BackgroundElement(width + 53, 50, "black", 0.2, x + (PLAYER_WIDTH / 2) - (width / 2), y - 46.25))
+        element.addSubElement(new UiElementSprite(50, 50, x + (PLAYER_WIDTH / 2) + width / 2, y - 51, itemID))
         this.players[playerID] = {
             x: x,
             y: y,
             self: self,
             displayName: displayName,
             colour: character,
+            item: itemID,
             element: element
         }
     }

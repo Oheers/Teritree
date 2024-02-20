@@ -42,7 +42,7 @@ async function init() {
 
 async function loadWorld() {
     terrain.loadStartingChunks(camCentreX, camCentreY);
-    terrain.addNewPlayer("You", true, 0, 0, "You", 0)
+    terrain.addNewPlayer("You", true, 0, 0, "You", 0, itemID)
     renderer.loading = false;
 }
 

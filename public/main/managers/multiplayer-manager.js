@@ -31,7 +31,9 @@ socket.on("update_tile", (data) => {
     if (terrain.decorMap[data.x][data.y] === undefined) {
         terrain.decorMap[data.x][data.y] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.colour)
         terrain.decorMap[data.x][data.y].cacheElement(data.x, data.y)
+        changePlayerItem(data.id, -1)
     } else {
+        changePlayerItem(data.id, terrain.decorMap[data.x][data.y].itemID)
         terrain.decorMap[data.x][data.y].changeSprite(data.colour, data.x, data.y, false);
     }
 });
@@ -43,7 +45,7 @@ socket.on("reset_position", (data) => {
 // new player coming into range
 socket.on("player_ir", (data) => {
     if (data.id !== socket.id) {
-        terrain.addNewPlayer(data.id, false, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.displayName, data.character)
+        terrain.addNewPlayer(data.id, false, (data.x - camCentreX) * terrain.scaledSquareSize, (-data.y + camCentreY) * terrain.scaledSquareSize, data.displayName, data.character, data.item)
     }
 })
 
@@ -82,6 +84,8 @@ socket.on("player_leave", (data) => {
 socket.on("auth_verify", (data) => {
     camCentreX = data.x;
     camCentreY = data.y;
+    itemID = data.i;
+    changeHotbar();
     loadWorld();
 })
 

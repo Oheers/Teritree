@@ -53,11 +53,11 @@ async function getAccount(username) {
 }
 
 async function getAccountFromAuthToken(authToken) {
-    return connection.query(`SELECT username, id, x, y FROM teritree_users WHERE token = "${authToken}"`);
+    return connection.query(`SELECT username, id, x, y, itemID FROM teritree_users WHERE token = "${authToken}"`);
 }
 
-async function updatePlayerRecord(userID, x, y) {
-    return connection.query(`UPDATE teritree_users SET x = ${Math.round(x)}, y = ${Math.round(y)} WHERE id = ${userID}`);
+async function updatePlayerRecord(userID, x, y, itemID) {
+    return connection.query(`UPDATE teritree_users SET x = ${Math.round(x)}, y = ${Math.round(y)}, itemID = ${itemID} WHERE id = ${userID}`);
 }
 
 module.exports = {

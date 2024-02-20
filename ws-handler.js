@@ -32,6 +32,7 @@ event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
         x: mover.x,
         y: mover.y,
         displayName: mover.displayName,
+        item: mover.itemID,
         character: 0
     })
 })
@@ -87,8 +88,8 @@ function disconnectPlayer(userID) {
     dbBackend.deletePlayer(userID);
 }
 
-function updateColour(x, y, colour, senderID) {
-    dbBackend.onNewColour(x, y, colour, senderID);
+function updateColour(x, y, colour, oldColour, senderID) {
+    dbBackend.onNewColour(x, y, colour, oldColour, senderID);
 }
 
 function movePlayer(newX, newY, playerID) {
@@ -117,7 +118,8 @@ function init(server) {
 
             socket.emit("auth_verify", {
                 x: player.x,
-                y: player.y
+                y: player.y,
+                i: player.itemID
             })
 
             event.emitter.emit("player_join", socket.id, player.x, player.y)
@@ -128,7 +130,7 @@ function init(server) {
         })
 
         socket.on("new_colour", (data) => {
-            updateColour(data.x, -data.y, data.colour, data.id);
+            updateColour(data.x, -data.y, data.colour, data.oldColour, data.id);
         })
 
         socket.on("move", (data) => {

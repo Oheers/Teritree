@@ -55,6 +55,7 @@ class RenderEngine {
         }
     }
 
+    // Moves all players around the world apart from the self player.
     translatePlayers(x, y) {
         for (const playerID in terrain.players) {
             if (!terrain.players[playerID].self) {

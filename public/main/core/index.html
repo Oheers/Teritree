@@ -45,12 +45,50 @@
 <div class ="leaderboard-outline ui"></div>
 
 <div class="location ui">
-    <p class="gui-header"><b>World</b></p>
-    <p class="first-gui-text"><span id="x-preview">X: ${x} Y: ${y}</span></p>
-    <p class="location-element"><span id="y-preview">X: ${x} Y: ${y}</span></p>
-    <p class="location-element"><span id="town-preview">X: ${x} Y: ${y}</span></p>
+    <p class="gui-header"><b></b></p>
+    <p class="first-gui-text"><span id="x-preview">Loading ...</span></p>
+    <p class="location-element"><span id="y-preview"></span></p>
+    <p class="location-element"><span id="town-preview"></span></p>
 </div>
 <div class ="location-outline ui"></div>
+
+<div class="town-creator">
+    <div class="town-creator-backer default-hidden-ui" id="town-creator"></div>
+    <div class ="town-creator-outline default-hidden-ui" id="town-creator-outline">
+        <p class="big-gui-header">Create Town</p>
+        <form class="data-input">
+            <div class="town-gui-item">
+                <label for="town-name" class="gui-input-desc">Town:</label>
+                <input class="input-box" id="town-name" type="text" name="town-name" placeholder="Wakefield">
+            </div>
+            <div class="town-gui-item gui-item-big">
+                <label for="town-description" class="gui-input-desc top-align">Description:</label>
+                <textarea class="input-box big-input-box" id="town-description" name="town-description" rows="4" cols="50" placeholder="A city in West Yorkshire."></textarea>
+            </div>
+            <div class="town-gui-item">
+                <label class="checkbox-button">
+                    <span class=gui-input-desc>Invite-only:</span>
+                    <input type="checkbox" class="checkbox-button__input" id="choice1-1" name="choice1">
+                    <span class="checkbox-button__control"></span>
+                </label>
+            </div>
+            <div class="town-gui-item">
+                <label for="town-invitecode" class="gui-input-desc">Invite Code:</label>
+                <input class="input-box" id="town-invitecode" name="town-invitecode" placeholder="4u5Ame" style="width: 20%;">
+            </div>
+            <div class="town-gui-item">
+                <label class="checkbox-button">
+                    <span class=gui-input-desc>Colour:</span>
+                    <input type="checkbox" class="checkbox-button__input" id="town-colour" name="town-colour" onclick="return false;" checked>
+                    <span class="checkbox-button__control"></span>
+                </label>
+            </div>
+            <div class="town-gui-item">
+                <button class="large-gui-button" id="town-gui-button" type="button">Create Town</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <div class="colour-name ui" id="colour-name">Nothing</div>
 
@@ -65,6 +103,7 @@
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script src="main/simplex-noise/simplex.js"></script>
 <script src="main/simplex-noise/world-generator.js"></script>
+<script src="main/managers/gui-manager.js"></script>
 <script src="main/managers/input-manager.js"></script>
 <script src="main/managers/cache-manager.js"></script>
 <script src="main/core/render-engine.js"></script>

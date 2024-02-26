@@ -58,6 +58,10 @@ function updateViewport() {
         document.querySelectorAll('.ui').forEach(element => {
             element.style.display = 'none';
         });
+
+        document.querySelectorAll('.default-hidden-ui').forEach(element => {
+            element.style.display = 'none';
+        });
         const ctx = renderer.viewportArea.context;
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
@@ -96,7 +100,7 @@ function checkSocketIOConnection() {
 function updateCoordinateTracker() {
     xTracker.innerHTML = "<b>X:</b> "+ Math.floor(camCentreX);
     yTracker.innerHTML = "<b>Y:</b> "+ Math.floor(camCentreY);
-    townTracker.innerHTML = "<b>Town:</b> "+ "None";
+    townTracker.innerHTML = "<b>Town:</b> "+ "None <br><span style='color: #aaaaaa; font-size: 12pt;'>(Press T to create a town)</span>";
 }
 
 init().then(r => console.log("Hello world."));

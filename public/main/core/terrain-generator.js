@@ -304,19 +304,19 @@ class PlayerElement extends Element {
     };
 
     calculateDirection(x, y) {
+        // Moving south/east
         if (y === 0) {
+            // No movement
             if (x === 0) return;
-            else if (x > 0) {
-                this.facing = 2;
-            } else {
-                this.facing = 3;
-            }
+            // Moving East
+            else if (x > 0) this.facing = 2;
+            // Moving South
+            else this.facing = 3;
         } else {
-            if (y < 0) {
-                this.facing = 1;
-            } else {
-                this.facing = 0;
-            }
+            // Moving North
+            if (y < 0) this.facing = 1;
+            // Moving South
+            else this.facing = 0;
         }
 
         this.sx = ((this.facing * 5) + this.leg) * PIXELS_WIDTH;
@@ -593,11 +593,13 @@ class TerrainGenerator {
 
     addNewPlayer(playerID, self, x, y, displayName, character, itemID) {
         const element = new PlayerElement(x, y, character)
-        const text = new TextElement(200, 50, x + (PLAYER_WIDTH / 2), y - 12.5, displayName, "24px Arial", "center", "black")
-        const width = text.textWidth
-        element.addSubElement(text)
-        element.addSubElement(new BackgroundElement(width + 53, 50, "black", 0.2, x + (PLAYER_WIDTH / 2) - (width / 2), y - 46.25))
-        element.addSubElement(new UiElementSprite(50, 50, x + (PLAYER_WIDTH / 2) + width / 2, y - 51, itemID))
+        if (!self) {
+            const text = new TextElement(200, 50, x + (PLAYER_WIDTH / 2), y - 12.5, displayName, "24px Arial", "center", "black")
+            const width = text.textWidth
+            element.addSubElement(text)
+            element.addSubElement(new BackgroundElement(width + 53, 50, "black", 0.2, x + (PLAYER_WIDTH / 2) - (width / 2), y - 46.25))
+            element.addSubElement(new UiElementSprite(50, 50, x + (PLAYER_WIDTH / 2) + width / 2, y - 51, itemID))
+        }
         this.players[playerID] = {
             x: x,
             y: y,

@@ -5,6 +5,7 @@ let mouseY = 0;
 let draw = false;
 let keyMap = {};
 let moveSpeed = 4
+let movementLock = false;
 
 class InputManager {
 
@@ -31,23 +32,31 @@ class InputManager {
     }
 
     updatePositioning(x, y, back) {
+        if (movementLock) return;
         const oldX = camCentreX;
         const oldY = camCentreY;
+
         if (Math.abs(camCentreX + x) > 20) {
+            // Game restores the x coordinates to be within the brackets if the movement requested is too great.
             //x = (Math.abs(camCentreX - (-20)) < Math.abs(camCentreX - 20)) ? camCentreX - 20 : camCentreX + 20;
         }
         if (Math.abs(camCentreY + y) > 20) {
+            // Game restores the y coordinates to be within the brackets if the movement requested is too great.
             //y = (Math.abs(camCentreY - (-20)) < Math.abs(camCentreY - 20)) ? camCentreY + 20 : camCentreY - 20;
         }
+
         camCentreX += (-(x / terrain.scaledSquareSize));
         camCentreY += (y / terrain.scaledSquareSize);
         mouseX -= (x);
         mouseY -= (y);
+
         renderer.translate(x, y, terrain.terrainMap);
         renderer.translate(x, y, terrain.decorMap);
         renderer.translateUI(x, y, renderer.uiMap);
         renderer.translatePlayers(x, y);
+
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
+
         if (!back || (x === 0 && y === 0)) return;
         Math.abs(Math.floor(camCentreX + 0.5) - Math.floor(mouseX / terrain.scaledSquareSize)) > 1
         || Math.abs(Math.floor(camCentreY + 0.5) + Math.floor(mouseY / terrain.scaledSquareSize)) > 1 ?
@@ -75,14 +84,12 @@ class InputManager {
                     socket.emit("new_colour", {x: tileX, y: tileY, colour: itemID, id: socket.id})
                     itemID = -1;
                     changeHotbar();
-                    changePlayerItem("You", itemID)
                 } else {
                     if (itemID !== -1 || !sprites[terrain.decorMap[tileX][tileY].itemID].movable) {
                         return;
                     }
                     itemID = terrain.decorMap[tileX][tileY].itemID;
                     changeHotbar();
-                    changePlayerItem("You", itemID)
                     terrain.decorMap[tileX][tileY].changeSprite(-1, tileX, tileY, true);
                 }
             } catch (error) {
@@ -92,6 +99,7 @@ class InputManager {
         }
     }
 
+    // Changes the zoom amount of the canvas.
     setZoom(scaledSquareSize) {
         terrain.scaledSquareSize = scaledSquareSize;
         moveSpeed = terrain.scaledSquareSize / 100;
@@ -109,10 +117,17 @@ class InputManager {
             y = y * 1.6;
         }
 
+        if (keyMap[84]) {
+            keyMap[84] = false;
+            if (movementLock) {
+                hideTownMaker()
+            } else {
+                openTownMaker()
+            }
+        }
+
         let reload = true;
-        if (keyMap[70]) {
-            terrain.players
-        } else if (keyMap[78]) {
+        if (keyMap[78]) {
             this.setZoom(60)
         } else if (keyMap[71]) {
             this.setZoom(40)
@@ -132,11 +147,11 @@ class InputManager {
         const chunkID = getChunkID(Math.floor(tileX/32), Math.ceil(-tileY/-32));
         const colour = terrain.activeChunks[chunkID].chunk.chunkMap[tileX][-tileY].colour;
         return colour === "#73bed3" || colour === "#4f8fba" || colour === "#3c5e8b";
-
     }
 
     selectTile() {
         try {
+            console.log(mouseX, terrain.scaledSquareSize)
             return terrain.terrainMap
                 [Math.floor(mouseX/terrain.scaledSquareSize)]
                 [Math.floor(mouseY/terrain.scaledSquareSize)];
@@ -147,13 +162,14 @@ class InputManager {
 
     keyDownProcessor(event) {
         var event = window.event || event;
-        if (event.keyCode === 37 || event.keyCode === 39) return;
+        console.log("keyCode:", event.keyCode)
+        if (event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 84) return;
         keyMap[event.keyCode] = true;
     }
 
     keyUpProcessor(event) {
         var event = window.event || event;
-        if (event.keyCode === 37 || event.keyCode === 39) {
+        if (event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 84) {
             keyMap[event.keyCode] = true;
             return;
         }

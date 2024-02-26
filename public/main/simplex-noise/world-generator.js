@@ -76,7 +76,7 @@ function standardColourRendering(tileX, tileY) {
             } else {
                 return SAND;
             }
-        } else if (warmth > 0.35) {
+        } else if (warmth > 0.15) {
             // Forest area
             if (dampness > 0.85) {
                 return DARKER_FOREST;

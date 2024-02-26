@@ -102,20 +102,20 @@ body {
     margin-top: 5.1%;
 }
 
-.input-box {
+input {
     background-color: rgba(0, 32, 12, 0.9);
     margin: 0 0 0 19%;
     width: 56%;
     height: 38.9%;
     border-style: solid;
     border-color: rgba(0, 32, 12, 0.9);
-    color: white;
+    color: red;
     font-size: 14pt;
     padding-left: 16px;
 }
 
-.input-box:active {
-    border-color: rgba(0, 32, 12, 0.9);
+input:active {
+    border-color: rgba(255, 32, 12, 0.9);
 }
 
 .main-signin {

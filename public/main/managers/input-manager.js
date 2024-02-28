@@ -13,7 +13,7 @@ class InputManager {
         window.addEventListener('keydown', this.keyDownProcessor, false)
         window.addEventListener('keyup', this.keyUpProcessor, false)
         window.addEventListener("mousemove", this.onMouseMove, false);
-        window.addEventListener("mousedown", this.onMouseDown, false);
+        window.addEventListener("mousedown", this.onMouseDown, false); // @TODO THIS HERE !!!!!!!!!!!!
         window.addEventListener("mouseup", this.onMouseUp, false);
 
         moveSpeed = terrain.scaledSquareSize / 100;
@@ -108,6 +108,8 @@ class InputManager {
     fetchKeyPress() {
         let x = 0, y = 0;
 
+        if (document.activeElement !== document.body) return {x: 0, y: 0};
+
         if (keyMap[87]) y = 4; // W
         if (keyMap[65]) x = 4; // A
         if (keyMap[83]) y += -4 // S
@@ -151,7 +153,6 @@ class InputManager {
 
     selectTile() {
         try {
-            console.log(mouseX, terrain.scaledSquareSize)
             return terrain.terrainMap
                 [Math.floor(mouseX/terrain.scaledSquareSize)]
                 [Math.floor(mouseY/terrain.scaledSquareSize)];
@@ -162,7 +163,6 @@ class InputManager {
 
     keyDownProcessor(event) {
         var event = window.event || event;
-        console.log("keyCode:", event.keyCode)
         if (event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 84) return;
         keyMap[event.keyCode] = true;
     }
@@ -200,7 +200,7 @@ class InputManager {
             keyMap["mouse_L"] = true;
         }
         draw = true;
-        event.preventDefault();
+        if (!movementLock) event.preventDefault();
     }
 
     onMouseUp(event) {
@@ -211,4 +211,26 @@ class InputManager {
     clearKeyMap() {
         this.keyMap = {};
     }
+}
+
+function openColourSelector() {
+    if (document.getElementById("colour-menu").style.display === "block") {
+        document.getElementById("colour-menu").style.display = "none";
+        document.getElementById("colour-menu-background").style.display = "none";
+    } else {
+        document.getElementById("colour-menu").style.display = "block";
+        document.getElementById("colour-menu-background").style.display = "block";
+    }
+
+    document.getElementById("town-colour").checked = true;
+    return false;
+}
+
+townColours = [
+    "#ff5555", "#ffaa22", "#ddbb99", "#aaff55",
+    "#33ddff", "#ff66bb", "#889999", "#223344"
+]
+
+function selectColour(colour) {
+    document.getElementById("town-colour").style.setProperty('background-color', townColours[colour], 'important');
 }

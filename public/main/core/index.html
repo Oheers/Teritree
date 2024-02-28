@@ -59,7 +59,7 @@
         <form class="data-input">
             <div class="town-gui-item">
                 <label for="town-name" class="gui-input-desc">Town:</label>
-                <input class="input-box" id="town-name" type="text" name="town-name" placeholder="Wakefield">
+                <input class="input-box" id="town-name" name="town-name" placeholder="Wakefield">
             </div>
             <div class="town-gui-item gui-item-big">
                 <label for="town-description" class="gui-input-desc top-align">Description:</label>
@@ -79,14 +79,29 @@
             <div class="town-gui-item">
                 <label class="checkbox-button">
                     <span class=gui-input-desc>Colour:</span>
-                    <input type="checkbox" class="checkbox-button__input" id="town-colour" name="town-colour" onclick="return false;" checked>
-                    <span class="checkbox-button__control"></span>
+                    <input type="checkbox" class="checkbox-button__input" id="town-colour" name="town-colour" onclick="openColourSelector()" checked>
+                    <span id="controller-colour" class="checkbox-button__control"></span>
                 </label>
             </div>
             <div class="town-gui-item">
                 <button class="large-gui-button" id="town-gui-button" type="button">Create Town</button>
             </div>
         </form>
+    </div>
+</div>
+
+<div class="colour-menu">
+    <div class="colour-menu-backer default-hidden-ui" id="colour-menu"></div>
+    <div class="colour-menu-outline default-hidden-ui" id="colour-menu-background">
+        <p class="medium-gui-header">Colours</p>
+        <div class="colour-red colour-selection" onclick="selectColour(0)" id="colour-red"></div>
+        <div class="colour-orange colour-selection" onclick="selectColour(1)" id="colour-orange"></div>
+        <div class="colour-wood colour-selection" onclick="selectColour(2)" id="colour-wood"></div>
+        <div class="colour-green colour-selection" onclick="selectColour(3)" id="colour-green"></div>
+        <div class="colour-blue colour-selection" onclick="selectColour(4)" id="colour-blue"></div>
+        <div class="colour-pink colour-selection" onclick="selectColour(5)" id="colour-pink"></div>
+        <div class="colour-gray colour-selection" onclick="selectColour(6)" id="colour-gray"></div>
+        <div class="colour-darkgray colour-selection" onclick="selectColour(7)" id="colour-darkgray"></div>
     </div>
 </div>
 

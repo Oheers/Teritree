@@ -45,7 +45,7 @@ async function cacheChunk(chunkID, updateMap, updateTimes) {
 }
 
 async function newAccount(username, password, authToken, x, y) {
-    return connection.query(`INSERT INTO teritree_users (username, password, token, x, y) VALUES ("${username}", "${password}", "${authToken}", "${x}", "${y}")`);
+    return connection.query(`INSERT INTO teritree_users (username, password, token, x, y, itemID) VALUES ("${username}", "${password}", "${authToken}", "${x}", "${y}", "-1")`);
 }
 
 async function getAccount(username) {

@@ -100,6 +100,37 @@ socket.on("disconnect", () => {
     renderer.errorMSG = "Disconnected from server."
 })
 
+async function postTownCreationData(town_name, town_description, invite_only, invite_code, colour) {
+    const response = await fetch(`/create-town?socket_id=${socket.id}`, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, *same-origin, omit
+        headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify({
+            town_name: town_name,
+            town_description: town_description,
+            invite_only: invite_only,
+            invite_code: invite_code,
+            colour: colour
+        }) // body data type must match "Content-Type" header
+    }).then(response => {
+        return response.json();
+    }).then(jsonResponse => {
+        if (!jsonResponse.success) {
+            const error = jsonResponse.error.split(":");
+            document.getElementById(error[0]).style.visibility = "visible"
+            document.getElementById(error[0]).innerHTML = error[1];
+        }
+        console.log("town creation response:", jsonResponse)
+    })
+}
+
 function signout() {
     deleteCookie("authToken")
     window.location.href = `/`

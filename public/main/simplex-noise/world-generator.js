@@ -12,6 +12,7 @@ const DRY = "#ad7757"
 const BURNT = "#884b2b";
 
 function standardColourRendering(tileX, tileY) {
+
     noise.seed(terrain.seed)
     const height = Math.abs(noise.simplex2(tileX / 400, tileY / 400));
     noise.seed(terrain.seed + 1)

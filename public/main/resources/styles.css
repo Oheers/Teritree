@@ -6,6 +6,10 @@
     font-style: normal;
 }
 
+:root {
+    --town-colour: colour-change 20s ease alternate infinite;
+}
+
 body {
     margin: 0;
     overflow: hidden;
@@ -66,7 +70,7 @@ canvas {
 
 .medium-gui-header {
     font-size: 24pt;
-    margin-top: 2%;
+    margin-top: 6%;
     margin-left: 7.5%;
     margin-bottom: 0;
     color: white;
@@ -91,6 +95,13 @@ canvas {
     margin-left: 2%;
     width: 40%;
     height: 50%;
+}
+
+.alert-error {
+    margin: 0 0 0 2%;
+    color: #ff6666;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    visibility: hidden;
 }
 
 #town-description::placeholder {
@@ -122,6 +133,10 @@ canvas {
     border: none;
 }
 
+.input-box:focus {
+    outline: 2px solid #ffffff;
+}
+
 .big-input-box {
     height: 100%;
 }
@@ -131,7 +146,7 @@ canvas {
 }
 
 .input-box:active {
-    background-color: blue;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 .checkbox-button {
     cursor: pointer;
@@ -180,6 +195,10 @@ input {
     background-color: #ffffff;
 }
 
+.colour-checkbox-button__input:checked+.colour-checkbox-button__control:after {
+    animation: var(--town-colour);
+}
+
 @keyframes colour-change {
     0% {
         background-color: #ff5555;
@@ -218,8 +237,44 @@ input {
     }
 }
 
-#town-colour:checked+.checkbox-button__control:after {
-    animation: colour-change 20s ease alternate infinite;
+@keyframes solid-colour-0 {
+    0% { background-color: #ff5555; }
+    100% { background-color: #ff5555; }
+}
+
+@keyframes solid-colour-1 {
+    0% { background-color: #ffaa22; }
+    100% { background-color: #ffaa22; }
+}
+
+@keyframes solid-colour-2 {
+    0% { background-color: #ddbb99; }
+    100% { background-color: #ddbb99; }
+}
+
+@keyframes solid-colour-3 {
+    0% { background-color: #aaff55; }
+    100% { background-color: #aaff55; }
+}
+
+@keyframes solid-colour-4 {
+    0% { background-color: #33ddff; }
+    100% { background-color: #33ddff; }
+}
+
+@keyframes solid-colour-5 {
+    0% { background-color: #ff66bb; }
+    100% { background-color: #ff66bb; }
+}
+
+@keyframes solid-colour-6 {
+    0% { background-color: #889999; }
+    100% { background-color: #889999; }
+}
+
+@keyframes solid-colour-7 {
+    0% { background-color: #223344; }
+    100% { background-color: #223344; }
 }
 
 .checkbox-button__control {
@@ -228,6 +283,14 @@ input {
 
 .colour-selection {
     cursor: pointer;
+}
+
+.colour-selection:hover {
+    outline: 0.25vw solid white;
+}
+
+.colour-selection:active {
+    opacity: 90%;
 }
 
 .colour-red {
@@ -375,13 +438,13 @@ input {
 }
 
 .colour-menu {
-    z-index: 2;
+    z-index: -1;
     position: absolute;
     width: 20%;
     height: 50%;
     transform: translate(-50%, -50%);
     top: 50%;
-    left: 70%;
+    left: 24%;
 }
 
 .colour-menu-backer {

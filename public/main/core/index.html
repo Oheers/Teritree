@@ -18,27 +18,27 @@
 <div class="leaderboard ui">
     <p class="gui-header ui"><b>Leaderboard</b></p>
     <div class="leaderboard-element-main ui">
-        <p class="first-leaderboard-item ui"><span id="leaderboard-1"><b>1: <span style="color: #ff4444;">Player 1</span></b></span></p>
+        <p class="first-leaderboard-item ui"><span id="leaderboard-1"><b>1: <span style="color: #ff4444;">London Town</span></b></span></p>
         <p class="leaderboard-stat ui"><span id="leaderboard-1-stat">6,091 Trees</span></p>
     </div>
     <div class="leaderboard-element-main ui">
-        <p class="leaderboard-item ui"><span id="leaderboard-2"><b>2: <span style="color: #ff7700;">Player 2</span></b></span></p>
+        <p class="leaderboard-item ui"><span id="leaderboard-2"><b>2: <span style="color: #ff7700;">Dubai</span></b></span></p>
         <p class="leaderboard-stat ui"><span id="leaderboard-2-stat">5,992 Trees</span></p>
     </div>
     <div class="leaderboard-element-main ui">
-        <p class="leaderboard-item ui"><span id="leaderboard-3"><b>3: <span style="color: #44ff44;">Player 3</span></b></span></p>
+        <p class="leaderboard-item ui"><span id="leaderboard-3"><b>3: <span style="color: #44ff44;">Petersham</span></b></span></p>
         <p class="leaderboard-stat ui"><span id="leaderboard-3-stat">4,611 Trees</span></p>
     </div>
     <div class="leaderboard-element-main ui">
-        <p class="leaderboard-item ui"><span id="leaderboard-4"><b>4: <span style="color: #ff7700;">Player 4</span></b></span></p>
+        <p class="leaderboard-item ui"><span id="leaderboard-4"><b>4: <span style="color: #ff7700;">MALMÖ</span></b></span></p>
         <p class="leaderboard-stat ui"><span id="leaderboard-4-stat">2,918 Trees</span></p>
     </div>
     <div class="leaderboard-element-main ui">
-        <p class="leaderboard-item ui"><span id="leaderboard-5"><b>5: <span style="color: #44ff44;">Player 5</span></b></span></p>
+        <p class="leaderboard-item ui"><span id="leaderboard-5"><b>5: <span style="color: #44ff44;">Silicon Valley</span></b></span></p>
         <p class="leaderboard-stat ui"><span id="leaderboard-5-stat">691 Trees</span></p>
     </div>
     <div class="leaderboard-element-main ui">
-        <p class="leaderboard-item ui"><span id="leaderboard-6"><b>67: <span style="color: #ebede9;">You</span></b></span></p>
+        <p class="leaderboard-item ui"><span id="leaderboard-6"><b>67: <span style="color: #ebede9;">Your Town</span></b></span></p>
         <p class="leaderboard-stat ui"><span id="leaderboard-6-stat">41 Trees</span></p>
     </div>
 </div>
@@ -59,38 +59,42 @@
         <form class="data-input">
             <div class="town-gui-item">
                 <label for="town-name" class="gui-input-desc">Town:</label>
-                <input class="input-box" id="town-name" name="town-name" placeholder="Wakefield">
+                <input class="input-box" id="town-name" name="town-name" placeholder="Wakefield" autocomplete="off">
+                <div id="town-name-error" class="alert-error"></div>
             </div>
             <div class="town-gui-item gui-item-big">
                 <label for="town-description" class="gui-input-desc top-align">Description:</label>
                 <textarea class="input-box big-input-box" id="town-description" name="town-description" rows="4" cols="50" placeholder="A city in West Yorkshire."></textarea>
+                <div id="town-description-error" class="alert-error"></div>
             </div>
             <div class="town-gui-item">
                 <label class="checkbox-button">
                     <span class=gui-input-desc>Invite-only:</span>
-                    <input type="checkbox" class="checkbox-button__input" id="choice1-1" name="choice1">
+                    <input type="checkbox" class="checkbox-button__input" id="town-invite-only" name="choice1" checked>
                     <span class="checkbox-button__control"></span>
                 </label>
             </div>
             <div class="town-gui-item">
                 <label for="town-invitecode" class="gui-input-desc">Invite Code:</label>
-                <input class="input-box" id="town-invitecode" name="town-invitecode" placeholder="4u5Ame" style="width: 20%;">
+                <input class="input-box" id="town-invitecode" name="town-invitecode" placeholder="super secret invite code" style="width: 20%;" autocomplete="off">
+                <div id="town-invitecode-error" class="alert-error"></div>
             </div>
             <div class="town-gui-item">
                 <label class="checkbox-button">
                     <span class=gui-input-desc>Colour:</span>
-                    <input type="checkbox" class="checkbox-button__input" id="town-colour" name="town-colour" onclick="openColourSelector()" checked>
-                    <span id="controller-colour" class="checkbox-button__control"></span>
+                    <input type="checkbox" class="colour-checkbox-button__input checkbox-button__input" id="town-colour" name="town-colour" onclick="toggleColourSelector()" checked>
+                    <span id="controller-colour" class="colour-checkbox-button__control checkbox-button__control"></span>
+                    <div id="town-colour-error" class="alert-error"></div>
                 </label>
             </div>
             <div class="town-gui-item">
-                <button class="large-gui-button" id="town-gui-button" type="button">Create Town</button>
+                <button class="large-gui-button" id="town-gui-button" type="button" onclick="createTown()">Create Town</button>
             </div>
         </form>
     </div>
 </div>
 
-<div class="colour-menu">
+<div id="colour-menu-container" class="colour-menu" onclick="closeColourSelector()">
     <div class="colour-menu-backer default-hidden-ui" id="colour-menu"></div>
     <div class="colour-menu-outline default-hidden-ui" id="colour-menu-background">
         <p class="medium-gui-header">Colours</p>

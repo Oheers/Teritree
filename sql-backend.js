@@ -219,7 +219,26 @@ function checkPlayerAlreadyLoggedIn(accountID) {
     })
 }
 
+// Fetches whether a town exists, returns undefined if no town exists.
+function getTown(townName) {
+    return new Promise((resolve) => {
+        dbManager.getTownFromName(townName).then(r => {
+            if (r[0][0] === undefined) {
+                resolve(undefined);
+                return;
+            }
+            resolve(r[0][0].name);
+        })
+    })
+}
+
+function createTown(player, townName, townDescription, townInviteOnly, townInviteCode, townColour) {
+    return new Promise((resolve => {
+        dbManager.createTown(player.accountID, townName, townDescription, townInviteOnly, townInviteCode, townColour).then(r => resolve(r));
+    }))
+}
+
 module.exports = {
     onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
-    fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer, writePlayer
+    fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer, writePlayer, getTown, createTown
 }

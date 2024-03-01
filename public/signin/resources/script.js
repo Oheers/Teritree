@@ -42,7 +42,7 @@ function startSignup() {
     document.getElementById("sign-up").style.display = "none";
     document.getElementById("experian").style.display = "none";
     document.getElementById("sign-in-form").style.display = "block";
-    document.getElementById("username-warning").style.display = "block";
+    document.getElementById("username-warning").style.visibility = "visible";
     document.getElementById("sign-up-complete").style.display = "table-cell";
     document.getElementById("sign-up-google-auth").style.display = "table-cell";
     document.getElementById("sign-up-microsoft-auth").style.display = "table-cell";
@@ -210,13 +210,13 @@ function validate_passwordLength() {
 function displayInputError(input, message, colour) {
     const warningHandler = document.getElementById(`${input}-warning`);
     warningHandler.innerHTML = message;
-    warningHandler.style.display = "block";
+    warningHandler.style.visibility = "visible";
     warningHandler.style.color = colour;
 }
 
 function clearWarnings() {
-    document.getElementById("username-warning").style.display = "none";
-    document.getElementById("password-warning").style.display = "none";
+    document.getElementById("username-warning").style.visibility = "hidden";
+    document.getElementById("password-warning").style.visibility = "hidden";
 }
 
 // Initial adjustment on page load

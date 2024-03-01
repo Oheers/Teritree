@@ -68,6 +68,63 @@ app.post('/login-auth-token', bodyParser.json(), (req, res) => {
     })
 })
 
+app.post('/create-town', bodyParser.json(), (req, res) => {
+    const id = req.query.socket_id;
+    const player = dbBackend.getPlayer(id);
+
+    const body = req.body;
+    const town_name = body.town_name;
+
+    // Backend verification that there's a town name.
+    if (town_name === undefined || town_name.length < 4 || town_name.length > 32) {
+        res.json({
+            success: false,
+            error: "town-name-error:You need to specify a town name."
+        })
+        return;
+    }
+
+    const town = dbBackend.getTown(town_name).then(r => {
+        if (r !== undefined) {
+            res.json({
+                success: false,
+                error: "town-name-error:Town name already exists."
+            })
+        } else {
+            const town_colour = body.colour;
+            console.log("town_colour:", town_colour)
+            if (town_colour === undefined || town_colour % 1 !== 0 || town_colour > 7 || town_colour < 0) {
+                res.json({
+                    success: false,
+                    error: "town-colour-error:You need to specify a colour for your town to represent."
+                })
+                return;
+            }
+
+            const town_invitecode = body.invite_code;
+            console.log("invite code:", town_invitecode)
+            if (town_invitecode === undefined || town_invitecode.length === 0) {
+                res.json({
+                    success: false,
+                    error: "town-invitecode-error:This section cannot be empty."
+                })
+                return;
+            }
+
+            const town_description = body.town_description;
+            const town_inviteonly = body.invite_only;
+
+            dbBackend.createTown(player, town_name, town_description, town_inviteonly, town_invitecode, town_colour).then(r => {
+                console.log("success:", r)
+                res.json({
+                    success: true,
+                    player: player
+                })
+            })
+        }
+    })
+})
+
 app.get('/api/world/chunk/:id', async (req, res) => {
     const chunkID = req.params.id;
     let viewTime = req.query.time;

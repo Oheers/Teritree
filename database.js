@@ -60,6 +60,18 @@ async function updatePlayerRecord(userID, x, y, itemID) {
     return connection.query(`UPDATE teritree_users SET x = ${Math.round(x)}, y = ${Math.round(y)}, itemID = ${itemID} WHERE id = ${userID}`);
 }
 
+async function getTownFromName(name) {
+    return connection.query(`SELECT * FROM teritree_towns WHERE name = "${name}";`)
+}
+
+// Adds a new town to the SQL database.
+async function createTown(leaderID, townName, townDescription, townInviteOnly, townInviteCode, townColour) {
+    return connection.query(`INSERT INTO teritree_towns (leaderID, spawnX, spawnY, name, colourID, description, 
+    invite_only, invite_code) VALUES (${leaderID}, 0, 0, "${townName}", ${townColour}, "${townDescription}", 
+    ${townInviteOnly ? 1 : 0}, "${townInviteCode}");`)
+
+}
+
 module.exports = {
-    sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken, updatePlayerRecord
+    sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken, updatePlayerRecord, getTownFromName, createTown
 }

@@ -108,8 +108,6 @@ class InputManager {
     fetchKeyPress() {
         let x = 0, y = 0;
 
-        if (document.activeElement !== document.body) return {x: 0, y: 0};
-
         if (keyMap[87]) y = 4; // W
         if (keyMap[65]) x = 4; // A
         if (keyMap[83]) y += -4 // S
@@ -123,6 +121,8 @@ class InputManager {
             keyMap[84] = false;
             if (movementLock) {
                 hideTownMaker()
+                console.log("closing down town maker")
+                closeColourSelector()
             } else {
                 openTownMaker()
             }
@@ -162,12 +162,18 @@ class InputManager {
     }
 
     keyDownProcessor(event) {
+
+        if (document.activeElement !== document.body) return;
+
         var event = window.event || event;
         if (event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 84) return;
         keyMap[event.keyCode] = true;
     }
 
     keyUpProcessor(event) {
+
+        if (document.activeElement !== document.body) return;
+
         var event = window.event || event;
         if (event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 84) {
             keyMap[event.keyCode] = true;
@@ -213,16 +219,25 @@ class InputManager {
     }
 }
 
-function openColourSelector() {
+function toggleColourSelector() {
     if (document.getElementById("colour-menu").style.display === "block") {
         document.getElementById("colour-menu").style.display = "none";
         document.getElementById("colour-menu-background").style.display = "none";
+        document.getElementById("colour-menu-container").style.zIndex = "-1";
     } else {
         document.getElementById("colour-menu").style.display = "block";
         document.getElementById("colour-menu-background").style.display = "block";
+        document.getElementById("colour-menu-container").style.zIndex = "2";
     }
 
     document.getElementById("town-colour").checked = true;
+    return false;
+}
+
+function closeColourSelector() {
+    document.getElementById("colour-menu").style.display = "none";
+    document.getElementById("colour-menu-background").style.display = "none";
+    document.getElementById("colour-menu-container").style.zIndex = "-1";
     return false;
 }
 
@@ -231,6 +246,55 @@ townColours = [
     "#33ddff", "#ff66bb", "#889999", "#223344"
 ]
 
+let chosenColour = -1;
+
 function selectColour(colour) {
-    document.getElementById("town-colour").style.setProperty('background-color', townColours[colour], 'important');
+    document.documentElement.style.setProperty('--town-colour', `solid-colour-${colour} 20s ease alternate infinite`);
+    closeColourSelector()
+    chosenColour = colour;
+}
+
+function createTown() {
+    document.getElementById("town-name-error").style.visibility = "hidden"
+    document.getElementById("town-description-error").style.visibility = "hidden"
+    document.getElementById("town-invitecode-error").style.visibility = "hidden"
+    document.getElementById("town-colour-error").style.visibility = "hidden"
+
+    const town_name = document.getElementById("town-name").value;
+    // Is the town name present
+    if (town_name === "") {
+        document.getElementById("town-name-error").style.visibility = "visible"
+        document.getElementById("town-name-error").innerHTML = "You need to specify a town name.";
+        return false;
+    // Is the town name between 4-32 characters.
+    } else if (town_name.length > 32 || town_name.length < 4) {
+        document.getElementById("town-name-error").style.visibility = "visible"
+        document.getElementById("town-name-error").innerHTML = "Town name must be between 4-32 characters.";
+        return false;
+    // Does the town name only contain characters you'd expect?
+    } else if (!(/^[a-zA-Z0-9 ]+$/.test(town_name))) {
+        console.log("town name:" + "|" + town_name + "|", !(/^[a-zA-Z0-9 ]$/.test(town_name)))
+        document.getElementById("town-name-error").style.visibility = "visible"
+        document.getElementById("town-name-error").innerHTML = "Town name can only contain a-Z, 0-9, and spaces.";
+        return false;
+    }
+
+    const town_description = document.getElementById("town-description").value;
+
+    const invite_only = document.getElementById("town-invite-only").checked;
+
+    const invite_code = document.getElementById("town-invitecode").value;
+    if (invite_code === "" || invite_code.length > 32) {
+        document.getElementById("town-invitecode-error").style.visibility = "visible"
+        document.getElementById("town-invitecode-error").innerHTML = "This section must be between 0 and 32 characters.";
+        return false;
+    }
+
+    if (chosenColour === -1) {
+        document.getElementById("town-colour-error").style.visibility = "visible"
+        document.getElementById("town-colour-error").innerHTML = "You need to specify a colour for your town to represent.";
+        return false;
+    }
+
+    postTownCreationData(town_name, town_description, invite_only, invite_code, chosenColour);
 }

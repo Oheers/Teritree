@@ -34,6 +34,8 @@ async function init() {
         uiElements.forEach(element => {
             element.style.display = 'block';
         });
+
+        document.getElementById("town-invitecode").value = generateRandomCode();
     } catch (error) {
         console.error(error);
         // Handle error appropriately
@@ -65,6 +67,7 @@ function updateViewport() {
         const ctx = renderer.viewportArea.context;
         ctx.font = "30px Arial";
         ctx.textAlign = "center";
+        ctx.fillStyle = "#000000";
         ctx.fillText(renderer.errorMSG, ctx.canvas.width / 2, ctx.canvas.height / 2);
         return;
     }
@@ -73,7 +76,7 @@ function updateViewport() {
     totalTickingTime += diff;
     inputHandler.tick(diff);
     activeTile = inputHandler.selectTile();
-    renderer.uiMap["selector"].changeTile(activeTile.x, activeTile.y)
+    if (activeTile !== null) renderer.uiMap["selector"].changeTile(activeTile.x, activeTile.y)
     updateCoordinateTracker();
     terrain.updateAll(terrain.terrainMap); // LAYER 1 - BASE LAYER, UNCHANGEABLE
     terrain.updateAll(terrain.decorMap); // LAYER 2 - DECOR MAP, WORLD UPDATES

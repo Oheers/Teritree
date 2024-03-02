@@ -118,13 +118,15 @@ canvas {
 
 .data-input {
     height: calc(95% - 28pt);
+    float: left;
+    width: 65%;
 }
 
 .input-box {
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.5);
     font-family: 'calibriteritree', 'Arial Hebrew', serif;
-    width: 40%;
+    width: 65%;
     height: 50%;
     margin-left: 2.5%;
     color: white;
@@ -585,4 +587,62 @@ input {
 
 .default-hidden-ui {
     display: none;
+}
+
+.location-selector {
+    display: inline-block;
+    float: left;
+    width: 30%;
+}
+
+.location-selector-description {
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    color: white;
+    background-color: rgb(0, 0, 0, 0.5);
+    padding: 0 8px 1px 8px;
+}
+
+.colour-tile {
+    width: 4vw; /* Adjust the size as needed */
+    height: 4vw; /* Adjust the size as needed */
+    position: relative;
+    display: inline-block;
+    background-color: white;
+    margin: 2px 2px 2px 2px;
+}
+
+.colour-tile:hover {
+    cursor: pointer;
+    outline: 4px solid white;
+}
+
+.seg-TL, .seg-TR, .seg-BL, .seg-BR {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+}
+
+.seg-TL {
+    top: 0;
+    left: 0;
+    background-color: black;
+}
+
+.seg-TR {
+    top: 0;
+    left: 50%;
+    background-color: deepskyblue;
+}
+
+.seg-BL {
+    top: 50%;
+    left: 0;
+    background-color: deepskyblue;
+}
+
+.seg-BR {
+    top: 50%;
+    left: 50%;
+    background-color: black;
 }

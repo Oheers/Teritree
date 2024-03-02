@@ -36,6 +36,7 @@ async function init() {
         });
 
         document.getElementById("town-invitecode").value = generateRandomCode();
+        loadAbstractWorld();
     } catch (error) {
         console.error(error);
         // Handle error appropriately

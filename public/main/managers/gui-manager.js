@@ -35,3 +35,30 @@ function generateRandomCode() {
 
     return result;
 }
+
+function loadAbstractWorld() {
+    for (let x = 1; x < 13; x++) {
+        for (let y = 0; y < 12; y++) {
+            document.getElementById(`colour-region-${(y * 12) + x}`).style.backgroundColor = standardColourRendering((x - 6) * 40, (y - 6) * 40);
+        }
+    }
+}
+
+function previewRegion(region) {
+    if (selectedRegion !== -1) region = selectedRegion;
+    if (region === 0) document.getElementById("live-location-selector").innerHTML = `Currently selected: None`
+    else {
+        const x = Math.round((((region - 1) % 6) - 3) * 1498);
+        const y = Math.round((Math.floor((region - 1) / 6) - 3) * 1498);
+        document.getElementById("live-location-selector").innerHTML = `Currently selected: (${x}, ${y}) to (${x + 1498}, ${y + 1498})`
+    }
+}
+
+let selectedRegion = -1;
+
+function selectRegion(region) {
+    if (selectedRegion !== -1) document.getElementById(`location-tile${selectedRegion}`).style.outline = "none";
+    document.getElementById(`location-tile${region}`).style.outline = "4px solid gold";
+    selectedRegion = region;
+    previewRegion(region);
+}

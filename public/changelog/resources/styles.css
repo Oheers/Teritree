@@ -1,0 +1,36 @@
+@font-face {
+    font-family: 'calibriteritree';
+    src: url('../../global/resources/calibri-teritree.woff2') format('woff2'),
+    url('../../global/resources/calibri-teritree.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    color: #111111;
+    background-color: white;
+    margin-left: 1.5%;
+}
+
+.medium-button {
+    position: absolute;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    padding: 1% 2% 1% 2%;
+    background-color: rgb(0, 32, 12, 0.9);
+    color: white;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    right: 1%;
+}
+
+.medium-button:hover {
+    cursor: pointer;
+    background-color: rgba(30, 62, 42, 0.9);
+}
+
+.medium-button:active {
+    background-color: rgba(40, 72, 52, 0.9);
+}

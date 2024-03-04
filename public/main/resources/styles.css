@@ -387,13 +387,22 @@ input {
     top: calc(47.4% + 4px);
 }
 
-.sign-out {
+.top-button {
     position: absolute;
     margin: 1%;
     left: 0;
     z-index: 1;
     width: 25.5%;
     height: 75%;
+    display: inline-block;
+}
+
+.top-button-1 {
+    left: 0;
+}
+
+.top-button-2 {
+    left: 7.5%;
 }
 
 .medium-button {
@@ -426,7 +435,7 @@ input {
     margin-left: 2%;
     text-align: center;
     height: 100%;
-    width: 58%;
+    width: 85%;
     border: none;
 }
 
@@ -619,8 +628,8 @@ input {
 
 .seg-TL, .seg-TR, .seg-BL, .seg-BR {
     position: absolute;
-    width: 50%;
-    height: 50%;
+    width: 52%;
+    height: 52%;
 }
 
 .seg-TL {
@@ -631,18 +640,18 @@ input {
 
 .seg-TR {
     top: 0;
-    left: 50%;
+    left: 48%;
     background-color: deepskyblue;
 }
 
 .seg-BL {
-    top: 50%;
+    top: 48%;
     left: 0;
     background-color: deepskyblue;
 }
 
 .seg-BR {
-    top: 50%;
-    left: 50%;
+    top: 48%;
+    left: 48%;
     background-color: black;
 }

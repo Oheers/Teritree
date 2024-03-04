@@ -175,6 +175,19 @@ sprites[107] = new Sprite(107, 4, 4, 2, 2, "burnt_pebbles", false, "Burnt Pebble
 sprites[108] = new Sprite(108, 4, 3, 3, 2, "burnt_leaves1", false, "Burnt Leaves")
 sprites[109] = new Sprite(109, 4, 3, 3, 2, "burnt_leaves2", false, "Burnt Leaves")
 sprites[117] = new Sprite(117, 0, 0, 0, 0, "selector_icon", false, "Selector")
+sprites[118] = new Sprite(118, 0, 0.75, 0.75, 0.75, "cold_tree1", true, "Cold Tree")
+sprites[119] = new Sprite(119, 0, 0.9, 0.75, 0.75, "cold_tree2", true, "Cold Tree")
+sprites[120] = new Sprite(120, 0, 0.5, 0.5, 0.5, "cold_tree3", true, "Cold Tree")
+sprites[121] = new Sprite(121, 0, 0.75, 0.75, 0.75, "snowy_cold_tree1", true, "Snowy Cold Tree")
+sprites[122] = new Sprite(122, 0, 0.9, 0.75, 0.75, "snowy_cold_tree2", true, "Snowy Cold Tree")
+sprites[123] = new Sprite(123, 0, 0.5, 0.5, 0.5, "snowy_cold_tree3", true, "Snowy Cold Tree")
+sprites[124] = new Sprite(124, 1, 0.5, 0.5, 0.5, "cold_rock1", true, "Cold Rock")
+sprites[125] = new Sprite(125, 1, 0.5, 0.5, 0.5, "cold_rock2", true, "Cold Rock")
+sprites[126] = new Sprite(126, 0.5, 0.5, 0.5, 0.5, "cold_rock3", true, "Big Cold Rock")
+sprites[127] = new Sprite(127, 4, 3, 3, 2, "cold_leaves1", false, "Cold Leaves")
+sprites[128] = new Sprite(128, 4, 3, 3, 2, "cold_leaves2", false, "Cold Leaves")
+sprites[129] = new Sprite(129, 4, 3, 3, 2, "dead_leaves1", false, "Dead Leaves")
+sprites[130] = new Sprite(130, 4, 3, 3, 2, "dead_leaves2", false, "Dead Leaves")
 
 function getImageCoords(itemID) {
     return {

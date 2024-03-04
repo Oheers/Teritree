@@ -46,11 +46,11 @@ function loadAbstractWorld() {
 
 function previewRegion(region) {
     if (selectedRegion !== -1) region = selectedRegion;
-    if (region === 0) document.getElementById("live-location-selector").innerHTML = `Currently selected: None`
+    if (region === 0) document.getElementById("live-location-selector").innerHTML = `Currently selected: Random`
     else {
-        const x = Math.round((((region - 1) % 6) - 3) * 1498);
-        const y = Math.round((Math.floor((region - 1) / 6) - 3) * 1498);
-        document.getElementById("live-location-selector").innerHTML = `Currently selected: (${x}, ${y}) to (${x + 1498}, ${y + 1498})`
+        const x = Math.round((((region - 1) % 6) - 3) * 1664);
+        const y = -Math.round((Math.floor((region - 1) / 6) - 3) * 1664);
+        document.getElementById("live-location-selector").innerHTML = `Currently selected: (${x}, ${y}) to (${x + 1664}, ${y - 1664})`
     }
 }
 

@@ -11,6 +11,8 @@ const crypto = require('crypto');
 const dbBackend = require("./sql-backend")
 const worldHandler = require("./world-handler.js");
 
+const utils = require("./utils.js");
+
 const port = 3000
 
 app.use(express.static('./public/'));
@@ -28,6 +30,10 @@ app.get('/play', (req, res) => {
             res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/auth.html'))
         }
     })
+})
+
+app.get('/changelog', (req, res) => {
+    res.status(200).sendFile(path.resolve(__dirname, './public/changelog/core/changelog.html'));
 })
 
 app.post('/login', bodyParser.json(), (req, res) => {
@@ -114,11 +120,18 @@ app.post('/create-town', bodyParser.json(), (req, res) => {
             const town_description = body.town_description;
             const town_inviteonly = body.invite_only;
 
+            let town_region = 0
+            if (body.region > 36 || body.region < 1) town_region = Math.ceil(Math.random() * 36)
+            else town_region = body.region;
+
+            const x = Math.round((((town_region - 1) % 6) - 3) * 1664);
+            const y = -Math.round((Math.floor((town_region - 1) / 6) - 3) * 1664);
+            const chunkID = utils.getChunkID(Math.floor(+(Math.random()*52) + (x / 32)), Math.floor(-(Math.random()*52) + (y / 32)));
+
             dbBackend.createTown(player, town_name, town_description, town_inviteonly, town_invitecode, town_colour).then(r => {
-                console.log("success:", r)
                 res.json({
                     success: true,
-                    player: player
+                    location: chunkID
                 })
             })
         }

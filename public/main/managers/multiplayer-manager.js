@@ -117,7 +117,8 @@ async function postTownCreationData(town_name, town_description, invite_only, in
             town_description: town_description,
             invite_only: invite_only,
             invite_code: invite_code,
-            colour: colour
+            colour: colour,
+            region: selectedRegion
         }) // body data type must match "Content-Type" header
     }).then(response => {
         return response.json();
@@ -126,6 +127,10 @@ async function postTownCreationData(town_name, town_description, invite_only, in
             const error = jsonResponse.error.split(":");
             document.getElementById(error[0]).style.visibility = "visible"
             document.getElementById(error[0]).innerHTML = error[1];
+        } else {
+            const x = (((jsonResponse.location % 312) - 156) * 32) + 16;
+            const y = ((((jsonResponse.location - x - 156) / 312) - 157) * 32) - 16;
+            alert("Once fully coded, you'll have a town in chunkID: " + jsonResponse.location + " x: " + Math.floor(x) + " y: " + Math.floor(-y));
         }
         console.log("town creation response:", jsonResponse)
     })

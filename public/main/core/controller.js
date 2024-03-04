@@ -104,7 +104,7 @@ function checkSocketIOConnection() {
 function updateCoordinateTracker() {
     xTracker.innerHTML = "<b>X:</b> "+ Math.floor(camCentreX);
     yTracker.innerHTML = "<b>Y:</b> "+ Math.floor(camCentreY);
-    townTracker.innerHTML = "<b>Town:</b> "+ "None <br><span style='color: #aaaaaa; font-size: 12pt;'>(Press T to create a town)</span>";
+    townTracker.innerHTML = "<b>Town:</b> None"+ " <br><span style='color: #aaaaaa; font-size: 12pt;'>(Press T to create a town)</span>";
 }
 
 init().then(r => console.log("Hello world."));

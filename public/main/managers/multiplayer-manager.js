@@ -130,7 +130,7 @@ async function postTownCreationData(town_name, town_description, invite_only, in
         } else {
             const x = (((jsonResponse.location % 312) - 156) * 32) + 16;
             const y = ((((jsonResponse.location - x - 156) / 312) - 157) * 32) - 16;
-            alert("Once fully coded, you'll have a town in chunkID: " + jsonResponse.location + " x: " + Math.floor(x) + " y: " + Math.floor(-y));
+            console.log("Once fully coded, you'll have a town in chunkID: " + jsonResponse.location + " x: " + Math.floor(x) + " y: " + Math.floor(-y));
         }
         console.log("town creation response:", jsonResponse)
     })

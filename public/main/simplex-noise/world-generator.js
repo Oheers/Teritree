@@ -150,10 +150,12 @@ function pickTree(random, floor) {
     } else if (floor === DEAD_GRASS) {
         return 35;
     } else {
+        // The ground is incompatible for tree spawning
         return -1;
     }
 }
 
+// Determines whether there should be a shrub placed, returns the item ID of the chosen shrub, and -1 if not applicable.
 function shouldPlaceShrubbery(tileX, tileY, floor) {
     noise.seed(terrain.seed + 5);
     const random = Math.abs(noise.simplex2(tileX + 0.53, tileY + 0.53));

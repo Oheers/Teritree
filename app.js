@@ -98,7 +98,6 @@ app.post('/create-town', bodyParser.json(), (req, res) => {
             })
         } else {
             const town_colour = body.colour;
-            console.log("town_colour:", town_colour)
             if (town_colour === undefined || town_colour % 1 !== 0 || town_colour > 7 || town_colour < 0) {
                 res.json({
                     success: false,
@@ -108,7 +107,6 @@ app.post('/create-town', bodyParser.json(), (req, res) => {
             }
 
             const town_invitecode = body.invite_code;
-            console.log("invite code:", town_invitecode)
             if (town_invitecode === undefined || town_invitecode.length === 0) {
                 res.json({
                     success: false,
@@ -126,12 +124,22 @@ app.post('/create-town', bodyParser.json(), (req, res) => {
 
             const x = Math.round((((town_region - 1) % 6) - 3) * 1664);
             const y = -Math.round((Math.floor((town_region - 1) / 6) - 3) * 1664);
-            const chunkID = utils.getChunkID(Math.floor(+(Math.random()*52) + (x / 32)), Math.floor(-(Math.random()*52) + (y / 32)));
+            let chunkID = utils.getChunkID(Math.floor(+(Math.random()*52) + (x / 32)), Math.floor(-(Math.random()*52) + (y / 32)));
+            while (dbBackend.getClaim(chunkID) !== undefined) {
+                chunkID = utils.getChunkID(Math.floor(+(Math.random()*52) + (x / 32)), Math.floor(-(Math.random()*52) + (y / 32)));
+            }
 
-            dbBackend.createTown(player, town_name, town_description, town_inviteonly, town_invitecode, town_colour).then(r => {
-                res.json({
-                    success: true,
-                    location: chunkID
+            const spawnX = ((chunkID % 312) - 155.5) * 32;
+            const spawnY = (157.5 - Math.floor(chunkID / 312)) * 32;
+
+            dbBackend.createTown(player, town_name, spawnX, spawnY, town_description, town_inviteonly, town_invitecode, town_colour).then(r => {
+                dbBackend.getTown(town_name).then(r => {
+                    dbBackend.createClaim(chunkID, r.townID, false).then(r => {
+                        res.json({
+                            success: true,
+                            location: chunkID
+                        })
+                    })
                 })
             })
         }

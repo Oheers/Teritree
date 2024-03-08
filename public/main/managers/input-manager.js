@@ -36,13 +36,13 @@ class InputManager {
         const oldX = camCentreX;
         const oldY = camCentreY;
 
-        if (Math.abs(camCentreX + x) > 20) {
+        if (Math.abs(camCentreX + x) > 1000) {
             // Game restores the x coordinates to be within the brackets if the movement requested is too great.
-            //x = (Math.abs(camCentreX - (-20)) < Math.abs(camCentreX - 20)) ? camCentreX - 20 : camCentreX + 20;
+            x = (Math.abs(camCentreX - (-1000)) < Math.abs(camCentreX - 1000)) ? camCentreX - 1000 : camCentreX + 1000;
         }
-        if (Math.abs(camCentreY + y) > 20) {
+        if (Math.abs(camCentreY + y) > 1000) {
             // Game restores the y coordinates to be within the brackets if the movement requested is too great.
-            //y = (Math.abs(camCentreY - (-20)) < Math.abs(camCentreY - 20)) ? camCentreY + 20 : camCentreY - 20;
+            y = (Math.abs(camCentreY - (-1000)) < Math.abs(camCentreY - 1000)) ? camCentreY + 1000 : camCentreY - 1000;
         }
 
         camCentreX += (-(x / terrain.scaledSquareSize));
@@ -121,7 +121,6 @@ class InputManager {
             keyMap[84] = false;
             if (movementLock) {
                 hideTownMaker()
-                console.log("closing down town maker")
                 closeColourSelector()
             } else {
                 openTownMaker()
@@ -281,7 +280,6 @@ function createTown() {
         return false;
     // Does the town name only contain characters you'd expect?
     } else if (!(/^[a-zA-Z0-9 ]+$/.test(town_name))) {
-        console.log("town name:" + "|" + town_name + "|", !(/^[a-zA-Z0-9 ]$/.test(town_name)))
         document.getElementById("town-name-error").style.visibility = "visible"
         document.getElementById("town-name-error").innerHTML = "Town name can only contain a-Z, 0-9, and spaces.";
         return false;

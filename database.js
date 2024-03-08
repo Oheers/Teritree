@@ -45,7 +45,9 @@ async function cacheChunk(chunkID, updateMap, updateTimes) {
 }
 
 async function newAccount(username, password, authToken, x, y) {
-    return connection.query(`INSERT INTO teritree_users (username, password, token, x, y, itemID) VALUES ("${username}", "${password}", "${authToken}", "${x}", "${y}", "-1")`);
+    return connection.query(`INSERT INTO teritree_users (username, password, token, x, y, itemID, townID, joinEpoch, ` +
+        `competitionsWon, townRank, serverRank) VALUES ("${username}", "${password}", "${authToken}", "${x}", "${y}", "-1", "-1",` +
+    `"${Date.now()}", "0", "-1", "0");`);
 }
 
 async function getAccount(username) {
@@ -56,12 +58,20 @@ async function getAccountFromAuthToken(authToken) {
     return connection.query(`SELECT username, id, x, y, itemID FROM teritree_users WHERE token = "${authToken}"`);
 }
 
+async function getAllPlayers() {
+    return connection.query(`SELECT * FROM teritree_users`);
+}
+
 async function updatePlayerRecord(userID, x, y, itemID) {
     return connection.query(`UPDATE teritree_users SET x = ${Math.round(x)}, y = ${Math.round(y)}, itemID = ${itemID} WHERE id = ${userID}`);
 }
 
 async function getTownFromName(name) {
     return connection.query(`SELECT * FROM teritree_towns WHERE name = "${name}";`)
+}
+
+async function getAllTowns() {
+    return connection.query(`SELECT * FROM teritree_towns;`);
 }
 
 // Adds a new town to the SQL database.
@@ -72,6 +82,18 @@ async function createTown(leaderID, townName, townDescription, townInviteOnly, t
 
 }
 
+// Registers a claim with the SQL database.
+async function createClaim(chunkID, townID, isPublic) {
+    console.log("creating town:", chunkID, townID, isPublic);
+    return connection.query(`INSERT INTO teritree_claims (chunkID, townID, isPublic) VALUES (${chunkID}, ${townID}, 
+    ${isPublic});`)
+}
+
+async function getAllClaims() {
+    return connection.query(`SELECT * FROM teritree_claims;`);
+}
+
 module.exports = {
-    sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken, updatePlayerRecord, getTownFromName, createTown
+    sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken, updatePlayerRecord,
+    getTownFromName, createTown, getAllTowns, getAllPlayers, createClaim, getAllClaims
 }

@@ -3,7 +3,9 @@ const dbManager = require("./database.js")
 const utils = require("./utils.js");
 const event = require("./event-manager.js");
 const { changeInternalCache, onTileChange} = require("./world-handler");
-const {Player} = require("./objects/player");
+const { Player } = require("./objects/player");
+const { Town } = require("./objects/town");
+const { Claim } = require("./objects/claim");
 
 const activeUsers = {};
 const pendingAuth = {};
@@ -12,6 +14,20 @@ const sessionPlayers = {};
 
 const maxSpeed = 0.25;
 const afk_timer = 300000;
+
+const players = {};
+const towns = {};
+const claims = {};
+
+getAllPlayers().then(r => {
+    console.log("Players:", Object.keys(players).length)
+    getAllTowns().then(r => {
+        console.log("Towns:", Object.keys(towns).length)
+        getAllClaims().then(r => {
+            console.log("Claims:", Object.keys(claims).length);
+        })
+    });
+})
 
 async function addPlayer(player, socketID) {
     activeUsers[socketID] = player;
@@ -227,18 +243,77 @@ function getTown(townName) {
                 resolve(undefined);
                 return;
             }
-            resolve(r[0][0].name);
+            const town = r[0][0];
+            resolve(new Town(town.townID, players[town.leaderID], town.spawnX, town.spawnY, town.name, town.colourID, town.description,
+                town.invite_only, town.invite_code));
         })
     })
 }
 
-function createTown(player, townName, townDescription, townInviteOnly, townInviteCode, townColour) {
+function getAllPlayers() {
     return new Promise((resolve => {
-        dbManager.createTown(player.accountID, townName, townDescription, townInviteOnly, townInviteCode, townColour).then(r => resolve(r));
+        dbManager.getAllPlayers().then(r => {
+            if (r[0] === undefined) return;
+            r[0].forEach(player => {
+                players[player.id] = new Player(player.id, player.townID, player.x, player.y, player.joinEpoch, player.competitionsWon,
+                    player.username, player.townRank, player.serverRank, player.itemID);
+            })
+            resolve();
+        })
+    }))
+}
+
+function getAllTowns() {
+    return new Promise((resolve => {
+        dbManager.getAllTowns().then(r => {
+            if (r[0] === undefined) return;
+            r[0].forEach(town => {
+                towns[town.townID] = new Town(town.townID, players[town.leaderID], town.spawnX, town.spawnY, town.name, town.colourID, town.description,
+                    town.invite_only, town.invite_code);
+            })
+            resolve();
+        })
+    }))
+}
+
+function createTown(player, townName, townDescription, townInviteOnly, townInviteCode, townColour) {
+    return new Promise((resolve) => { dbManager.createTown(player.accountID, townName, townDescription,
+        townInviteOnly, townInviteCode, townColour).then(r => {
+            getTown(townName).then(r => {
+                towns[r.townID] = new Town(r.townID, player, r.spawnX, r.spawnY, r.name, r.colourID, r.description, r.invite_only, r.invite_code);
+                resolve(r);
+            })
+        })
+    });
+}
+
+function createClaim(chunkID, townID, isPublic) {
+    const claimObject = new Claim(chunkID, townID, isPublic);
+    towns[townID].addClaim(chunkID, claimObject);
+    claims[chunkID] = claimObject;
+    return new Promise((resolve => {
+        dbManager.createClaim(chunkID, townID, isPublic)
+    }))
+}
+
+function getClaim(chunkID) {
+    return claims[chunkID];
+}
+
+function getAllClaims() {
+    return new Promise((resolve => {
+        dbManager.getAllClaims().then(r => {
+            if (r[0] === undefined) return;
+            r[0].forEach(claim => {
+                claims[claim.chunkID] = new Claim(claim.chunkID, claim.townID, claim.isPublic);
+            })
+            resolve();
+        })
     }))
 }
 
 module.exports = {
     onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
-    fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer, writePlayer, getTown, createTown
+    fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer, writePlayer, getTown, createTown, createClaim,
+    getClaim
 }

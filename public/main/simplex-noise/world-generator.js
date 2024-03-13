@@ -1,3 +1,4 @@
+const CHERRY_GRASS = "#aad65e"
 const GRASS = "#a8ca58";
 const FOREST = "#75a743";
 const DARK_FOREST = "#468232"

@@ -137,8 +137,19 @@ app.post('/create-town', bodyParser.json(), (req, res) => {
                     dbBackend.createClaim(chunkID, r.townID, false).then(r => {
                         res.json({
                             success: true,
-                            location: chunkID
+                            location: chunkID,
+                            x: spawnX,
+                            y: spawnY
                         })
+                    })
+                    worldHandler.unregisterPlayerWithArea();
+                    player.x = spawnX;
+                    player.y = spawnY;
+                    worldHandler.registerPlayerWithArea(id, spawnX, spawnY).then(r => {
+                        worldHandler.onTileChange(chunkID, utils.getTileID(spawnX, -spawnY), 131 + (town_colour * 4), 1000526)
+                        worldHandler.onTileChange(chunkID, utils.getTileID(spawnX + 1, -spawnY), 132 + (town_colour * 4), 1000526)
+                        worldHandler.onTileChange(chunkID, utils.getTileID(spawnX, 1 - spawnY), 133 + (town_colour * 4), 1000526)
+                        worldHandler.onTileChange(chunkID, utils.getTileID(spawnX + 1, 1 - spawnY), 134 + (town_colour * 4), 1000526)
                     })
                 })
             })

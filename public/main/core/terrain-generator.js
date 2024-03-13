@@ -73,14 +73,16 @@ class SpriteElement extends Element {
      */
     constructor(_width, _height, _x, _y, _itemID) {
         const allocatedItem = sprites[_itemID];
-        const xDiff = ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * (100 / PIXELS_WIDTH));
-        const yDiff = ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * (100 / PIXELS_WIDTH));
-        super(_width, _height, _x + xDiff, _y + yDiff);
+        //const xDiff = ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * (100 / PIXELS_WIDTH));
+        //const yDiff = ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * (100 / PIXELS_WIDTH));
+        //super(_width, _height, _x + xDiff, _y + yDiff);
+        super(_width, _height, _x, _y);
         this.sx = allocatedItem.sx;
         this.sy = allocatedItem.sy;
-        this.xDiff = xDiff;
-        this.yDiff = yDiff;
-        this.img = document.getElementById("sprites");
+        //this.xDiff = xDiff;
+        //this.yDiff = yDiff;
+        if (allocatedItem.sheetID === 0) this.img = document.getElementById("sprites");
+        else if (allocatedItem.sheetID === 1) this.img = document.getElementById("buildings");
         this._itemID = _itemID;
         this._opacity = 1;
     }
@@ -95,12 +97,12 @@ class SpriteElement extends Element {
     setItem(itemID) {
         this._itemID = itemID;
         const allocatedItem = sprites[itemID];
-        this.x -= this.xDiff;
-        this.y -= this.yDiff;
-        this.xDiff = ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * (100 / PIXELS_WIDTH));
-        this.yDiff = ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * (100 / PIXELS_WIDTH));
-        this.x += this.xDiff;
-        this.y += this.yDiff;
+        //this.x -= this.xDiff;
+        //this.y -= this.yDiff;
+        //this.xDiff = ((Math.random() * (allocatedItem.tRight + allocatedItem.tLeft) - allocatedItem.tLeft) * (100 / PIXELS_WIDTH));
+        //this.yDiff = ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * (100 / PIXELS_WIDTH));
+        //this.x += this.xDiff;
+        //this.y += this.yDiff;
         this.sx = allocatedItem.sx;
         this.sy = allocatedItem.sy;
     }
@@ -178,24 +180,23 @@ class BackgroundElement extends Element {
         super(width, height, x, y);
         this._colour = colour;
         this._opacity = opacity;
-        this.ctx = renderer.viewportArea.context;
     }
 
     update() {
+        this.ctx ??= renderer.viewportArea.context;
         this.ctx.fillStyle = this.colour;
         this.ctx.globalAlpha = this._opacity;
         this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
         this.ctx.globalAlpha = 1;
     }
 
-    changeColour(colour) {
-        this.colour = colour;
+    set colour(colour) {
+        this._colour = colour;
     }
 
     get colour() {
         return this._colour;
     }
-
 
     get opacity() {
         return this._opacity;
@@ -235,8 +236,9 @@ class TextElement extends Element {
 class StaticUiBackgroundElement extends BackgroundElement {
 
     constructor(_width, _height, _colour, _opacity, _x, _y) {
-        super(_width, _height, _opacity, _x, _y);
+        super(_width, _height, _colour, _opacity, _x, _y);
         this.colour = _colour;
+        this._visible = true;
     }
 
     translate(x, y) {
@@ -244,8 +246,16 @@ class StaticUiBackgroundElement extends BackgroundElement {
     }
 
     update() {
+        if (!this._visible) return;
         this.ctx = renderer.viewportArea.context;
-        this.ctx.drawImage(this.img, this.sx, this.sy, PIXELS_WIDTH, PIXELS_HEIGHT, this.x, this.y, this.width, this.height)
+        this.ctx.fillStyle = this.colour;
+        this.ctx.globalAlpha = this._opacity;
+        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+        this.ctx.globalAlpha = 1;
+    }
+
+    set visible(visible) {
+        this._visible = visible;
     }
 }
 
@@ -512,6 +522,13 @@ class TerrainGenerator {
         } else {
             terrain.decorMap[x][y].changeSprite(itemID, x, y, false);
         }
+    }
+
+    unloadAll() {
+        this.terrainMap = {};
+        this.decorMap = {};
+        this.activeChunks = {}
+        this.players = {}
     }
 
     /**

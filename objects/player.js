@@ -1,7 +1,8 @@
 class Player {
 
-    constructor (accountID, townID, x, y, joinEpoch, competitionsWon, displayName, townRank, serverRank, itemID) {
+    constructor (accountID, socketID, townID, x, y, joinEpoch, competitionsWon, displayName, townRank, serverRank, itemID) {
         this._accountID = accountID;
+        this._socketID = socketID;
         this._townID = townID;
         this._x = x;
         this._y = y;
@@ -107,6 +108,14 @@ class Player {
     set itemID(value) {
         this._itemID = value;
         this.setActive()
+    }
+
+    get socketID() {
+        return this._socketID;
+    }
+
+    set socketID(value) {
+        this._socketID = value;
     }
 }
 

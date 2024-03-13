@@ -31,14 +31,7 @@ getAllPlayers().then(r => {
 
 async function addPlayer(player, socketID) {
     activeUsers[socketID] = player;
-    sessionPlayers[player.accountID] ??= {
-        accountID: player.accountID,
-        displayName: player.displayName,
-        x: player.x,
-        y: player.y,
-        item: player.itemID,
-        lastKnownTime: Date.now()
-    };
+    sessionPlayers[player.accountID] ??= player
 }
 
 function getPlayer(playerID) {
@@ -61,7 +54,11 @@ function getPlayers() {
 
 function writePlayer(socketID) {
     const player = sessionPlayers[activeUsers[socketID].accountID];
-    dbManager.updatePlayerRecord(player.accountID, player.x, player.y, player.item)
+    dbManager.updatePlayerRecord(player.accountID, player.x, player.y, player.itemID, player.townID)
+}
+
+function writePlayerWithObject(player) {
+    dbManager.updatePlayerRecord(player.accountID, player.x, player.y, player.itemID, player.townID)
 }
 
 function getCoords(socketID) {
@@ -83,7 +80,7 @@ function deletePlayer(socketID) {
 function onNewColour(x, y, colourID, oldColour, senderID) {
     const player = activeUsers[senderID];
     if (oldColour === undefined) oldColour = -1;
-    sessionPlayers[player.accountID].item = oldColour;
+    sessionPlayers[player.accountID].itemID = oldColour;
     activeUsers[senderID].itemID = oldColour;
     const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(-y / 32));
     const tileID = utils.getTileID(x, y);
@@ -117,7 +114,6 @@ function onMove(newX, newY, playerID) {
     player.y = newY;
     sessionPlayers[player.accountID].x = newX;
     sessionPlayers[player.accountID].y = newY;
-    sessionPlayers[player.accountID].lastKnownTime = Date.now();
     return shouldRecalibrate(player);
 }
 
@@ -144,11 +140,11 @@ function isPlayerAFK(player) {
     return Date.now() - player._lastActiveTime >= afk_timer;
 }
 
-function addPendingAuthUser(tokenID, id, username, x, y, itemID) {
+function addPendingAuthUser(tokenID, id, username, x, y, itemID, townID) {
     if (sessionPlayers[id] !== undefined) {
         x = sessionPlayers[id].x;
         y = sessionPlayers[id].y;
-        itemID = sessionPlayers[id].item;
+        itemID = sessionPlayers[id].itemID;
     }
 
     pendingAuth[tokenID] = {
@@ -156,16 +152,17 @@ function addPendingAuthUser(tokenID, id, username, x, y, itemID) {
         username: username,
         x: x,
         y: y,
-        itemID: itemID
+        itemID: itemID,
+        townID: townID
     }
 }
 
 function verifyAuthUser(tokenID, socketID) {
     if (pendingAuth.hasOwnProperty(tokenID)) {
         const userID = pendingAuth[tokenID].id;
-        const playerObject = new Player(userID, 527, pendingAuth[tokenID].x, pendingAuth[tokenID].y, 10000, 2, pendingAuth[tokenID].username, 1, 1, pendingAuth[tokenID].itemID);
+        const playerObject = new Player(userID, socketID, pendingAuth[tokenID].townID, pendingAuth[tokenID].x, pendingAuth[tokenID].y, 10000, 2, pendingAuth[tokenID].username, 1, 1, pendingAuth[tokenID].itemID);
         addPlayer(playerObject, socketID)
-       delete pendingAuth[tokenID];
+        delete pendingAuth[tokenID];
         return playerObject;
     } else {
         return undefined;
@@ -219,7 +216,7 @@ async function fetchAccount(authToken) {
             if (r[0][0] === undefined) {
                 resolve({auth: false});
             } else {
-                addPendingAuthUser(authToken, r[0][0].id, r[0][0].username, r[0][0].x, r[0][0].y, r[0][0].itemID)
+                addPendingAuthUser(authToken, r[0][0].id, r[0][0].username, r[0][0].x, r[0][0].y, r[0][0].itemID, r[0][0].townID)
                 resolve({auth: true, username: r[0][0].username, accountID: r[0][0].id, x: r[0][0].x, y: r[0][0].y})
             }
         })
@@ -250,6 +247,10 @@ function getTown(townName) {
     })
 }
 
+function getTownFromID(id) {
+    return towns[id];
+}
+
 function getAllPlayers() {
     return new Promise((resolve => {
         dbManager.getAllPlayers().then(r => {
@@ -276,11 +277,15 @@ function getAllTowns() {
     }))
 }
 
-function createTown(player, townName, townDescription, townInviteOnly, townInviteCode, townColour) {
-    return new Promise((resolve) => { dbManager.createTown(player.accountID, townName, townDescription,
-        townInviteOnly, townInviteCode, townColour).then(r => {
+function createTown(player, townName, spawnX, spawnY, townDescription, townInviteOnly, townInviteCode, townColour) {
+    return new Promise((resolve) => { dbManager.createTown(player.accountID, townName, spawnX, spawnY,
+        townDescription, townInviteOnly, townInviteCode, townColour).then(r => {
             getTown(townName).then(r => {
                 towns[r.townID] = new Town(r.townID, player, r.spawnX, r.spawnY, r.name, r.colourID, r.description, r.invite_only, r.invite_code);
+                player.townID = r.townID;
+                sessionPlayers[player.accountID].townID = r.townID;
+                writePlayerWithObject(player);
+                event.emitter.emit("new_town", player.socketID, r.name, r.spawnX, r.spawnY);
                 resolve(r);
             })
         })
@@ -292,7 +297,9 @@ function createClaim(chunkID, townID, isPublic) {
     towns[townID].addClaim(chunkID, claimObject);
     claims[chunkID] = claimObject;
     return new Promise((resolve => {
-        dbManager.createClaim(chunkID, townID, isPublic)
+        dbManager.createClaim(chunkID, townID, isPublic).then(r => {
+            resolve();
+        })
     }))
 }
 
@@ -315,5 +322,5 @@ function getAllClaims() {
 module.exports = {
     onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
     fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer, writePlayer, getTown, createTown, createClaim,
-    getClaim
+    getClaim, getTownFromID
 }

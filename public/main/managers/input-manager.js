@@ -7,6 +7,9 @@ let keyMap = {};
 let moveSpeed = 4
 let movementLock = false;
 
+let townX = 0;
+let townY = 0;
+
 class InputManager {
 
     constructor() {
@@ -36,14 +39,14 @@ class InputManager {
         const oldX = camCentreX;
         const oldY = camCentreY;
 
-        if (Math.abs(camCentreX + x) > 1000) {
+        /*if (Math.abs(camCentreX + x) > 1000) {
             // Game restores the x coordinates to be within the brackets if the movement requested is too great.
-            x = (Math.abs(camCentreX - (-1000)) < Math.abs(camCentreX - 1000)) ? camCentreX - 1000 : camCentreX + 1000;
+            x = (Math.abs(camCentreX - (-10000)) < Math.abs(camCentreX - 10000)) ? camCentreX - 10000 : camCentreX + 10000;
         }
-        if (Math.abs(camCentreY + y) > 1000) {
+        if (Math.abs(camCentreY + y) > 10000) {
             // Game restores the y coordinates to be within the brackets if the movement requested is too great.
-            y = (Math.abs(camCentreY - (-1000)) < Math.abs(camCentreY - 1000)) ? camCentreY + 1000 : camCentreY - 1000;
-        }
+            y = (Math.abs(camCentreY - (-10000)) < Math.abs(camCentreY - 10000)) ? camCentreY + 10000 : camCentreY - 10000;
+        }*/
 
         camCentreX += (-(x / terrain.scaledSquareSize));
         camCentreY += (y / terrain.scaledSquareSize);
@@ -54,6 +57,8 @@ class InputManager {
         renderer.translate(x, y, terrain.decorMap);
         renderer.translateUI(x, y, renderer.uiMap);
         renderer.translatePlayers(x, y);
+
+        renderer.repositionTownIndicator();
 
         terrain.fetchLocalTerrain(camCentreX, camCentreY, oldX, oldY);
 

@@ -143,36 +143,11 @@ function removePlayerFromCachedChunk(chunkID, playerID) {
 }
 
 event.emitter.on("player_join", function playerJoin(socketID, x, y) {
-    const currentRenderRegion = utils.findRenderRegion(x, y);
-    cacheNewChunk(utils.getChunkID(currentRenderRegion.x - 1, currentRenderRegion.y + 1), socketID)
-    cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y + 1), socketID)
-    cacheNewChunk(utils.getChunkID(currentRenderRegion.x -1, currentRenderRegion.y), socketID)
-    cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y), socketID)
-
-    const nearbyPlayers = new Set()
-    getActivePlayers(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32))).forEach((playerID) => {
-        nearbyPlayers.add(playerID);
-    })
-    getActivePlayers(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32) + 1)).forEach((playerID) => {
-        nearbyPlayers.add(playerID);
-    })
-    getActivePlayers(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32) + 1)).forEach((playerID) => {
-        nearbyPlayers.add(playerID);
-    })
-    getActivePlayers(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32))).forEach((playerID) => {
-        nearbyPlayers.add(playerID);
-    })
-
-    nearbyPlayers.forEach((playerID) => {
-        event.emitter.emit("player_in_range", playerID, socketID)
-        event.emitter.emit("player_in_range", socketID, playerID)
-    });
+    registerPlayerWithArea(socketID, x, y);
 });
 
 event.emitter.on("player_leave", function playerLeave(socketID, coords) {
-    for (const chunk in cache) {
-        removePlayerFromCachedChunk(chunk, socketID)
-    }
+    unregisterPlayerWithArea(socketID);
 })
 
 async function downloadChunk(chunkID) {
@@ -204,19 +179,63 @@ function cacheNewChunks(chunk1, chunk2, socketID) {
     cacheNewChunk(chunk2, socketID)
 }
 
-function cacheNewChunk(chunk, socketID) {
-    if (!existsInCache(chunk)) {
-        downloadChunk(chunk, 0).then(r => {
-            cache[chunk] = {
-                chunk: r[0],
-                users: [socketID]
-            };
-            event.emitter.emit("chunk_resting", socketID, chunk)
+function registerPlayerWithArea(socketID, x, y) {
+    return new Promise((resolve => {
+        const currentRenderRegion = utils.findRenderRegion(x, y);
+        cacheNewChunk(utils.getChunkID(currentRenderRegion.x - 1, currentRenderRegion.y + 1), socketID).then(r => {
+            cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y + 1), socketID).then(r2 => {
+                cacheNewChunk(utils.getChunkID(currentRenderRegion.x -1, currentRenderRegion.y), socketID).then(r3 => {
+                    cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y), socketID).then (r4 => {
+                        const nearbyPlayers = new Set()
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32))).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32) + 1)).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32) + 1)).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32))).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+
+                        nearbyPlayers.forEach((playerID) => {
+                            event.emitter.emit("player_in_range", playerID, socketID)
+                            event.emitter.emit("player_in_range", socketID, playerID)
+                        });
+                        resolve();
+                    })
+                })
+            })
         })
-    } else {
-        cache[chunk].users.push(socketID)
-        event.emitter.emit("chunk_resting", socketID, chunk)
+    }))
+}
+
+function unregisterPlayerWithArea(socketID) {
+    for (const chunk in cache) {
+        removePlayerFromCachedChunk(chunk, socketID)
     }
+}
+
+function cacheNewChunk(chunk, socketID) {
+    return new Promise((resolve) => {
+        if (!existsInCache(chunk)) {
+            downloadChunk(chunk, 0).then(r => {
+                cache[chunk] = {
+                    chunk: r[0],
+                    users: [socketID]
+                };
+                event.emitter.emit("chunk_resting", socketID, chunk)
+
+                resolve();
+            })
+        } else {
+            cache[chunk].users.push(socketID)
+            event.emitter.emit("chunk_resting", socketID, chunk)
+            resolve();
+        }
+    })
 }
 
 function uncacheChunks(chunk1, chunk2, socketID) {
@@ -265,5 +284,5 @@ function merge(array1, array2) {
 }
 
 module.exports = {
-    changeInternalCache, downloadChunk, onTileChange, restChunk
+    changeInternalCache, downloadChunk, onTileChange, restChunk, registerPlayerWithArea, unregisterPlayerWithArea
 }

@@ -85,8 +85,14 @@ socket.on("auth_verify", (data) => {
     camCentreX = data.x;
     camCentreY = data.y;
     itemID = data.i;
+
+    changeTown(data.t);
     changeHotbar();
     loadWorld();
+})
+
+socket.on("create_town", (data) => {
+    changeTown(data);
 })
 
 socket.on("connect", () => {
@@ -128,17 +134,27 @@ async function postTownCreationData(town_name, town_description, invite_only, in
             document.getElementById(error[0]).style.visibility = "visible"
             document.getElementById(error[0]).innerHTML = error[1];
         } else {
-            const x = (((jsonResponse.location % 312) - 156) * 32) + 16;
-            const y = ((((jsonResponse.location - x - 156) / 312) - 157) * 32) - 16;
-            console.log("Once fully coded, you'll have a town in chunkID: " + jsonResponse.location + " x: " + Math.floor(x) + " y: " + Math.floor(-y));
+            camCentreX = jsonResponse.x;
+            camCentreY = jsonResponse.y;
+            unloadWorld();
+            loadWorld();
         }
-        console.log("town creation response:", jsonResponse)
     })
 }
 
 function signout() {
     deleteCookie("authToken")
     window.location.href = `/`
+}
+
+function changeTown(town) {
+    if (town === undefined) {
+        townTracker.innerHTML = "<b>Town:</b> None"+ " <br><span style='color: #aaaaaa; font-size: 12pt;'>(Press T to create a town)</span>";
+    } else {
+        townTracker.innerHTML = "<b>Town:</b> " + town.n;
+        townX = town.x;
+        townY = town.y;
+    }
 }
 
 function fetchRestingChunk(chunkID, saveTime) {

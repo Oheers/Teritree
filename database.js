@@ -55,15 +55,15 @@ async function getAccount(username) {
 }
 
 async function getAccountFromAuthToken(authToken) {
-    return connection.query(`SELECT username, id, x, y, itemID FROM teritree_users WHERE token = "${authToken}"`);
+    return connection.query(`SELECT username, id, x, y, itemID, townID FROM teritree_users WHERE token = "${authToken}"`);
 }
 
 async function getAllPlayers() {
     return connection.query(`SELECT * FROM teritree_users`);
 }
 
-async function updatePlayerRecord(userID, x, y, itemID) {
-    return connection.query(`UPDATE teritree_users SET x = ${Math.round(x)}, y = ${Math.round(y)}, itemID = ${itemID} WHERE id = ${userID}`);
+async function updatePlayerRecord(userID, x, y, itemID, townID) {
+    return connection.query(`UPDATE teritree_users SET x = ${Math.round(x)}, y = ${Math.round(y)}, itemID = ${itemID}, townID = ${townID} WHERE id = ${userID}`);
 }
 
 async function getTownFromName(name) {
@@ -75,16 +75,15 @@ async function getAllTowns() {
 }
 
 // Adds a new town to the SQL database.
-async function createTown(leaderID, townName, townDescription, townInviteOnly, townInviteCode, townColour) {
-    return connection.query(`INSERT INTO teritree_towns (leaderID, spawnX, spawnY, name, colourID, description, 
-    invite_only, invite_code) VALUES (${leaderID}, 0, 0, "${townName}", ${townColour}, "${townDescription}", 
-    ${townInviteOnly ? 1 : 0}, "${townInviteCode}");`)
+async function createTown(leaderID, townName, spawnX, spawnY, townDescription, townInviteOnly, townInviteCode, townColour) {
+    return connection.query(`INSERT INTO teritree_towns (leaderID, spawnX, spawnY, name, colourID, description,` +
+    ` invite_only, invite_code) VALUES (${leaderID}, ${spawnX}, ${spawnY}, "${townName}", ${townColour}, "${townDescription}", ` +
+    `${townInviteOnly ? 1 : 0}, "${townInviteCode}");`)
 
 }
 
 // Registers a claim with the SQL database.
 async function createClaim(chunkID, townID, isPublic) {
-    console.log("creating town:", chunkID, townID, isPublic);
     return connection.query(`INSERT INTO teritree_claims (chunkID, townID, isPublic) VALUES (${chunkID}, ${townID}, 
     ${isPublic});`)
 }

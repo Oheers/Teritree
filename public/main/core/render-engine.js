@@ -29,6 +29,7 @@ class RenderEngine {
 
         this.uiMap = {};
         this.createSelector();
+        this.createTownIndicator();
         this._viewDebugType = "normal";
 
         window.addEventListener("blur", this.onBlur, false);
@@ -69,6 +70,27 @@ class RenderEngine {
         }
     }
 
+    repositionTownIndicator() {
+        const xCoord = (townX - camCentreX) * terrain.scaledSquareSize + 75;
+        const yCoord = (camCentreY - townY) * terrain.scaledSquareSize + 75;
+        const size = Math.max(30, 60 - (0.005 * (Math.sqrt((xCoord ** 2) + (yCoord **2)))))
+
+        this.uiMap["town_indicator"].width = size;
+        this.uiMap["town_indicator"].height = size;
+
+        let outRange = false;
+
+        if (xCoord > 1010) { this.uiMap["town_indicator"].x = 875; outRange = true; }
+        else if (xCoord < -1105) { this.uiMap["town_indicator"].x = -940; outRange = true; }
+        else this.uiMap["town_indicator"].x = xCoord;
+
+        if (yCoord > 590) { this.uiMap["town_indicator"].y = 455; outRange = true; }
+        else if (yCoord < -690) { this.uiMap["town_indicator"].y = -515; outRange = true; }
+        else this.uiMap["town_indicator"].y = yCoord;
+
+        this.uiMap["town_indicator"].visible = outRange;
+    }
+
     onBlur() {
         this.focused = false;
         inputHandler.clearKeyMap();
@@ -90,6 +112,10 @@ class RenderEngine {
         }
         // window.innerWidth / 19.2 is the number of pixels per square. 19.2 pixels are rendered horizontally on any monitor.
         this._verticalZoomLevel = this._gameHeight * (100 / (window.innerWidth / 19.2));
+    }
+
+    createTownIndicator() {
+        this.uiMap["town_indicator"] ??= new StaticUiBackgroundElement(65, 65, "#aaff55", 100, 0, 100);
     }
 
     createSelector() {
@@ -143,4 +169,6 @@ class RenderEngine {
     set errorMSG(value) {
         this._errorMSG = value;
     }
+
+
 }

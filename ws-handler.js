@@ -70,6 +70,14 @@ event.emitter.on("user_already_logged_in", function afkPlayer(playerID) {
     disconnectPlayer(playerID);
 })
 
+event.emitter.on("new_town", function newTown(playerID, townName, townX, townY) {
+    emitToSocket(playerID, "create_town", {
+        n: townName,
+        x: townX,
+        y: townY
+    })
+})
+
 function emitToSocket(socketID, message, data) {
     io.to(socketID).emit(message, data);
 }
@@ -116,11 +124,28 @@ function init(server) {
                 return;
             }
 
-            socket.emit("auth_verify", {
-                x: player.x,
-                y: player.y,
-                i: player.itemID
-            })
+            const town = dbBackend.getTownFromID(player.townID);
+            if (town === undefined) {
+                socket.emit("auth_verify", {
+                    x: player.x,
+                    y: player.y,
+                    i: player.itemID,
+                    t: undefined
+                })
+            } else {
+                socket.emit("auth_verify", {
+                    x: player.x,
+                    y: player.y,
+                    i: player.itemID,
+                    t: {
+                        n: town.name,
+                        x: town.spawnX,
+                        y: town.spawnY
+                    }
+                })
+            }
+
+
 
             event.emitter.emit("player_join", socket.id, player.x, player.y)
         })

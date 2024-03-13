@@ -130,7 +130,7 @@ app.post('/create-town', bodyParser.json(), (req, res) => {
             }
 
             const spawnX = ((chunkID % 312) - 155.5) * 32;
-            const spawnY = (157.5 - Math.floor(chunkID / 312)) * 32;
+            const spawnY = (156.5 - Math.floor(chunkID / 312)) * 32;
 
             dbBackend.createTown(player, town_name, spawnX, spawnY, town_description, town_inviteonly, town_invitecode, town_colour).then(r => {
                 dbBackend.getTown(town_name).then(r => {
@@ -162,7 +162,13 @@ app.get('/api/world/chunk/:id', async (req, res) => {
     let viewTime = req.query.time;
     if (viewTime < weekStartMS) viewTime = weekStartMS
     const chunk = await worldHandler.restChunk(chunkID, viewTime);
-    res.status(200).send(chunk)
+    const claim = dbBackend.getClaim(chunkID);
+    let town = undefined;
+    if (claim !== undefined) town = claim.townID;
+    res.status(200).send({
+        chunk: chunk,
+        town: town
+    })
 })
 
 const now = new Date();

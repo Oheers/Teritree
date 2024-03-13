@@ -39,14 +39,19 @@ class InputManager {
         const oldX = camCentreX;
         const oldY = camCentreY;
 
-        /*if (Math.abs(camCentreX + x) > 1000) {
+        if (camCentreX + (x / terrain.scaledSquareSize) > 4492 && x < 0) {
             // Game restores the x coordinates to be within the brackets if the movement requested is too great.
-            x = (Math.abs(camCentreX - (-10000)) < Math.abs(camCentreX - 10000)) ? camCentreX - 10000 : camCentreX + 10000;
+            x = 0;
+        } else if (camCentreX + (x / terrain.scaledSquareSize) < -4492 && x > 0) {
+            x = 0;
         }
-        if (Math.abs(camCentreY + y) > 10000) {
+
+        if (camCentreY + (y / terrain.scaledSquareSize) > 4492 && y > 0) {
             // Game restores the y coordinates to be within the brackets if the movement requested is too great.
-            y = (Math.abs(camCentreY - (-10000)) < Math.abs(camCentreY - 10000)) ? camCentreY + 10000 : camCentreY - 10000;
-        }*/
+            y = 0;
+        } else if (camCentreY + (y / terrain.scaledSquareSize) < -4492 && y < 0) {
+            y = 0;
+        }
 
         camCentreX += (-(x / terrain.scaledSquareSize));
         camCentreY += (y / terrain.scaledSquareSize);
@@ -81,7 +86,7 @@ class InputManager {
                 || Math.abs(Math.floor(camCentreY + 0.5) - tileY) > 1) return;
             try {
                 terrain.decorMap[tileX] ??= {};
-                if (terrain.decorMap[tileX][tileY] === undefined || terrain.decorMap[tileX][tileY].itemID === -1) {
+                if (terrain.decorMap[tileX][tileY] === undefined || terrain.decorMap[tileX][tileY].itemID === -1 || sprites[terrain.decorMap[tileX][tileY].itemID].replaceable) {
                     if (itemID === -1) return;
                     if (this.placingOnOcean(tileX, tileY)) return;
                     terrain.decorMap[tileX][tileY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (tileX - camCentreX) * terrain.scaledSquareSize, (-tileY + camCentreY) * terrain.scaledSquareSize, itemID)

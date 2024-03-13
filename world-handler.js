@@ -163,7 +163,7 @@ async function restChunk(chunkID, time) {
         if (tile.epochTime > time) {
             resultMap.push({
                 tileID: tile.tileID,
-                itemID: tile.itemID
+                itemID: tile.itemID,
             });
         }
     })

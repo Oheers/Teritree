@@ -163,9 +163,13 @@ function fetchRestingChunk(chunkID, saveTime) {
             return r.json();
         })
         .then(tileList => {
-                tileList.forEach(tile => {
+                tileList.chunk.forEach(tile => {
                     terrain.actionRestUpdate(tile.tileID, tile.itemID)
                 })
+
+                if (tileList.town !== undefined) {
+                    terrain.createChunkBorder(chunkID);
+                }
             }
         )
 }

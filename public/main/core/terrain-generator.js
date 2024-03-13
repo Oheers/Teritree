@@ -103,6 +103,12 @@ class SpriteElement extends Element {
         //this.yDiff = ((Math.random() * (allocatedItem.tDown - allocatedItem.tUp) + allocatedItem.tDown) * (100 / PIXELS_WIDTH));
         //this.x += this.xDiff;
         //this.y += this.yDiff;
+        if (allocatedItem.sheetID === 0) {
+            this.img = document.getElementById("sprites");
+        }
+        else if (allocatedItem.sheetID === 1) {
+            this.img = document.getElementById("buildings");
+        }
         this.sx = allocatedItem.sx;
         this.sy = allocatedItem.sy;
     }
@@ -185,9 +191,21 @@ class BackgroundElement extends Element {
     update() {
         this.ctx ??= renderer.viewportArea.context;
         this.ctx.fillStyle = this.colour;
-        this.ctx.globalAlpha = this._opacity;
+        if (this._animation_opacityFlicker_do) {
+            this.ctx.globalAlpha = this._animation_opacityFlicker_min + this._animation_opacityFlicker_amplitude * (1 +
+                Math.sin(((Date.now() % this._animation_opacityFlicker_time) * 2 * Math.PI) / this._animation_opacityFlicker_time)) / 2;
+        } else {
+            this.ctx.globalAlpha = this._opacity;
+        }
         this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
         this.ctx.globalAlpha = 1;
+    }
+
+    addOpacityFlickerAnimation(amplitude, min, time) {
+        this._animation_opacityFlicker_do = true;
+        this._animation_opacityFlicker_amplitude = amplitude;
+        this._animation_opacityFlicker_min = min;
+        this._animation_opacityFlicker_time = time;
     }
 
     set colour(colour) {
@@ -522,6 +540,14 @@ class TerrainGenerator {
         } else {
             terrain.decorMap[x][y].changeSprite(itemID, x, y, false);
         }
+    }
+
+    createChunkBorder(chunkID) {
+        const chunkX = (chunkID % 312) - 156;
+        const chunkY = Math.floor(chunkID / 312) - 157;
+        const claimPreview = new BackgroundElement(terrain.scaledSquareSize * 32, terrain.scaledSquareSize * 32, "#00ff55", 0.5, terrain.scaledSquareSize * ((32*chunkX) - camCentreX), terrain.scaledSquareSize * ((chunkY*32) + camCentreY));
+        claimPreview.addOpacityFlickerAnimation(0.1, 0, 3000);
+        renderer.uiMap[`town_claim_${chunkID}`] = claimPreview;
     }
 
     unloadAll() {

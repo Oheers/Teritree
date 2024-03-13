@@ -82,6 +82,7 @@ function updateViewport() {
     inputHandler.tick(diff);
     activeTile = inputHandler.selectTile();
     if (activeTile !== null) renderer.uiMap["selector"].changeTile(activeTile.x, activeTile.y)
+    updateWorldResetTracker();
     updateCoordinateTracker();
     terrain.updateAll(terrain.terrainMap); // LAYER 1 - BASE LAYER, UNCHANGEABLE
     terrain.updateAll(terrain.decorMap); // LAYER 2 - DECOR MAP, WORLD UPDATES
@@ -108,6 +109,16 @@ function checkSocketIOConnection() {
 function updateCoordinateTracker() {
     xTracker.innerHTML = "<b>X:</b> "+ Math.floor(camCentreX);
     yTracker.innerHTML = "<b>Y:</b> "+ Math.floor(camCentreY);
+}
+
+function updateWorldResetTracker() {
+    const now = new Date();
+    const sec = 604800 - (((now.getDay() + 6) % 7) * 86400 +
+        now.getHours() * 3600 +
+        now.getMinutes() * 60 +
+        now.getSeconds());
+    document.getElementById("world-reset").innerHTML = `World Resetting: ${Math.floor(sec / 86400)}d, 
+    ${Math.floor((sec % 86400) / 3600)}h, ${Math.floor((sec % 3600) / 60)}m, ${Math.floor(sec % 60)}s`;
 }
 
 init().then(r => console.log("Hello world."));

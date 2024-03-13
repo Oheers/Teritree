@@ -39,6 +39,7 @@ function changeHotbar() {
 }
 
 function changePlayerItem(id, item) {
+    if (id === 1000526) return; // 1000526 is the server ID.
     for (let element in terrain.players[id].element.subElements) {
         if (terrain.players[id].element.subElements[element] instanceof UiElementSprite) {
             terrain.players[id].element.subElements[element].changeItem(item);

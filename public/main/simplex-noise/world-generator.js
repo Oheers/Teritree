@@ -3,7 +3,6 @@ const GRASS = "#a8ca58";
 const FOREST = "#75a743";
 const DARK_FOREST = "#468232"
 const DARKER_FOREST = "#25562e"
-const COLD_GRASS = "#7fe19b"
 const DEAD_GRASS = "#c2b781"
 const SAND = "#e8c170";
 const RIVER = "#73bed3";
@@ -22,6 +21,8 @@ function standardColourRendering(tileX, tileY) {
     const warmth = Math.abs(noise.simplex2(tileX / 1000, tileY / 1000));
     noise.seed(terrain.seed + 2)
     const dampness = Math.abs(noise.simplex2(tileX / 500, tileY / 500));
+    noise.seed(terrain.seed + 6)
+    const fruitiness = Math.abs(noise.simplex2(tileX / 400, tileY / 400));
 
     // HEIGHT
     if (renderer.viewDebugType === "height") {
@@ -91,10 +92,12 @@ function standardColourRendering(tileX, tileY) {
             } else if (dampness < 0.1) {
                 return DEAD_GRASS
             } else {
-                return GRASS;
+                if (fruitiness > 0.6) {
+                    return CHERRY_GRASS;
+                } else {
+                    return GRASS;
+                }
             }
-        } else if (warmth > 0.15) {
-            return COLD_GRASS;
         } else {
             // Snowy area
             if (dampness > 0.65) {
@@ -146,7 +149,7 @@ function pickTree(random, floor) {
         } else {
             return 33 + (2 * (id - 6))
         }
-    } else if (floor === COLD_GRASS) {
+    } else if (floor === CHERRY_GRASS) {
         return (Math.floor(random * 100) % 6) + 118;
     } else if (floor === DEAD_GRASS) {
         return 35;
@@ -246,12 +249,12 @@ function pickShrub(random, floor) {
         } else {
             return 64 + id;
         }
-    } else if (floor === COLD_GRASS) {
-        const id = Math.floor(random * 100) % 5;
-        return id + 124;
+    } else if (floor === CHERRY_GRASS) {
+        const id = Math.floor(random * 100) % 4;
+        return id + 121;
     } else if (floor === DEAD_GRASS) {
-        const id = Math.floor(random * 100) % 2;
-        return id + 129;
+        const id = Math.floor(random * 100) % 4;
+        return id + 126;
     }
 
     return -1;

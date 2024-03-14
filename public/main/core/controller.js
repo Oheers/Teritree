@@ -88,7 +88,7 @@ function updateViewport() {
     terrain.updateAll(terrain.decorMap); // LAYER 2 - DECOR MAP, WORLD UPDATES
     terrain.updateAllUI(renderer.uiMap); // LAYER 3 - UI ELEMENTS & PLAYERS
     terrain.updateAllPlayers() // LAYER 3
-    if (totalTicks % 30 === 0) terrain.cache();
+    if (totalTicks % 3000 === 0) terrain.cache();
 }
 
 function getTerrainGenerator() {

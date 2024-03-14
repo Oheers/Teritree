@@ -110,14 +110,6 @@ function movePlayer(newX, newY, playerID) {
     }
 }
 
-function parseHeader(header) {
-    for (const directive of header.split(",")[0].split(";")) {
-        if (directive.startsWith("for=")) {
-            return directive.substring(4);
-        }
-    }
-}
-
 function init(server) {
     io = new Server(server);
     io.on("connection", (socket) => {
@@ -133,8 +125,7 @@ function init(server) {
             }
 
 
-            const ip = parseHeader(socket.handshake.headers["forwarded"] || "");
-            console.log(player.displayName, "has connected with IP:", ip, new Date().toString());
+            console.log(player.displayName, "has connected with IP:", socket.handshake.address, new Date().toString());
 
             const town = dbBackend.getTownFromID(player.townID);
             if (town === undefined) {

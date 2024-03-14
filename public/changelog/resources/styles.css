@@ -34,3 +34,7 @@ body {
 .medium-button:active {
     background-color: rgba(40, 72, 52, 0.9);
 }
+
+img {
+    vertical-align: center;
+}

@@ -77,9 +77,14 @@ async function getAllTowns() {
 // Adds a new town to the SQL database.
 async function createTown(leaderID, townName, spawnX, spawnY, townDescription, townInviteOnly, townInviteCode, townColour) {
     return connection.query(`INSERT INTO teritree_towns (leaderID, spawnX, spawnY, name, colourID, description,` +
-    ` invite_only, invite_code) VALUES (${leaderID}, ${spawnX}, ${spawnY}, "${townName}", ${townColour}, "${townDescription}", ` +
-    `${townInviteOnly ? 1 : 0}, "${townInviteCode}");`)
+    ` invite_only, invite_code, trees) VALUES (${leaderID}, ${spawnX}, ${spawnY}, "${townName}", ${townColour}, "${townDescription}", ` +
+    `${townInviteOnly ? 1 : 0}, "${townInviteCode}", 0);`)
 
+}
+
+// Updates the amount of trees in the town.
+async function updateTownTrees(townID, trees) {
+    return connection.query(`UPDATE teritree_towns SET trees = ${trees} WHERE townID = ${townID};`);
 }
 
 // Registers a claim with the SQL database.
@@ -94,5 +99,5 @@ async function getAllClaims() {
 
 module.exports = {
     sendTileUpdate, fetchChunkUpdates, cacheChunk, newAccount, getAccount, getAccountFromAuthToken, updatePlayerRecord,
-    getTownFromName, createTown, getAllTowns, getAllPlayers, createClaim, getAllClaims
+    getTownFromName, createTown, getAllTowns, getAllPlayers, createClaim, getAllClaims, updateTownTrees
 }

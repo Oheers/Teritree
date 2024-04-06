@@ -413,7 +413,10 @@ class Chunk {
             // Creates new decoration on the map.
             if (xRow[uY] === undefined) {
                 if (update.itemID === -1) continue;
-                decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize, (uX - camCentreX) * terrain.scaledSquareSize, (-uY + camCentreY) * terrain.scaledSquareSize, update.itemID)
+                // Setting the decoration at uX and uY to update.itemID
+                decorMap[uX][uY] = new SpriteElement(terrain.scaledSquareSize, terrain.scaledSquareSize,
+                    (uX - camCentreX) * terrain.scaledSquareSize, (-uY + camCentreY) * terrain.scaledSquareSize,
+                    update.itemID)
             } else {
                 if (update.itemID === -1) {
                     delete decorMap[uX][uY];

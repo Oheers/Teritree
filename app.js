@@ -48,7 +48,9 @@ app.post('/login', bodyParser.json(), (req, res) => {
 
 app.post('/signup', bodyParser.json(), (req, res) => {
     const body = req.body;
+    // Creating authentication token
     const authToken = crypto.randomBytes(8).toString("hex");
+    // Adding account to database
     dbBackend.createAccount(body.username, body.password, authToken).then(r => {
         if (r) {
             res.json({
@@ -77,6 +79,14 @@ app.post('/login-auth-token', bodyParser.json(), (req, res) => {
 app.post('/create-town', bodyParser.json(), (req, res) => {
     const id = req.query.socket_id;
     const player = dbBackend.getPlayer(id);
+
+    if (player.townID !== -1) {
+        res.json({
+            success: false,
+            error: "town-name-error:You are already in a town."
+        })
+        return;
+    }
 
     const body = req.body;
     const town_name = body.town_name;
@@ -122,13 +132,16 @@ app.post('/create-town', bodyParser.json(), (req, res) => {
             if (body.region > 36 || body.region < 1) town_region = Math.ceil(Math.random() * 36)
             else town_region = body.region;
 
+            // Gets the x and y of the square chosen from the GUI
             const x = Math.round((((town_region - 1) % 6) - 3) * 1664);
             const y = -Math.round((Math.floor((town_region - 1) / 6) - 3) * 1664);
+            // Calculates the actual chunkID chosen
             let chunkID = utils.getChunkID(Math.floor(+(Math.random()*52) + (x / 32)), Math.floor(-(Math.random()*52) + (y / 32)));
             while (dbBackend.getClaim(chunkID) !== undefined) {
                 chunkID = utils.getChunkID(Math.floor(+(Math.random()*52) + (x / 32)), Math.floor(-(Math.random()*52) + (y / 32)));
             }
 
+            // Offsets the chunk to get the centre coordinates for it.
             const spawnX = ((chunkID % 312) - 155.5) * 32;
             const spawnY = (156.5 - Math.floor(chunkID / 312)) * 32;
 

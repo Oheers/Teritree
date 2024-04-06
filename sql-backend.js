@@ -19,6 +19,13 @@ const players = {};
 const towns = {};
 const claims = {};
 
+let leaderboard = [];
+
+// Sorts the leaderboard from most to least trees
+function reloadLeaderboard() {
+    leaderboard.sort(function(a, b) { return b.trees - a.trees; })
+}
+
 getAllPlayers().then(r => {
     console.log("Players:", Object.keys(players).length)
     getAllTowns().then(r => {
@@ -83,6 +90,32 @@ function onNewColour(x, y, colourID, oldColour, senderID) {
     sessionPlayers[player.accountID].itemID = oldColour;
     activeUsers[senderID].itemID = oldColour;
     const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(-y / 32));
+    if (claims[chunkID] !== undefined) {
+        const playerTown = activeUsers[senderID].townID;
+        if (playerTown !== claims[chunkID].townID) {
+            return;
+        }
+
+        // The itemID corresponds to a tree.
+        if (playerTown !== -1) {
+            // A new tree is being placed
+            if ((colourID >= 0 && colourID <= 22) || (colourID >= 28 && colourID <= 31) || (colourID >= 117 && colourID <= 119)) {
+                towns[playerTown].trees += 1;
+            // A tree is being removed
+            } else if (colourID === -1 && ((oldColour >= 0 && oldColour <= 22) || (oldColour >= 28 && oldColour <= 31) || (oldColour >= 117 && oldColour <= 119))) {
+                towns[playerTown].trees -= 1;
+            }
+            dbManager.updateTownTrees(playerTown, towns[playerTown].trees);
+            reloadLeaderboard()
+            if (leaderboard.length < 6 || towns[playerTown].trees > leaderboard[4].trees) {
+                for (const [key, value] of Object.entries(activeUsers)) {
+                    event.emitter.emit("update_leaderboard", key, getRelevantLeaderboard(value.accountID, value.townID !== -1))
+                }
+            } else {
+                event.emitter.emit("update_leaderboard", senderID, getRelevantLeaderboard(player.accountID, player.townID !== -1));
+            }
+        }
+    }
     const tileID = utils.getTileID(x, y);
     onTileChange(chunkID, tileID, colourID, senderID);
 }
@@ -242,7 +275,7 @@ function getTown(townName) {
             }
             const town = r[0][0];
             resolve(new Town(town.townID, players[town.leaderID], town.spawnX, town.spawnY, town.name, town.colourID, town.description,
-                town.invite_only, town.invite_code));
+                town.invite_only, town.invite_code, town.trees));
         })
     })
 }
@@ -270,8 +303,10 @@ function getAllTowns() {
             if (r[0] === undefined) return;
             r[0].forEach(town => {
                 towns[town.townID] = new Town(town.townID, players[town.leaderID], town.spawnX, town.spawnY, town.name, town.colourID, town.description,
-                    town.invite_only, town.invite_code);
+                    town.invite_only, town.invite_code, town.trees);
             })
+            leaderboard = Object.values(towns);
+            reloadLeaderboard();
             resolve();
         })
     }))
@@ -281,11 +316,14 @@ function createTown(player, townName, spawnX, spawnY, townDescription, townInvit
     return new Promise((resolve) => { dbManager.createTown(player.accountID, townName, spawnX, spawnY,
         townDescription, townInviteOnly, townInviteCode, townColour).then(r => {
             getTown(townName).then(r => {
-                towns[r.townID] = new Town(r.townID, player, r.spawnX, r.spawnY, r.name, r.colourID, r.description, r.invite_only, r.invite_code);
+                const town = new Town(r.townID, player, r.spawnX, r.spawnY, r.name, r.colourID, r.description, r.invite_only, r.invite_code, r.trees);;
+                towns[r.townID] = town;
+                leaderboard.push(town);
                 player.townID = r.townID;
                 sessionPlayers[player.accountID].townID = r.townID;
                 writePlayerWithObject(player);
-                event.emitter.emit("new_town", player.socketID, r.name, r.spawnX, r.spawnY);
+                event.emitter.emit("new_town", player.socketID, r.name, r.spawnX, r.spawnY, r.townID);
+                event.emitter.emit("update_leaderboard", player.socketID, getRelevantLeaderboard(player.accountID, player.townID !== -1))
                 resolve(r);
             })
         })
@@ -319,8 +357,42 @@ function getAllClaims() {
     }))
 }
 
+function getRelevantLeaderboard(accountID, inTown) {
+    let foundTown = false;
+    let data = [];
+    // Looping through the top five towns.
+    for (let i=0; i < 5; i++) {
+        if (i + 1 > leaderboard.length) break;
+        const town = leaderboard[i];
+        if (town.leader.accountID === accountID) foundTown = true;
+        // p = position, n = name, t = tree count
+        data[i] = {
+            p: i + 1,
+            n: town.name,
+            t: town.trees,
+            c: town.colourID
+        }
+    }
+    // Adding the user's own town if the game couldn't find their town in the top 5.
+    if (!foundTown && inTown) {
+        for (let i=5; i < leaderboard.length; i++) {
+            const town = leaderboard[i];
+            if (town.leader.accountID === accountID) {
+                data[5] = {
+                    p: i + 1,
+                    n: town.name,
+                    t: town.trees,
+                    c: town.colourID
+                }
+            }
+
+        }
+    }
+    return data;
+}
+
 module.exports = {
     onNewColour, onMove, addPlayer, deletePlayer, getCoords, getPlayers, getPlayer, kickAFKPlayers, createAccount, signin,
     fetchAccount, verifyAuthUser, checkPlayerAlreadyLoggedIn, selectPlayer, writePlayer, getTown, createTown, createClaim,
-    getClaim, getTownFromID
+    getClaim, getTownFromID, getRelevantLeaderboard
 }

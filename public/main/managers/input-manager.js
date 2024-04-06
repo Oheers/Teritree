@@ -82,6 +82,7 @@ class InputManager {
             draw = false;
             const tileX = Math.floor(mouseX / terrain.scaledSquareSize);
             const tileY = -Math.floor(mouseY / terrain.scaledSquareSize);
+            if (!this.canModify(tileX, tileY)) return;
             if (Math.abs(Math.floor(camCentreX + 0.5) - tileX) > 1
                 || Math.abs(Math.floor(camCentreY + 0.5) - tileY) > 1) return;
             try {
@@ -95,6 +96,7 @@ class InputManager {
                     itemID = -1;
                     changeHotbar();
                 } else {
+                    // If the player is already holding an item or if the decoration isn't movable
                     if (itemID !== -1 || !sprites[terrain.decorMap[tileX][tileY].itemID].movable) {
                         return;
                     }
@@ -107,6 +109,11 @@ class InputManager {
                 console.log("error:", error)
             }
         }
+    }
+
+    canModify(tileX, tileY) {
+        const claim = claims[getChunkID(Math.floor(tileX / 32), Math.ceil(tileY / 32))];
+        return claim === undefined || claim === townID;
     }
 
     // Changes the zoom amount of the canvas.

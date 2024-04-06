@@ -1,6 +1,6 @@
 class Town {
 
-    constructor(townID, leader, spawnX, spawnY, name, colourID, description, invite_only, invite_code) {
+    constructor(townID, leader, spawnX, spawnY, name, colourID, description, invite_only, invite_code, trees) {
         this.invite_only = invite_code;
         this._townID = townID;
         this._leader = leader;
@@ -11,6 +11,7 @@ class Town {
         this._description = description;
         this._invite_only = invite_only;
         this._invite_code = invite_code;
+        this._trees = trees;
 
         this._claims = {}
     }
@@ -33,6 +34,10 @@ class Town {
 
     get spawnX() {
         return this._spawnX;
+    }
+
+    get trees() {
+        return this._trees;
     }
 
     set spawnX(value) {
@@ -85,6 +90,10 @@ class Town {
 
     set invite_code(value) {
         this._invite_code = value;
+    }
+
+    set trees(trees) {
+        this._trees = trees;
     }
 }
 

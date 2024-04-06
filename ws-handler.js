@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const { Player } = require("./objects/player");
 const dbBackend = require("./sql-backend");
 const event = require("./event-manager.js");
+const {getRelevantLeaderboard} = require("./sql-backend");
 let io;
 
 const playerLinks = {};
@@ -70,12 +71,17 @@ event.emitter.on("user_already_logged_in", function afkPlayer(playerID) {
     disconnectPlayer(playerID);
 })
 
-event.emitter.on("new_town", function newTown(playerID, townName, townX, townY) {
+event.emitter.on("new_town", function newTown(playerID, townName, townX, townY, townID) {
     emitToSocket(playerID, "create_town", {
         n: townName,
         x: townX,
-        y: townY
+        y: townY,
+        i: townID
     })
+})
+
+event.emitter.on("update_leaderboard", function updateLeaderboard(socketID, data) {
+    emitToSocket(socketID, "leaderboard_update", data);
 })
 
 function emitToSocket(socketID, message, data) {
@@ -124,9 +130,6 @@ function init(server) {
                 return;
             }
 
-
-            console.log(player.displayName, "has connected with IP:", socket.handshake.address, new Date().toString());
-
             const town = dbBackend.getTownFromID(player.townID);
             if (town === undefined) {
                 socket.emit("auth_verify", {
@@ -142,13 +145,14 @@ function init(server) {
                     i: player.itemID,
                     t: {
                         n: town.name,
+                        i: town.townID,
                         x: town.spawnX,
                         y: town.spawnY
                     }
                 })
             }
 
-
+            socket.emit("leaderboard_update", getRelevantLeaderboard(player.accountID, player.townID !== -1))
 
             event.emitter.emit("player_join", socket.id, player.x, player.y)
         })

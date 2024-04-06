@@ -1,5 +1,10 @@
 const socket = io();
 
+let townID = -1;
+const claims = {};
+
+const colours = ["#ff4444", "#ffaa22", "#ddbb99", "#aaff55", "#33ddff", "#ff66bb", "#889999", "#ffffff"]
+
 const authToken = getCookie("authToken");
 socket.emit("auth", {
     token: authToken
@@ -95,6 +100,17 @@ socket.on("create_town", (data) => {
     changeTown(data);
 })
 
+socket.on("leaderboard_update", (data) => {
+    let HTML = ""
+    for (let i = 0; i < data.length; i++) {
+        HTML += `<div class="leaderboard-element-main ui">
+            <p class="leaderboard-item ui"><span id="leaderboard-${i+1}"><b>${i+1}: <span style="color: ${colours[data[i].c]};">${data[i].n}</span></b></span></p>
+            <p class="leaderboard-stat ui"><span id="leaderboard-${i+1}-stat">${data[i].t} Trees</span></p>
+        </div>`
+    }
+    document.getElementById("leaderboard").innerHTML = HTML;
+})
+
 socket.on("connect", () => {
     document.querySelectorAll('.ui').forEach(element => {
         element.style.display = 'block';
@@ -154,6 +170,7 @@ function changeTown(town) {
         townTracker.innerHTML = "<b>Town:</b> " + town.n;
         townX = town.x;
         townY = town.y;
+        townID = town.i;
     }
 }
 
@@ -168,6 +185,7 @@ function fetchRestingChunk(chunkID, saveTime) {
                 })
 
                 if (tileList.town !== undefined) {
+                    claims[chunkID] = tileList.town
                     terrain.createChunkBorder(chunkID);
                 }
             }

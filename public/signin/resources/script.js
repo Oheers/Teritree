@@ -61,8 +61,8 @@ async function signin() {
 }
 
 async function signup() {
-    if (!validationChecks()) return;
     if (!validate_usernameLength()) return;
+    if (!validationChecks()) return;
     await postUsernameAndPassword("signup");
 }
 
@@ -191,9 +191,7 @@ function validate_usernameLength() {
 
 function validate_usernameCharacters() {
     const username = document.getElementById("username").value;
-    if (/^[a-zA-Z0-9_]{2,16}$/.test(username)) {
-        return true;
-    }
+    if (/^[a-zA-Z0-9_]{2,16}$/.test(username)) return true;
     displayInputError("username", "Username must be alphanumeric.", "#ff2222");
     return false;
 }
@@ -210,13 +208,13 @@ function validate_passwordLength() {
 function displayInputError(input, message, colour) {
     const warningHandler = document.getElementById(`${input}-warning`);
     warningHandler.innerHTML = message;
-    warningHandler.style.visibility = "visible";
+    warningHandler.style.display = "block";
     warningHandler.style.color = colour;
 }
 
 function clearWarnings() {
-    document.getElementById("username-warning").style.visibility = "hidden";
-    document.getElementById("password-warning").style.visibility = "hidden";
+    document.getElementById("username-warning").style.display = "none";
+    document.getElementById("password-warning").style.display = "none";
 }
 
 // Initial adjustment on page load

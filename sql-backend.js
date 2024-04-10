@@ -13,7 +13,7 @@ const pendingAuth = {};
 const sessionPlayers = {};
 
 const maxSpeed = 0.25;
-const afk_timer = 300000;
+const afk_timer = 3000;
 
 const players = {};
 const towns = {};

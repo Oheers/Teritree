@@ -59,7 +59,7 @@ event.emitter.on("tile_change", function tileChange(playerID, tileID, itemID, se
 
 event.emitter.on("afk_player", function afkPlayer(playerID) {
     emitToSocket(playerID, "kick_player", {
-        msg:"You have been kicked for being AFK."
+        msg:"Too many players are connected to the server. Try again later."
     })
     disconnectPlayer(playerID);
 })

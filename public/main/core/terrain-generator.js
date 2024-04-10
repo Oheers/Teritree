@@ -124,6 +124,7 @@ class SpriteElement extends Element {
         const updateMap = terrain.activeChunks[getChunkID(Math.floor(realX/32), Math.ceil(-realY/-32))].chunk.updateMap;
         const tileID = ((4493 - realY) * 9984) + (realX + 4492)
         for (let i = 0; i < updateMap.length; i++) {
+            // The tile exists in the update map.
             if (updateMap[i].tileID === tileID) {
                 updateMap[i] = {
                     tileID: tileID,
@@ -133,6 +134,7 @@ class SpriteElement extends Element {
             }
         }
 
+        // The tile does not exist in the update map.
         updateMap.push({
             tileID: tileID,
             itemID: this.itemID

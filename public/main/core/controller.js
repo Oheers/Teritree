@@ -81,7 +81,7 @@ function updateViewport() {
     totalTickingTime += diff;
     inputHandler.tick(diff);
     activeTile = inputHandler.selectTile();
-    if (activeTile !== null) renderer.uiMap["selector"].changeTile(activeTile.x, activeTile.y)
+    if (activeTile !== null && activeTile !== undefined) renderer.uiMap["selector"].changeTile(activeTile.x, activeTile.y)
     updateWorldResetTracker();
     updateCoordinateTracker();
     terrain.updateAll(terrain.terrainMap); // LAYER 1 - BASE LAYER, UNCHANGEABLE

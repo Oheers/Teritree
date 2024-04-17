@@ -129,7 +129,7 @@ class InputManager {
         if (keyMap[65]) x = 4; // A
         if (keyMap[83]) y += -4 // S
         if (keyMap[68]) x += -4 // D
-        if (keyMap[16]) {
+        if (keyMap[16]) { // Sprint
             x = x * 1.6;
             y = y * 1.6;
         }

@@ -44,6 +44,10 @@ socket.on("update_tile", (data) => {
 });
 
 socket.on("reset_position", (data) => {
+    console.log("Anticheat (position):", {
+        x: (camCentreX - data.x) * terrain.scaledSquareSize,
+        y: (data.y - camCentreY) * terrain.scaledSquareSize
+    })
     inputHandler.updatePositioning((camCentreX - data.x) * terrain.scaledSquareSize, (data.y - camCentreY) * terrain.scaledSquareSize, false);
 });
 

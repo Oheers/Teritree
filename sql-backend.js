@@ -13,7 +13,7 @@ const pendingAuth = {};
 const sessionPlayers = {};
 
 const maxSpeed = 0.25;
-const afk_timer = 3000;
+const afk_timer = 300000;
 
 const players = {};
 const towns = {};
@@ -87,8 +87,6 @@ function deletePlayer(socketID) {
 function onNewColour(x, y, colourID, oldColour, senderID) {
     const player = activeUsers[senderID];
     if (oldColour === undefined) oldColour = -1;
-    sessionPlayers[player.accountID].itemID = oldColour;
-    activeUsers[senderID].itemID = oldColour;
     const chunkID = utils.getChunkID(Math.floor(x / 32),  Math.ceil(-y / 32));
     if (claims[chunkID] !== undefined) {
         const playerTown = activeUsers[senderID].townID;
@@ -97,7 +95,7 @@ function onNewColour(x, y, colourID, oldColour, senderID) {
         }
 
         // The itemID corresponds to a tree.
-        if (playerTown !== -1) {
+        if (playerTown !== -1 && sessionPlayers[player.accountID].itemID === colourID) {
             // A new tree is being placed
             if ((colourID >= 0 && colourID <= 22) || (colourID >= 28 && colourID <= 31) || (colourID >= 117 && colourID <= 119)) {
                 towns[playerTown].trees += 1;
@@ -116,6 +114,8 @@ function onNewColour(x, y, colourID, oldColour, senderID) {
             }
         }
     }
+    sessionPlayers[player.accountID].itemID = oldColour;
+    activeUsers[senderID].itemID = oldColour;
     const tileID = utils.getTileID(x, y);
     onTileChange(chunkID, tileID, colourID, senderID);
 }
@@ -236,7 +236,6 @@ async function selectPlayer(authToken) {
             if (r[0][0] === undefined) {
                 resolve({auth: false});
             } else {
-                // @todo add x and y to this return.
                 resolve({auth: true})
             }
         })

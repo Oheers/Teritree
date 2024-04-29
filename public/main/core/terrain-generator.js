@@ -40,27 +40,6 @@ class Element {
     }
 }
 
-class UiElementStroke extends Element {
-
-    constructor(_width, _height, _x, _y, _colour, _thickness) {
-        super(_width, _height, _x, _y);
-        this.colour = _colour;
-        this.thickness = _thickness;
-        this.ctx = renderer.viewportArea.context;
-    }
-
-    update() {
-        this.ctx.lineWidth = this.thickness
-        this.ctx.strokeStyle = this.colour;
-        this.ctx.strokeRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
-    }
-
-    changeTile(tileX, tileY) {
-        this.x = tileX;
-        this.y = tileY;
-    }
-}
-
 class SpriteElement extends Element {
 
     /**
@@ -193,13 +172,39 @@ class BackgroundElement extends Element {
     update() {
         this.ctx ??= renderer.viewportArea.context;
         this.ctx.fillStyle = this.colour;
+        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+        this.ctx.globalAlpha = 1;
+    }
+
+    set colour(colour) {
+        this._colour = colour;
+    }
+
+    get colour() {
+        return this._colour;
+    }
+
+    get opacity() {
+        return this._opacity;
+    }
+}
+
+class ClaimUIElement extends BackgroundElement {
+    constructor(width, height, colour, opacity, x, y) {
+        super(width, height, colour, opacity, x, y);
+    }
+
+    update() {
+        this.ctx ??= renderer.viewportArea.context;
+        this.ctx.strokeStyle = this.colour;
         if (this._animation_opacityFlicker_do) {
             this.ctx.globalAlpha = this._animation_opacityFlicker_min + this._animation_opacityFlicker_amplitude * (1 +
                 Math.sin(((Date.now() % this._animation_opacityFlicker_time) * 2 * Math.PI) / this._animation_opacityFlicker_time)) / 2;
         } else {
             this.ctx.globalAlpha = this._opacity;
         }
-        this.ctx.fillRect(this.x + windowWidth / 2, this.y + windowHeight / 2, this.width + 1, this.height + 1);
+        this.ctx.lineWidth = 25;
+        this.ctx.strokeRect(this.x + windowWidth / 2 + 12.5, this.y + windowHeight / 2 + 12.5, this.width + 1 - 25, this.height + 1 - 25);
         this.ctx.globalAlpha = 1;
     }
 
@@ -550,7 +555,7 @@ class TerrainGenerator {
     createChunkBorder(chunkID) {
         const chunkX = (chunkID % 312) - 156;
         const chunkY = Math.floor(chunkID / 312) - 157;
-        const claimPreview = new BackgroundElement(terrain.scaledSquareSize * 32, terrain.scaledSquareSize * 32, "#00ff55", 0.5, terrain.scaledSquareSize * ((32*chunkX) - camCentreX), terrain.scaledSquareSize * ((chunkY*32) + camCentreY));
+        const claimPreview = new ClaimUIElement(terrain.scaledSquareSize * 32, terrain.scaledSquareSize * 32, "#00ff55", 0.5, terrain.scaledSquareSize * ((32*chunkX) - camCentreX), terrain.scaledSquareSize * ((chunkY*32) + camCentreY));
         claimPreview.addOpacityFlickerAnimation(0.1, 0, 3000);
         renderer.uiMap[`town_claim_${chunkID}`] = claimPreview;
     }

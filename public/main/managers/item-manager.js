@@ -72,7 +72,7 @@ class Sprite {
 
 const sprites = {};
 
-sprites[-1] = new Sprite(-1, 0, 0, 0, 0, 0, "nothing", false, "Nothing", false)
+sprites[-1] = new Sprite(-1, 0, 0, 0, 0, 0, "nothing", false, "", false)
 sprites[0] = new Sprite(0, 0, 0, 0.75, 0.75, 0.75, "normal_tree1", true, "Tree", false)
 sprites[1] = new Sprite(1, 0, 0, 0.9, 0.75, 0.75, "normal_tree2", true, "Tree", false)
 sprites[2] = new Sprite(2, 0, 0, 0.5, 0.5, 0.5, "normal_tree3", true, "Tree", false)

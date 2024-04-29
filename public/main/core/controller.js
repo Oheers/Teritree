@@ -31,9 +31,9 @@ async function init() {
 
         const uiElements = document.querySelectorAll('.ui');
 
-        uiElements.forEach(element => {
+        /*uiElements.forEach(element => {
             element.style.display = 'block';
-        });
+        });*/
 
         document.getElementById("town-invitecode").value = generateRandomCode();
         loadAbstractWorld();
@@ -51,6 +51,22 @@ async function loadWorld() {
     terrain.loadStartingChunks(camCentreX, camCentreY);
     terrain.addNewPlayer("You", true, 0, 0, "You", 0, itemID)
     renderer.loading = false;
+    if (getCookie("deny-help") === "") {
+        document.getElementById("help-gui").style.zIndex = 20;
+        document.getElementById("help-gui").style.display = "block";
+        document.querySelectorAll('.ui').forEach(element => {
+            element.style.display = 'none';
+        });
+    }
+}
+
+function closeHelp() {
+    document.getElementById("help-gui").style.zIndex = -1;
+    document.getElementById("help-gui").style.display = "none";
+    document.querySelectorAll('.ui').forEach(element => {
+        element.style.display = 'block';
+    });
+    setCookie("deny-help", true)
 }
 
 function updateViewport() {
@@ -104,6 +120,13 @@ function checkSocketIOConnection() {
         renderer.error = false;
         return true;
     }
+}
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
 function updateCoordinateTracker() {

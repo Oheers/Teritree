@@ -321,13 +321,23 @@
     </div>
 </div>
 
-<div class="big-gui" style="z-index: 1;">
-    <div class="big-gui-backer default-hidden-ui" id="help"></div>
-    <div class ="big-gui-outline default-hidden-ui" id="help-outline">
+<div class="big-gui" id="help-gui" style="z-index: -1; display:none">
+    <div class="big-gui-backer" id="help"></div>
+    <div class ="big-gui-outline" id="help-outline">
         <p class="big-gui-header"><b>How to Play</b></p>
-        <p class="town-gui-item gui-input-desc" style="font-size: 16pt">Welcome to Teritree, this help page goes over how to play the game. </p>
-        <p class="town-gui-item gui-input-desc" style="font-size: 16pt">W - Move Forward<br>A - Move Left<br>S - Move Down<br>D - Move Right</p>
-        <p class="town-gui-item gui-input-desc" style="font-size: 16pt">LEFT CLICK - Pick / Place Tree</p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; height: 2%">Welcome to Teritree, this help page goes over how to play the game. </p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; height: 10%">W - Move Forward<br>A - Move Left<br>S - Move Down<br>D - Move Right </p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; height: 2%">LEFT CLICK - Pick / Place Tree</p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; width:65%">Press T to create a town, this will take you to
+        your own area, then move out a bit until you see the flashing claim area. Place more trees into the area to get
+        points. Whoever has the most points at the end of the week wins.</p>
+        <video width="35%" height="auto" class="help-video" autoplay muted loop>
+            <source src="main/resources/tutorial_placetree.webm" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+        <div class="town-gui-item">
+            <button class="large-gui-button" id="close-help-gui" type="button" onclick="closeHelp()">Close</button>
+        </div>
     </div>
 </div>
 

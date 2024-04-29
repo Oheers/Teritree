@@ -17,6 +17,7 @@ const port = 3000
 
 app.use(express.static('./public/'));
 
+// Returns auth.html to any user trying to access teritree.io
 app.get('/', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/auth.html'))
 })

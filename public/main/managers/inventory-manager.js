@@ -29,11 +29,13 @@ function changeHotbar() {
     }
     const hotbar = document.getElementById("colour-indicator-outline");
     const hotbarName = document.getElementById("colour-name");
-    hotbarName.style.opacity = 1;
     hotbarName.innerHTML = sprites[itemID].name_en
-    hotbarDisappearTimeout = setTimeout(() => {
-        hotbarName.style.opacity = 0;
-    }, 5000);
+    if (sprites[itemID].name_en !== "") {
+        hotbarName.style.opacity = 1;
+        hotbarDisappearTimeout = setTimeout(() => {
+            hotbarName.style.opacity = 0;
+        }, 5000);
+    }
     const coords = getImageCoords(itemID);
     hotbar.style.backgroundPosition = `calc((5vw - 16px) * ${coords.sx / -16}) calc((5vw - 16px) * ${coords.sy / -16})`;
 }

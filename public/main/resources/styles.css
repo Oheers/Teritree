@@ -139,6 +139,10 @@ canvas {
     outline: 2px solid #ffffff;
 }
 
+.help-video {
+    margin-left: 2%;
+}
+
 .big-input-box {
     height: 100%;
 }
@@ -411,8 +415,8 @@ input {
 }
 
 .top-button-centre {
-    width: 80%;
-    transform: translate(50%, 0);
+    width: 90%;
+    transform: translate(40%, 0);
     vertical-align: center;
 }
 
@@ -463,11 +467,11 @@ input {
 
 .large-gui-button:hover {
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .large-gui-button:active {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .colour-menu {

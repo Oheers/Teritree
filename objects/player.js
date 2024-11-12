@@ -1,17 +1,24 @@
 class Player {
 
-    constructor (accountID, townID, x, y, joinEpoch, competitionsWon, displayName, townRank, serverRank) {
+    constructor (accountID, socketID, townID, x, y, joinEpoch, competitionsWon, displayName, townRank, serverRank, itemID) {
         this._accountID = accountID;
+        this._socketID = socketID;
         this._townID = townID;
         this._x = x;
         this._y = y;
         this._lastMoveTime = Date.now();
+        this._lastActiveTime = Date.now();
         this._joinEpoch = joinEpoch;
         this._competitionsWon = competitionsWon;
         this._displayName = displayName;
         this._townRank = townRank;
         this._serverRank = serverRank;
+        this._itemID = itemID;
         this._lastPositionRecalibration = Date.now();
+    }
+
+    setActive() {
+        this._lastActiveTime = Date.now();
     }
 
     get accountID() {
@@ -92,6 +99,23 @@ class Player {
 
     set lastPositionRecalibration(time) {
         this._lastPositionRecalibration = time;
+    }
+
+    get itemID() {
+        return this._itemID;
+    }
+
+    set itemID(value) {
+        this._itemID = value;
+        this.setActive()
+    }
+
+    get socketID() {
+        return this._socketID;
+    }
+
+    set socketID(value) {
+        this._socketID = value;
     }
 }
 

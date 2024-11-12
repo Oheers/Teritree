@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Teritree</title>
+    <link rel="icon" type="image/x-icon" href="global/resources/favicon.png">
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta content="Teritree" name="description">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="/main/resources/styles.css" rel="stylesheet" type="text/css" media="screen">
+</head>
+<body oncontextmenu="return false;">
+
+<div class="top-bar">
+    <div class="top-button top-button-1 ui">
+        <button type="button" id="sign-out" onclick="signout()" class="medium-button">Sign Out</button>
+    </div>
+
+    <div class="top-button top-button-2 ui">
+        <a href="/changelog"><button type="button" id="changelog" class="medium-button">Changelog</button></a>
+    </div>
+
+    <div class="top-button top-button-centre ui">
+        <button id="world-reset" class="medium-button">World Resetting: 4d, 9h, 10m</button>
+    </div>
+</div>
+
+<div class="leaderboard ui">
+    <p class="gui-header ui"><b>Leaderboard</b></p>
+    <div class="leaderboard-contents" id="leaderboard">
+        Loading ...
+    </div>
+</div>
+<div class ="leaderboard-outline ui"></div>
+
+<div class="location ui">
+    <p class="gui-header"><b></b></p>
+    <p class="first-gui-text"><span id="x-preview">Loading ...</span></p>
+    <p class="location-element"><span id="y-preview"></span></p>
+    <p class="location-element"><span id="town-preview"></span></p>
+</div>
+<div class ="location-outline ui"></div>
+
+<div class="big-gui">
+    <div class="big-gui-backer default-hidden-ui" id="town-creator"></div>
+    <div class ="big-gui-outline default-hidden-ui" id="town-creator-outline">
+        <p class="big-gui-header">Create Town</p>
+        <form class="data-input" onmouseover="previewRegion(0)">
+            <div class="town-gui-item">
+                <label for="town-name" class="gui-input-desc">Town:</label>
+                <input class="input-box" id="town-name" name="town-name" placeholder="Wakefield" autocomplete="off">
+                <div id="town-name-error" class="alert-error"></div>
+            </div>
+            <div class="town-gui-item gui-item-big">
+                <label for="town-description" class="gui-input-desc top-align">Description:</label>
+                <textarea class="input-box big-input-box" id="town-description" name="town-description" rows="4" cols="50" placeholder="A city in West Yorkshire."></textarea>
+                <div id="town-description-error" class="alert-error"></div>
+            </div>
+            <div class="town-gui-item">
+                <label class="checkbox-button">
+                    <span class=gui-input-desc>Invite-only:</span>
+                    <input type="checkbox" class="checkbox-button__input" id="town-invite-only" name="choice1" checked>
+                    <span class="checkbox-button__control"></span>
+                </label>
+            </div>
+            <div class="town-gui-item">
+                <label for="town-invitecode" class="gui-input-desc">Invite Code:</label>
+                <input class="input-box" id="town-invitecode" name="town-invitecode" placeholder="super secret invite code" style="width: 20%;" autocomplete="off">
+                <div id="town-invitecode-error" class="alert-error"></div>
+            </div>
+            <div class="town-gui-item">
+                <label class="checkbox-button">
+                    <span class=gui-input-desc>Colour:</span>
+                    <input type="checkbox" class="colour-checkbox-button__input checkbox-button__input" id="town-colour" name="town-colour" onclick="toggleColourSelector()" checked>
+                    <span id="controller-colour" class="colour-checkbox-button__control checkbox-button__control"></span>
+                    <div id="town-colour-error" class="alert-error"></div>
+                </label>
+            </div>
+            <div class="town-gui-item">
+                <button class="large-gui-button" id="town-gui-button" type="button" onclick="createTown()">Create Town</button>
+            </div>
+        </form>
+        <div class="location-selector" id="location-selector">
+            <div class="colour-tile" id="location-tile1" onmouseover="previewRegion(1)" onclick="selectRegion(1)">
+                <div class="location-segment seg-TL" id="colour-region-1"></div>
+                <div class="location-segment seg-TR" id="colour-region-2"></div>
+                <div class="location-segment seg-BL" id="colour-region-13"></div>
+                <div class="location-segment seg-BR" id="colour-region-14"></div>
+            </div>
+            <div class="colour-tile" id="location-tile2" onmouseover="previewRegion(2)" onclick="selectRegion(2)">
+                <div class="location-segment seg-TL" id="colour-region-3"></div>
+                <div class="location-segment seg-TR" id="colour-region-4"></div>
+                <div class="location-segment seg-BL" id="colour-region-15"></div>
+                <div class="location-segment seg-BR" id="colour-region-16"></div>
+            </div>
+            <div class="colour-tile" id="location-tile3" onmouseover="previewRegion(3)" onclick="selectRegion(3)">
+                <div class="location-segment seg-TL" id="colour-region-5"></div>
+                <div class="location-segment seg-TR" id="colour-region-6"></div>
+                <div class="location-segment seg-BL" id="colour-region-17"></div>
+                <div class="location-segment seg-BR" id="colour-region-18"></div>
+            </div>
+            <div class="colour-tile" id="location-tile4" onmouseover="previewRegion(4)" onclick="selectRegion(4)">
+                <div class="location-segment seg-TL" id="colour-region-7"></div>
+                <div class="location-segment seg-TR" id="colour-region-8"></div>
+                <div class="location-segment seg-BL" id="colour-region-19"></div>
+                <div class="location-segment seg-BR" id="colour-region-20"></div>
+            </div>
+            <div class="colour-tile" id="location-tile5" onmouseover="previewRegion(5)" onclick="selectRegion(5)">
+                <div class="location-segment seg-TL" id="colour-region-9"></div>
+                <div class="location-segment seg-TR" id="colour-region-10"></div>
+                <div class="location-segment seg-BL" id="colour-region-21"></div>
+                <div class="location-segment seg-BR" id="colour-region-22"></div>
+            </div>
+            <div class="colour-tile" id="location-tile6" onmouseover="previewRegion(6)" onclick="selectRegion(6)">
+                <div class="location-segment seg-TL" id="colour-region-11"></div>
+                <div class="location-segment seg-TR" id="colour-region-12"></div>
+                <div class="location-segment seg-BL" id="colour-region-23"></div>
+                <div class="location-segment seg-BR" id="colour-region-24"></div>
+            </div>
+            <div class="colour-tile" id="location-tile7" onmouseover="previewRegion(7)" onclick="selectRegion(7)">
+                <div class="location-segment seg-TL" id="colour-region-25"></div>
+                <div class="location-segment seg-TR" id="colour-region-26"></div>
+                <div class="location-segment seg-BL" id="colour-region-37"></div>
+                <div class="location-segment seg-BR" id="colour-region-38"></div>
+            </div>
+            <div class="colour-tile" id="location-tile8" onmouseover="previewRegion(8)" onclick="selectRegion(8)">
+                <div class="location-segment seg-TL" id="colour-region-27"></div>
+                <div class="location-segment seg-TR" id="colour-region-28"></div>
+                <div class="location-segment seg-BL" id="colour-region-39"></div>
+                <div class="location-segment seg-BR" id="colour-region-40"></div>
+            </div>
+            <div class="colour-tile" id="location-tile9" onmouseover="previewRegion(9)" onclick="selectRegion(9)">
+                <div class="location-segment seg-TL" id="colour-region-29"></div>
+                <div class="location-segment seg-TR" id="colour-region-30"></div>
+                <div class="location-segment seg-BL" id="colour-region-41"></div>
+                <div class="location-segment seg-BR" id="colour-region-42"></div>
+            </div>
+            <div class="colour-tile" id="location-tile10" onmouseover="previewRegion(10)" onclick="selectRegion(10)">
+                <div class="location-segment seg-TL" id="colour-region-31"></div>
+                <div class="location-segment seg-TR" id="colour-region-32"></div>
+                <div class="location-segment seg-BL" id="colour-region-43"></div>
+                <div class="location-segment seg-BR" id="colour-region-44"></div>
+            </div>
+            <div class="colour-tile" id="location-tile11" onmouseover="previewRegion(11)" onclick="selectRegion(11)">
+                <div class="location-segment seg-TL" id="colour-region-33"></div>
+                <div class="location-segment seg-TR" id="colour-region-34"></div>
+                <div class="location-segment seg-BL" id="colour-region-45"></div>
+                <div class="location-segment seg-BR" id="colour-region-46"></div>
+            </div>
+            <div class="colour-tile" id="location-tile12" onmouseover="previewRegion(12)" onclick="selectRegion(12)">
+                <div class="location-segment seg-TL" id="colour-region-35"></div>
+                <div class="location-segment seg-TR" id="colour-region-36"></div>
+                <div class="location-segment seg-BL" id="colour-region-47"></div>
+                <div class="location-segment seg-BR" id="colour-region-48"></div>
+            </div>
+            <div class="colour-tile" id="location-tile13" onmouseover="previewRegion(13)" onclick="selectRegion(13)">
+                <div class="location-segment seg-TL" id="colour-region-49"></div>
+                <div class="location-segment seg-TR" id="colour-region-50"></div>
+                <div class="location-segment seg-BL" id="colour-region-61"></div>
+                <div class="location-segment seg-BR" id="colour-region-62"></div>
+            </div>
+            <div class="colour-tile" id="location-tile14" onmouseover="previewRegion(14)" onclick="selectRegion(14)">
+                <div class="location-segment seg-TL" id="colour-region-51"></div>
+                <div class="location-segment seg-TR" id="colour-region-52"></div>
+                <div class="location-segment seg-BL" id="colour-region-63"></div>
+                <div class="location-segment seg-BR" id="colour-region-64"></div>
+            </div>
+            <div class="colour-tile" id="location-tile15" onmouseover="previewRegion(15)" onclick="selectRegion(15)">
+                <div class="location-segment seg-TL" id="colour-region-53"></div>
+                <div class="location-segment seg-TR" id="colour-region-54"></div>
+                <div class="location-segment seg-BL" id="colour-region-65"></div>
+                <div class="location-segment seg-BR" id="colour-region-66"></div>
+            </div>
+            <div class="colour-tile" id="location-tile16" onmouseover="previewRegion(16)" onclick="selectRegion(16)">
+                <div class="location-segment seg-TL" id="colour-region-55"></div>
+                <div class="location-segment seg-TR" id="colour-region-56"></div>
+                <div class="location-segment seg-BL" id="colour-region-67"></div>
+                <div class="location-segment seg-BR" id="colour-region-68"></div>
+            </div>
+            <div class="colour-tile" id="location-tile17" onmouseover="previewRegion(17)" onclick="selectRegion(17)">
+                <div class="location-segment seg-TL" id="colour-region-57"></div>
+                <div class="location-segment seg-TR" id="colour-region-58"></div>
+                <div class="location-segment seg-BL" id="colour-region-69"></div>
+                <div class="location-segment seg-BR" id="colour-region-70"></div>
+            </div>
+            <div class="colour-tile" id="location-tile18" onmouseover="previewRegion(18)" onclick="selectRegion(18)">
+                <div class="location-segment seg-TL" id="colour-region-59"></div>
+                <div class="location-segment seg-TR" id="colour-region-60"></div>
+                <div class="location-segment seg-BL" id="colour-region-71"></div>
+                <div class="location-segment seg-BR" id="colour-region-72"></div>
+            </div>
+            <div class="colour-tile" id="location-tile19" onmouseover="previewRegion(19)" onclick="selectRegion(19)">
+                <div class="location-segment seg-TL" id="colour-region-73"></div>
+                <div class="location-segment seg-TR" id="colour-region-74"></div>
+                <div class="location-segment seg-BL" id="colour-region-85"></div>
+                <div class="location-segment seg-BR" id="colour-region-86"></div>
+            </div>
+            <div class="colour-tile" id="location-tile20" onmouseover="previewRegion(20)" onclick="selectRegion(20)">
+                <div class="location-segment seg-TL" id="colour-region-75"></div>
+                <div class="location-segment seg-TR" id="colour-region-76"></div>
+                <div class="location-segment seg-BL" id="colour-region-87"></div>
+                <div class="location-segment seg-BR" id="colour-region-88"></div>
+            </div>
+            <div class="colour-tile" id="location-tile21" onmouseover="previewRegion(21)" onclick="selectRegion(21)">
+                <div class="location-segment seg-TL" id="colour-region-77"></div>
+                <div class="location-segment seg-TR" id="colour-region-78"></div>
+                <div class="location-segment seg-BL" id="colour-region-89"></div>
+                <div class="location-segment seg-BR" id="colour-region-90"></div>
+            </div>
+            <div class="colour-tile" id="location-tile22" onmouseover="previewRegion(22)" onclick="selectRegion(22)">
+                <div class="location-segment seg-TL" id="colour-region-79"></div>
+                <div class="location-segment seg-TR" id="colour-region-80"></div>
+                <div class="location-segment seg-BL" id="colour-region-91"></div>
+                <div class="location-segment seg-BR" id="colour-region-92"></div>
+            </div>
+            <div class="colour-tile" id="location-tile23" onmouseover="previewRegion(23)" onclick="selectRegion(23)">
+                <div class="location-segment seg-TL" id="colour-region-81"></div>
+                <div class="location-segment seg-TR" id="colour-region-82"></div>
+                <div class="location-segment seg-BL" id="colour-region-93"></div>
+                <div class="location-segment seg-BR" id="colour-region-94"></div>
+            </div>
+            <div class="colour-tile" id="location-tile24" onmouseover="previewRegion(24)" onclick="selectRegion(24)">
+                <div class="location-segment seg-TL" id="colour-region-83"></div>
+                <div class="location-segment seg-TR" id="colour-region-84"></div>
+                <div class="location-segment seg-BL" id="colour-region-95"></div>
+                <div class="location-segment seg-BR" id="colour-region-96"></div>
+            </div>
+            <div class="colour-tile" id="location-tile25" onmouseover="previewRegion(25)" onclick="selectRegion(25)">
+                <div class="location-segment seg-TL" id="colour-region-97"></div>
+                <div class="location-segment seg-TR" id="colour-region-98"></div>
+                <div class="location-segment seg-BL" id="colour-region-109"></div>
+                <div class="location-segment seg-BR" id="colour-region-110"></div>
+            </div>
+            <div class="colour-tile" id="location-tile26" onmouseover="previewRegion(26)" onclick="selectRegion(26)">
+                <div class="location-segment seg-TL" id="colour-region-99"></div>
+                <div class="location-segment seg-TR" id="colour-region-100"></div>
+                <div class="location-segment seg-BL" id="colour-region-111"></div>
+                <div class="location-segment seg-BR" id="colour-region-112"></div>
+            </div>
+            <div class="colour-tile" id="location-tile27" onmouseover="previewRegion(27)" onclick="selectRegion(27)">
+                <div class="location-segment seg-TL" id="colour-region-101"></div>
+                <div class="location-segment seg-TR" id="colour-region-102"></div>
+                <div class="location-segment seg-BL" id="colour-region-113"></div>
+                <div class="location-segment seg-BR" id="colour-region-114"></div>
+            </div>
+            <div class="colour-tile" id="location-tile28" onmouseover="previewRegion(28)" onclick="selectRegion(28)">
+                <div class="location-segment seg-TL" id="colour-region-103"></div>
+                <div class="location-segment seg-TR" id="colour-region-104"></div>
+                <div class="location-segment seg-BL" id="colour-region-115"></div>
+                <div class="location-segment seg-BR" id="colour-region-116"></div>
+            </div>
+            <div class="colour-tile" id="location-tile29" onmouseover="previewRegion(29)" onclick="selectRegion(29)">
+                <div class="location-segment seg-TL" id="colour-region-105"></div>
+                <div class="location-segment seg-TR" id="colour-region-106"></div>
+                <div class="location-segment seg-BL" id="colour-region-117"></div>
+                <div class="location-segment seg-BR" id="colour-region-118"></div>
+            </div>
+            <div class="colour-tile" id="location-tile30" onmouseover="previewRegion(30)" onclick="selectRegion(30)">
+                <div class="location-segment seg-TL" id="colour-region-107"></div>
+                <div class="location-segment seg-TR" id="colour-region-108"></div>
+                <div class="location-segment seg-BL" id="colour-region-119"></div>
+                <div class="location-segment seg-BR" id="colour-region-120"></div>
+            </div>
+            <div class="colour-tile" id="location-tile31" onmouseover="previewRegion(31)" onclick="selectRegion(31)">
+                <div class="location-segment seg-TL" id="colour-region-121"></div>
+                <div class="location-segment seg-TR" id="colour-region-122"></div>
+                <div class="location-segment seg-BL" id="colour-region-133"></div>
+                <div class="location-segment seg-BR" id="colour-region-134"></div>
+            </div>
+            <div class="colour-tile" id="location-tile32" onmouseover="previewRegion(32)" onclick="selectRegion(32)">
+                <div class="location-segment seg-TL" id="colour-region-123"></div>
+                <div class="location-segment seg-TR" id="colour-region-124"></div>
+                <div class="location-segment seg-BL" id="colour-region-135"></div>
+                <div class="location-segment seg-BR" id="colour-region-136"></div>
+            </div>
+            <div class="colour-tile" id="location-tile33" onmouseover="previewRegion(33)" onclick="selectRegion(33)">
+                <div class="location-segment seg-TL" id="colour-region-125"></div>
+                <div class="location-segment seg-TR" id="colour-region-126"></div>
+                <div class="location-segment seg-BL" id="colour-region-137"></div>
+                <div class="location-segment seg-BR" id="colour-region-138"></div>
+            </div>
+            <div class="colour-tile" id="location-tile34" onmouseover="previewRegion(34)" onclick="selectRegion(34)">
+                <div class="location-segment seg-TL" id="colour-region-127"></div>
+                <div class="location-segment seg-TR" id="colour-region-128"></div>
+                <div class="location-segment seg-BL" id="colour-region-139"></div>
+                <div class="location-segment seg-BR" id="colour-region-140"></div>
+            </div>
+            <div class="colour-tile" id="location-tile35" onmouseover="previewRegion(35)" onclick="selectRegion(35)">
+                <div class="location-segment seg-TL" id="colour-region-129"></div>
+                <div class="location-segment seg-TR" id="colour-region-130"></div>
+                <div class="location-segment seg-BL" id="colour-region-141"></div>
+                <div class="location-segment seg-BR" id="colour-region-142"></div>
+            </div>
+            <div class="colour-tile" id="location-tile36" onmouseover="previewRegion(36)" onclick="selectRegion(36)">
+                <div class="location-segment seg-TL" id="colour-region-131"></div>
+                <div class="location-segment seg-TR" id="colour-region-132"></div>
+                <div class="location-segment seg-BL" id="colour-region-143"></div>
+                <div class="location-segment seg-BR" id="colour-region-144"></div>
+            </div>
+            <div class="location-selector-description" onmouseover="previewRegion(0)">
+                <p id="location-selector-description-top">Click on an area to choose where you'd like to create your town.</p>
+                <p id="live-location-selector">Currently selected: -402, 900</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="colour-menu-container" class="colour-menu" onclick="closeColourSelector()">
+    <div class="colour-menu-backer default-hidden-ui" id="colour-menu"></div>
+    <div class="colour-menu-outline default-hidden-ui" id="colour-menu-background">
+        <p class="medium-gui-header">Colours</p>
+        <div class="colour-red colour-selection" onclick="selectColour(0)" id="colour-red"></div>
+        <div class="colour-orange colour-selection" onclick="selectColour(1)" id="colour-orange"></div>
+        <div class="colour-wood colour-selection" onclick="selectColour(2)" id="colour-wood"></div>
+        <div class="colour-green colour-selection" onclick="selectColour(3)" id="colour-green"></div>
+        <div class="colour-blue colour-selection" onclick="selectColour(4)" id="colour-blue"></div>
+        <div class="colour-pink colour-selection" onclick="selectColour(5)" id="colour-pink"></div>
+        <div class="colour-gray colour-selection" onclick="selectColour(6)" id="colour-gray"></div>
+        <div class="colour-darkgray colour-selection" onclick="selectColour(7)" id="colour-darkgray"></div>
+    </div>
+</div>
+
+<div class="big-gui" id="help-gui" style="z-index: -1; display:none">
+    <div class="big-gui-backer" id="help"></div>
+    <div class ="big-gui-outline" id="help-outline">
+        <p class="big-gui-header"><b>How to Play</b></p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; height: 2%">Welcome to Teritree, this help page goes over how to play the game. </p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; height: 10%">W - Move Forward<br>A - Move Left<br>S - Move Down<br>D - Move Right </p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; height: 2%">LEFT CLICK - Pick / Place Tree</p>
+        <p class="town-gui-item gui-input-desc" style="font-size: 16pt; width:65%">Press T to create a town, this will take you to
+        your own area, then move out a bit until you see the flashing claim area. Place more trees into the area to get
+        points. Whoever has the most points at the end of the week wins.</p>
+        <video width="35%" height="auto" class="help-video" autoplay muted loop>
+            <source src="main/resources/tutorial_placetree.webm" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+        <div class="town-gui-item">
+            <button class="large-gui-button" id="close-help-gui" type="button" onclick="closeHelp()">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="colour-name ui" id="colour-name">Nothing</div>
+
+<div class="colour-indicator ui" id="colour-indicator"></div>
+<div class="colour-indicator-outline ui" id="colour-indicator-outline"></div>
+
+<img style="display:none;" id="sprites" src="main/resources/sprites.png" width="320" height="320">
+<img style="display:none;" id="buildings" src="main/resources/buildings.png" width="320" height="320">
+<img style="display:none;" id="character_sprites" src="main/resources/character_sprites.png" width="320" height="320">
+
+<canvas id="viewport" width=700px height=500px tabindex='1'></canvas>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script src="main/simplex-noise/simplex.js"></script>
+<script src="main/simplex-noise/world-generator.js"></script>
+<script src="main/managers/gui-manager.js"></script>
+<script src="main/managers/input-manager.js"></script>
+<script src="main/managers/cache-manager.js"></script>
+<script src="main/core/render-engine.js"></script>
+<script src="main/managers/item-manager.js"></script>
+<script src="main/managers/inventory-manager.js"></script>
+<script src="main/core/terrain-generator.js"></script>
+<script src="main/managers/multiplayer-manager.js"></script>
+<script src="main/core/controller.js"></script>
+</body>
+</html>

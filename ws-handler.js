@@ -2,23 +2,108 @@ const { Server } = require("socket.io");
 const { Player } = require("./objects/player");
 const dbBackend = require("./sql-backend");
 const event = require("./event-manager.js");
+const {getRelevantLeaderboard} = require("./sql-backend");
 let io;
+
+const playerLinks = {};
 
 event.emitter.on("chunk_resting", function chunkResting(socketID, data) {
     emitToSocket(socketID, "chunk_resting", data);
 });
 
+event.emitter.on("player_move", function onMove(playerID, x, y) {
+    const linkedPlayers = playerLinks[playerID]
+    if (linkedPlayers === undefined) return;
+    linkedPlayers.forEach(player => {
+        emitToSocket(player, "player_move", {
+            id: playerID,
+            x: x,
+            y: y
+        })
+    })
+})
+
+event.emitter.on("player_in_range", function inRange(newPlayerID, moverID) {
+    if (newPlayerID === moverID) return;
+    newPlayerID in playerLinks ? playerLinks[newPlayerID].push(moverID) : playerLinks[newPlayerID] = [moverID];
+    const mover = dbBackend.getPlayer(moverID)
+    if (mover === undefined) return;
+    emitToSocket(newPlayerID, "player_ir", {
+        id: moverID,
+        x: mover.x,
+        y: mover.y,
+        displayName: mover.displayName,
+        item: mover.itemID,
+        character: 0
+    })
+})
+
+event.emitter.on("player_out_range", function inRange(newPlayerID, moverID) {
+    if (playerLinks[newPlayerID] === undefined) return;
+    playerLinks[newPlayerID] = playerLinks[newPlayerID].filter(player => player !== moverID);
+    emitToSocket(newPlayerID, "player_oor", {
+        id: moverID
+    })
+})
+
+event.emitter.on("tile_change", function tileChange(playerID, tileID, itemID, senderID) {
+    const tileX = (tileID % 9984) - 4492
+    const tileY = Math.floor(tileID / 9984) - 4493
+    emitToSocket(playerID, "update_tile", {
+        x: tileX,
+        y: tileY,
+        colour: itemID,
+        id: senderID
+    })
+})
+
+event.emitter.on("afk_player", function afkPlayer(playerID) {
+    emitToSocket(playerID, "kick_player", {
+        msg:"Too many players are connected to the server. Try again later."
+    })
+    disconnectPlayer(playerID);
+})
+
+event.emitter.on("user_already_logged_in", function afkPlayer(playerID) {
+    emitToSocket(playerID, "kick_player", {
+        msg:"You have logged in from another location."
+    })
+    disconnectPlayer(playerID);
+})
+
+event.emitter.on("new_town", function newTown(playerID, townName, townX, townY, townID) {
+    emitToSocket(playerID, "create_town", {
+        n: townName,
+        x: townX,
+        y: townY,
+        i: townID
+    })
+})
+
+event.emitter.on("update_leaderboard", function updateLeaderboard(socketID, data) {
+    emitToSocket(socketID, "leaderboard_update", data);
+})
+
 function emitToSocket(socketID, message, data) {
     io.to(socketID).emit(message, data);
 }
 
-function disconnectPlayer(playerID) {
-    event.emitter.emit("player_leave", playerID, dbBackend.getCoords(playerID))
-    dbBackend.deletePlayer(playerID);
+function disconnectPlayer(userID) {
+    const coords = dbBackend.getCoords(userID);
+    // The user has already been removed from the server.
+    if (coords === undefined) return;
+    dbBackend.writePlayer(userID);
+    event.emitter.emit("player_leave", userID, dbBackend.getCoords(userID))
+    for (const playerID in playerLinks) {
+        playerLinks[playerID] = playerLinks[playerID].filter(linkedPlayer => linkedPlayer !== userID);
+    }
+    delete playerLinks[userID]
+    io.emit("player_leave", {id: userID})
+    dbBackend.deletePlayer(userID);
 }
 
-function updateColour(x, y, colour) {
-    dbBackend.onNewColour(x, y, colour);
+function updateColour(x, y, colour, oldColour, senderID) {
+    dbBackend.onNewColour(x, y, colour, oldColour, senderID);
 }
 
 function movePlayer(newX, newY, playerID) {
@@ -34,25 +119,61 @@ function movePlayer(newX, newY, playerID) {
 function init(server) {
     io = new Server(server);
     io.on("connection", (socket) => {
-        const x = 0;
-        const y = 0;
-        const playerObject = new Player(526, 527, x, y, 10000, 2, "Oheers", 1, 1);
-        event.emitter.emit("player_join", socket.id, x, y)
-        dbBackend.addPlayer(playerObject, socket.id)
+
+        socket.on("auth", (data) => {
+            const token = data.token;
+            const player = dbBackend.verifyAuthUser(token, socket.id);
+            if (player === undefined) {
+                io.emit("kick_player", {
+                    msg: "Authorization token expired. Please log in again."
+                })
+                return;
+            }
+
+            const town = dbBackend.getTownFromID(player.townID);
+            if (town === undefined) {
+                socket.emit("auth_verify", {
+                    x: player.x,
+                    y: player.y,
+                    i: player.itemID,
+                    t: undefined
+                })
+            } else {
+                socket.emit("auth_verify", {
+                    x: player.x,
+                    y: player.y,
+                    i: player.itemID,
+                    t: {
+                        n: town.name,
+                        i: town.townID,
+                        x: town.spawnX,
+                        y: town.spawnY
+                    }
+                })
+            }
+
+            socket.emit("leaderboard_update", getRelevantLeaderboard(player.accountID, player.townID !== -1))
+
+            event.emitter.emit("player_join", socket.id, player.x, player.y)
+        })
 
         socket.on("disconnect", (reason) => {
             disconnectPlayer(socket.id);
         })
 
         socket.on("new_colour", (data) => {
-            updateColour(data.x, data.y, data.colour);
-            io.emit("update_tile", data);
+            updateColour(data.x, -data.y, data.colour, data.oldColour, data.id);
         })
 
         socket.on("move", (data) => {
             movePlayer(data.newX, data.newY, socket.id);
         })
+        setInterval(timeoutCheck, 1000);
     })
+}
+
+function timeoutCheck() {
+    dbBackend.kickAFKPlayers();
 }
 
 module.exports = {

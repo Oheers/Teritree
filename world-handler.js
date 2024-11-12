@@ -21,9 +21,15 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
         cacheNewChunks(chunk1, chunk2, socketID)
 
         // Removing player from unloaded chunks and deleting chunk if no longer needed.
-        const unloadable1 = utils.getChunkID(newRenderRegion.x - 2, newRenderRegion.y);
-        const unloadable2 = utils.getChunkID(newRenderRegion.x - 2, newRenderRegion.y + 1);
-        uncacheChunks(unloadable1, unloadable2, socketID)
+        const unload1 = utils.getChunkID(newRenderRegion.x - 2, newRenderRegion.y);
+        const unload2 = utils.getChunkID(newRenderRegion.x - 2, newRenderRegion.y + 1);
+
+        const middle1 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y);
+        const middle2 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y + 1);
+
+        broadcastChangesInPlayerChunks(chunk1, chunk2, middle1, middle2, unload1, unload2, socketID)
+
+        uncacheChunks(unload1, unload2, socketID)
     } else {
         // Player has moved WEST into a new render region
         const chunk1 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y)
@@ -31,9 +37,15 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
         cacheNewChunks(chunk1, chunk2, socketID)
 
         // Removing player from unloaded chunks and deleting chunk if no longer needed.
-        const unloadable1 = utils.getChunkID(newRenderRegion.x + 1, newRenderRegion.y);
-        const unloadable2 = utils.getChunkID(newRenderRegion.x + 1, newRenderRegion.y + 1);
-        uncacheChunks(unloadable1, unloadable2, socketID)
+        const unload1 = utils.getChunkID(newRenderRegion.x + 1, newRenderRegion.y);
+        const unload2 = utils.getChunkID(newRenderRegion.x + 1, newRenderRegion.y + 1);
+
+        const middle1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y);
+        const middle2 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y + 1);
+
+        broadcastChangesInPlayerChunks(chunk1, chunk2, middle1, middle2, unload1, unload2, socketID)
+
+        uncacheChunks(unload1, unload2, socketID)
     }
 
     if (newRenderRegion.y === oldRenderRegion.y) {} // Stopping the else statement triggering if moving up/down
@@ -44,9 +56,15 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
         cacheNewChunks(chunk1, chunk2, socketID)
 
         // Removing player from unloaded chunks and deleting chunk if no longer needed.
-        const unloadable1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y - 1);
-        const unloadable2 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y - 1);
-        uncacheChunks(unloadable1, unloadable2, socketID)
+        const unload1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y - 1);
+        const unload2 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y - 1);
+
+        const middle1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y);
+        const middle2 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y);
+
+        broadcastChangesInPlayerChunks(chunk1, chunk2, middle1, middle2, unload1, unload2, socketID)
+
+        uncacheChunks(unload1, unload2, socketID)
     } else {
         // Player has moved SOUTH into a new render region
         const chunk1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y)
@@ -54,22 +72,53 @@ function changeInternalCache(newRenderRegion, oldRenderRegion, socketID) {
         cacheNewChunks(chunk1, chunk2, socketID)
 
         // Removing player from unloaded chunks and deleting chunk if no longer needed.
-        const unloadable1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y + 2);
-        const unloadable2 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y + 2);
-        uncacheChunks(unloadable1, unloadable2, socketID)
+        const unload1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y + 2);
+        const unload2 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y + 2);
+
+        const middle1 = utils.getChunkID(newRenderRegion.x, newRenderRegion.y + 1);
+        const middle2 = utils.getChunkID(newRenderRegion.x - 1, newRenderRegion.y + 1);
+
+        broadcastChangesInPlayerChunks(chunk1, chunk2, middle1, middle2, unload1, unload2, socketID)
+
+        uncacheChunks(unload1, unload2, socketID)
     }
+}
+
+// Figures out which players are no longer within the moving player's render region and broadcasts relevant data to them
+// via the WebSocket server.
+function broadcastChangesInPlayerChunks(newChunk1, newChunk2, middleChunk1, middleChunk2, oldChunk1, oldChunk2, moverID) {
+    const newChunks = merge(getActivePlayers(newChunk1), getActivePlayers(newChunk2));
+    const middleChunks = merge(getActivePlayers(middleChunk1), getActivePlayers(middleChunk2))
+    const oldChunks = merge(getActivePlayers(oldChunk1), getActivePlayers(oldChunk2))
+    const uniqueOldPlayers = oldChunks.filter(item => !middleChunks.includes(item))
+    const uniqueNewPlayers = newChunks.filter(item => !middleChunks.includes(item))
+    for (const playerID in uniqueNewPlayers) {
+        event.emitter.emit("player_in_range", uniqueNewPlayers[playerID], moverID)
+        event.emitter.emit("player_in_range", moverID, uniqueNewPlayers[playerID])
+    }
+    for (const playerID in uniqueOldPlayers) {
+        event.emitter.emit("player_out_range", uniqueOldPlayers[playerID], moverID)
+        event.emitter.emit("player_out_range", moverID, uniqueOldPlayers[playerID])
+    }
+}
+
+// Gets players that are active in the unloaded chunk
+function getActivePlayers(chunkID) {
+    const chunk = cache[chunkID];
+    if (chunk === undefined) return [];
+    return chunk.users;
 }
 
 function removePlayerFromCachedChunk(chunkID, playerID) {
     const cachedChunk = cache[chunkID];
     if (cachedChunk === undefined) {
-        console.log("CRASH PROTECTION: UNDEFINED CACHED CHUNK. DETAILS ON SESSION:\n", "cache:", cache, "chunkID:", chunkID, "playerID:", playerID, "cachedChunk:", cachedChunk)
+        return;
     }
     const activeUsers = cachedChunk.users;
     if (activeUsers.length === 1) {
-        // This is the only player using this chunk, it can be unloaded from internal cache.
+        // ^ This is the only player using this chunk, it can be unloaded from internal cache.
         if (activeUsers[0] === playerID) {
-            // Belt & braces safety check in the if statement above, we really don't want to un-cache a chunk if a
+            // ^ Belt & braces safety check in the if statement above, we really don't want to un-cache a chunk if a
             // player's using it. Set to only drop the data completely to stop the player moving between render regions
             // and causing lots of reads/writes.
             cachedChunk.users = []
@@ -94,17 +143,11 @@ function removePlayerFromCachedChunk(chunkID, playerID) {
 }
 
 event.emitter.on("player_join", function playerJoin(socketID, x, y) {
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32)), socketID)
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32) + 1), socketID)
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32) + 1), socketID)
-    cacheNewChunk(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32)), socketID)
+    registerPlayerWithArea(socketID, x, y);
 });
 
 event.emitter.on("player_leave", function playerLeave(socketID, coords) {
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32), Math.ceil(coords.y/-32)), socketID)
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32) - 1, Math.ceil(coords.y/-32) + 1), socketID)
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32), Math.ceil(coords.y/-32) + 1), socketID)
-    removePlayerFromCachedChunk(utils.getChunkID(Math.floor(coords.x/32) - 1, Math.ceil(coords.y/-32)), socketID)
+    unregisterPlayerWithArea(socketID);
 })
 
 async function downloadChunk(chunkID) {
@@ -120,7 +163,7 @@ async function restChunk(chunkID, time) {
         if (tile.epochTime > time) {
             resultMap.push({
                 tileID: tile.tileID,
-                itemID: tile.itemID
+                itemID: tile.itemID,
             });
         }
     })
@@ -136,19 +179,63 @@ function cacheNewChunks(chunk1, chunk2, socketID) {
     cacheNewChunk(chunk2, socketID)
 }
 
-function cacheNewChunk(chunk, socketID) {
-    if (!existsInCache(chunk)) {
-        downloadChunk(chunk, 0).then(r => {
-            cache[chunk] = {
-                chunk: r[0],
-                users: [socketID]
-            };
-            event.emitter.emit("chunk_resting", socketID, chunk)
+function registerPlayerWithArea(socketID, x, y) {
+    return new Promise((resolve => {
+        const currentRenderRegion = utils.findRenderRegion(x, y);
+        cacheNewChunk(utils.getChunkID(currentRenderRegion.x - 1, currentRenderRegion.y + 1), socketID).then(r => {
+            cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y + 1), socketID).then(r2 => {
+                cacheNewChunk(utils.getChunkID(currentRenderRegion.x -1, currentRenderRegion.y), socketID).then(r3 => {
+                    cacheNewChunk(utils.getChunkID(currentRenderRegion.x, currentRenderRegion.y), socketID).then (r4 => {
+                        const nearbyPlayers = new Set()
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32))).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32) + 1)).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32), Math.ceil(y/-32) + 1)).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+                        getActivePlayers(utils.getChunkID(Math.floor(x/32) - 1, Math.ceil(y/-32))).forEach((playerID) => {
+                            nearbyPlayers.add(playerID);
+                        })
+
+                        nearbyPlayers.forEach((playerID) => {
+                            event.emitter.emit("player_in_range", playerID, socketID)
+                            event.emitter.emit("player_in_range", socketID, playerID)
+                        });
+                        resolve();
+                    })
+                })
+            })
         })
-    } else {
-        cache[chunk].users.push(socketID)
-        event.emitter.emit("chunk_resting", socketID, chunk)
+    }))
+}
+
+function unregisterPlayerWithArea(socketID) {
+    for (const chunk in cache) {
+        removePlayerFromCachedChunk(chunk, socketID)
     }
+}
+
+function cacheNewChunk(chunk, socketID) {
+    return new Promise((resolve) => {
+        if (!existsInCache(chunk)) {
+            downloadChunk(chunk, 0).then(r => {
+                cache[chunk] = {
+                    chunk: r[0],
+                    users: [socketID]
+                };
+                event.emitter.emit("chunk_resting", socketID, chunk)
+
+                resolve();
+            })
+        } else {
+            cache[chunk].users.push(socketID)
+            event.emitter.emit("chunk_resting", socketID, chunk)
+            resolve();
+        }
+    })
 }
 
 function uncacheChunks(chunk1, chunk2, socketID) {
@@ -160,11 +247,15 @@ function uncacheChunks(chunk1, chunk2, socketID) {
     }
 }
 
-function onTileChange(chunkID, tileID, colourID) {
-    const start = Date.now();
+function onTileChange(chunkID, tileID, colourID, senderID) {
+    if (cache[chunkID] === undefined) console.error(`Fatal error while writing to ${chunkID}, loaded cache:`, cache)
     const updateMap = cache[chunkID].chunk;
-    const time = Date.now();
     if (updateMap === null) return;
+    const time = Date.now();
+    // Sends a message down the WS server to all players currently viewing the chunk.
+    cache[chunkID].users.forEach(userID => {
+        event.emitter.emit("tile_change", userID, tileID, colourID, senderID)
+    })
     cacheUpdateTimes[tileID] = time;
     for (let i=0; i < updateMap.length; i++) {
         if (updateMap[i].tileID === tileID) {
@@ -178,9 +269,8 @@ function onTileChange(chunkID, tileID, colourID) {
         itemID: colourID,
         epochTime: time
     })
-    if (Object.keys(cacheUpdateTimes).length > 10) {
-        cacheAllChunks();
-    }
+    // Preventing server crash from deleting data. @TODO IMPLEMENT PROPER WORLD SAVING
+    cacheAllChunks();
 }
 
 async function cacheAllChunks() {
@@ -189,6 +279,10 @@ async function cacheAllChunks() {
     }
 }
 
+function merge(array1, array2) {
+    return Array.from(new Set(array1.concat(array2)));
+}
+
 module.exports = {
-    changeInternalCache, downloadChunk, onTileChange, restChunk
+    changeInternalCache, downloadChunk, onTileChange, restChunk, registerPlayerWithArea, unregisterPlayerWithArea
 }

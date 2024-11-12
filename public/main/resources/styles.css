@@ -1,0 +1,683 @@
+@font-face {
+    font-family: 'calibriteritree';
+    src: url('../../global/resources/calibri-teritree.woff2') format('woff2'),
+    url('../../global/resources/calibri-teritree.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --town-colour: colour-change 20s ease alternate infinite;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+canvas {
+    width: 100%; /* Set canvas width to 100% of its container */
+    max-width: 100%; /* Ensure the canvas doesn't exceed its container's width */
+    display: block; /* Remove any default inline spacing */
+    image-rendering: pixelated;
+    position: relative;
+}
+
+.first-gui-text {
+    margin: 0.5%;
+    font-size: 16pt;
+}
+
+.location-element {
+    margin: 0;
+    font-size: 16pt;
+}
+
+.gui-header {
+    font-size: 28pt;
+    margin-top: 7%;
+    margin-bottom: 0;
+}
+
+.leaderboard-contents {
+    margin-top: 7.5%;
+    margin-bottom: 0;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+.leaderboard-item {
+    margin-top: 2%;
+    margin-bottom: 0;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+.leaderboard-stat {
+    font-size: 13pt;
+    margin: 0 0 0 6%;
+    color: #aaaaaa;
+}
+
+.big-gui-header {
+    font-size: 28pt;
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-bottom: 0;
+    color: white;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+}
+
+.medium-gui-header {
+    font-size: 24pt;
+    margin-top: 6%;
+    margin-left: 7.5%;
+    margin-bottom: 0;
+    color: white;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+}
+
+.gui-input-desc {
+    font-size: 24pt;
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-bottom: 0;
+    color: white;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+}
+
+.town-gui-item {
+    margin-top: 2%;
+    height: 7.5%;
+}
+
+.town-gui-button {
+    margin-left: 2%;
+    width: 40%;
+    height: 50%;
+}
+
+.alert-error {
+    margin: 0 0 0 2%;
+    color: #ff6666;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    visibility: hidden;
+}
+
+#town-description::placeholder {
+    vertical-align: top;
+}
+
+.gui-item-big {
+    height: 15%;
+}
+
+.top-align {
+    vertical-align: top;
+}
+
+.data-input {
+    height: calc(95% - 28pt);
+    float: left;
+    width: 65%;
+}
+
+.input-box {
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    width: 65%;
+    height: 50%;
+    margin-left: 2.5%;
+    color: white;
+    font-size: 16pt;
+    padding-left: 16px;
+    border: none;
+}
+
+.input-box:focus {
+    outline: 2px solid #ffffff;
+}
+
+.help-video {
+    margin-left: 2%;
+}
+
+.big-input-box {
+    height: 100%;
+}
+
+#town-description {
+    padding-top: 0.75%;
+}
+
+.input-box:active {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.checkbox-button {
+    cursor: pointer;
+}
+
+input[type=checkbox] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+input {
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 11px 23px;
+    border: none;
+    outline: 0;
+    background-color: transparent;
+}
+
+.checkbox-button__input {
+    opacity: 0;
+    position: absolute;
+    margin-left: 2%;
+}
+
+.checkbox-button__control {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    margin-right: 12px;
+    margin-left: 2%;
+    vertical-align: middle;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: rgba(0, 0, 0, 0.5);
+}
+
+.checkbox-button__input:checked+.checkbox-button__control:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    width: 36px;
+    height: 36px;
+    background-color: #ffffff;
+}
+
+.colour-checkbox-button__input:checked+.colour-checkbox-button__control:after {
+    animation: var(--town-colour);
+}
+
+@keyframes colour-change {
+    0% {
+        background-color: #ff5555;
+    }
+
+    12.5% {
+        background-color: #ffaa22;
+    }
+
+    25% {
+        background-color: #ddbb99;
+    }
+
+    37.5% {
+        background-color: #aaff55;
+    }
+
+    50% {
+        background-color: #33ddff;
+    }
+
+    62.5% {
+        background-color: #ff66bb;
+    }
+
+    75% {
+        background-color: #ffffff;
+    }
+
+    87.5% {
+        background-color: #889999;
+    }
+
+    100% {
+        background-color: #223344;
+    }
+}
+
+@keyframes solid-colour-0 {
+    0% { background-color: #ff5555; }
+    100% { background-color: #ff5555; }
+}
+
+@keyframes solid-colour-1 {
+    0% { background-color: #ffaa22; }
+    100% { background-color: #ffaa22; }
+}
+
+@keyframes solid-colour-2 {
+    0% { background-color: #ddbb99; }
+    100% { background-color: #ddbb99; }
+}
+
+@keyframes solid-colour-3 {
+    0% { background-color: #aaff55; }
+    100% { background-color: #aaff55; }
+}
+
+@keyframes solid-colour-4 {
+    0% { background-color: #33ddff; }
+    100% { background-color: #33ddff; }
+}
+
+@keyframes solid-colour-5 {
+    0% { background-color: #ff66bb; }
+    100% { background-color: #ff66bb; }
+}
+
+@keyframes solid-colour-6 {
+    0% { background-color: #889999; }
+    100% { background-color: #889999; }
+}
+
+@keyframes solid-colour-7 {
+    0% { background-color: #223344; }
+    100% { background-color: #223344; }
+}
+
+.checkbox-button__control {
+    transform: scale(0.75);
+}
+
+.colour-selection {
+    cursor: pointer;
+}
+
+.colour-selection:hover {
+    outline: 0.25vw solid white;
+}
+
+.colour-selection:active {
+    opacity: 90%;
+}
+
+.colour-red {
+    width: 5vw;
+    height: 5vw;
+    background-color: #ff5555;
+    margin: 7.5% 0 0 7.5%;
+    display: inline-block;
+}
+
+.colour-orange {
+    width: 5vw;
+    height: 5vw;
+    background-color: #ffaa22;
+    display: inline-block;
+    margin-left: 2.5%;
+}
+
+.colour-wood {
+    width: 5vw;
+    height: 5vw;
+    background-color: #ddbb99;
+    display: inline-block;
+    margin-left: 2.5%;
+}
+
+.colour-green {
+    width: 5vw;
+    height: 5vw;
+    background-color: #aaff55;
+    display: inline-block;
+    margin: 2.5% 0 0 7.5%;
+}
+
+.colour-blue {
+    width: 5vw;
+    height: 5vw;
+    background-color: #33ddff;
+    display: inline-block;
+    margin-left: 2.5%;
+}
+
+.colour-pink {
+    width: 5vw;
+    height: 5vw;
+    background-color: #ff66bb;
+    display: inline-block;
+    margin-left: 2.5%;
+}
+
+.colour-gray {
+    width: 5vw;
+    height: 5vw;
+    background-color: #889999;
+    display: inline-block;
+    margin: 2.5% 0 0 7.5%;
+}
+
+.colour-darkgray {
+    width: 5vw;
+    height: 5vw;
+    background-color: #223344;
+    display: inline-block;
+    margin-left: 2.5%;
+}
+
+.location {
+    position: absolute;
+    margin: 1%;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    padding: 0.025% 1.75%;
+    color: white;
+    background-color: rgb(0, 32, 12, 0.9);
+    z-index: 1;
+    width: 17.5%;
+    top: 47.4%;
+    height: 18.3%;
+    right: 0;
+}
+
+.location-outline {
+    position: absolute;
+    margin: 1%;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    padding: 0.025% 1.75%;
+    border: 4px solid white;
+    z-index: 1;
+    width: calc(17.5% - 16px);
+    height: calc(18.3% - 16px);
+    right: 4px;
+    top: calc(47.4% + 4px);
+}
+
+.top-bar {
+    width: 20%;
+    height: 3%;
+}
+
+.top-button {
+    position: absolute;
+    margin: 1%;
+    left: 0;
+    z-index: 1;
+    width: 25.5%;
+    height: 75%;
+    display: inline-block;
+}
+
+.top-button-1 {
+    left: 0;
+}
+
+.top-button-2 {
+    left: 7.5%;
+}
+
+.top-button-centre {
+    width: 90%;
+    transform: translate(40%, 0);
+    vertical-align: center;
+}
+
+#world-reset:hover {
+    cursor: default;
+    background-color: rgb(0, 32, 12, 0.9);
+}
+
+#world-reset:active {
+    cursor: default;
+    background-color: rgb(0, 32, 12, 0.9);
+}
+
+.medium-button {
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    padding: 0.025% 1.75%;
+    background-color: rgb(0, 32, 12, 0.9);
+    color: white;
+    text-align: center;
+    height: 7%;
+    width: 25%;
+    border: none;
+    vertical-align: center;
+}
+
+.medium-button:hover {
+    cursor: pointer;
+    background-color: rgba(30, 62, 42, 0.9);
+}
+
+.medium-button:active {
+    background-color: rgba(40, 72, 52, 0.9);
+}
+
+.large-gui-button {
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    padding: 0.025% 1.75%;
+    background-color: rgb(0, 0, 0, 0.5);
+    color: white;
+    margin-left: 2%;
+    text-align: center;
+    height: 100%;
+    width: 85%;
+    border: none;
+}
+
+.large-gui-button:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.large-gui-button:active {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.colour-menu {
+    z-index: -1;
+    position: absolute;
+    width: 20%;
+    height: 50%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 24%;
+}
+
+.colour-menu-backer {
+    position: absolute;
+    background-color: rgb(0, 32, 12, 0.9);
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 80%;
+}
+
+.colour-menu-outline {
+    position: absolute;
+    z-index: 1;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 80%;
+    border: 4px solid white;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+}
+
+.big-gui {
+    z-index: 2;
+    position: absolute;
+    width: 91%;
+    height: 88%;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+.big-gui-backer {
+    position: absolute;
+    background-color: rgb(0, 32, 12, 0.9);
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+.big-gui-outline {
+    position: absolute;
+    z-index: 1;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    border: 4px solid white;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+}
+
+.leaderboard {
+    position: absolute;
+    margin: 1%;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    padding: 0.025% 1.75%;
+    color: white;
+    background-color: rgb(0, 32, 12, 0.9);
+    z-index: 1;
+    width: 17.5%;
+    height: 45%;
+    right: 0;
+}
+
+.leaderboard-outline {
+    position: absolute;
+    margin: 1%;
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    padding: 0.025% 1.75%;
+    border: 4px solid white;
+    z-index: 1;
+    width: calc(17.5% - 16px);
+    height: calc(45% - 16px);
+    right: 4px;
+    top: 4px;
+}
+
+.colour-name {
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 14pt;
+    width: 10vw; /* Set the width of the cropped area */
+    height: 2vw; /* Set the height of the cropped area */
+    position: absolute;
+    bottom: 17.5%;
+    left: 50%;
+    opacity: 0;
+    background-color: rgba(0, 32, 12, 0.4);
+    color: #ffffff;
+    transform: translateX(-50%);
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2vw;
+    z-index: 1;
+    transition: opacity cubic-bezier(0.1, 0.75, 0.25, 0.1) 200ms
+}
+
+.colour-indicator {
+    width: 5vw; /* Set the width of the cropped area */
+    height: 5vw; /* Set the height of the cropped area */
+    position: absolute;
+    image-rendering: pixelated;
+    bottom: 3.5%;
+    left: 50%;
+    margin-bottom: 2vw;
+    transform: translateX(-50%);
+    background-color: rgba(0, 32, 12, 0.9);
+    z-index: 1;
+}
+
+.colour-indicator-outline {
+    width: calc(5vw - 16px); /* Set the width of the cropped area */
+    height: calc(5vw - 16px); /* Set the height of the cropped area */
+    background-image: url('../resources/sprites.png'); /* Replace 'path/to/your/image.jpg' with your image path */
+    background-size: calc((5vw - 16px) * 20) calc((5vw - 16px) * 20); /* Set background size to 1600% of the sprite sheet (20x20 sprites) */
+    background-repeat: no-repeat; /* Prevent repeating the sprite */
+    background-position: calc((5vw - 16px) * 1) calc((5vw - 16px) * 1); /* Position the desired sprite using negative values */
+    position: absolute;
+    image-rendering: pixelated;
+    bottom: calc(4px + 3.5%);
+    left: 50%;
+    margin-bottom: 2vw;
+    transform: translateX(-50%);
+    border: 4px solid white;
+    z-index: 1;
+}
+
+.ui {
+    display: block;
+}
+
+.default-hidden-ui {
+    display: none;
+}
+
+.location-selector {
+    display: inline-block;
+    float: left;
+    width: 30%;
+}
+
+.location-selector-description {
+    font-family: 'calibriteritree', 'Arial Hebrew', serif;
+    font-size: 16pt;
+    color: white;
+    background-color: rgb(0, 0, 0, 0.5);
+    padding: 0 8px 1px 8px;
+}
+
+.colour-tile {
+    width: 4vw; /* Adjust the size as needed */
+    height: 4vw; /* Adjust the size as needed */
+    position: relative;
+    display: inline-block;
+    background-color: white;
+    margin: 2px 2px 2px 2px;
+}
+
+.colour-tile:hover {
+    cursor: pointer;
+    outline: 4px solid white;
+}
+
+.seg-TL, .seg-TR, .seg-BL, .seg-BR {
+    position: absolute;
+    width: 52%;
+    height: 52%;
+}
+
+.seg-TL {
+    top: 0;
+    left: 0;
+    background-color: black;
+}
+
+.seg-TR {
+    top: 0;
+    left: 48%;
+    background-color: deepskyblue;
+}
+
+.seg-BL {
+    top: 48%;
+    left: 0;
+    background-color: deepskyblue;
+}
+
+.seg-BR {
+    top: 48%;
+    left: 48%;
+    background-color: black;
+}

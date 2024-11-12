@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Teritree - Log In / Sign Up</title>
+        <link rel="icon" type="image/x-icon" href="global/resources/favicon.png">
+        <link href="signin/resources/styles.css" rel="stylesheet" type="text/css" media="screen">
+    </head>
+
+    <body>
+        <div id="video-container">
+            <video id="video-background" class="background-video" autoplay muted loop>
+                <source src="signin/resources/background.webm" type="video/webm">
+                <!-- Include other video formats for better browser compatibility -->
+                <!-- <source src="your-video.mp4" type="video/mp4"> -->
+                <!-- <source src="your-video.ogv" type="video/ogg"> -->
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <div id="content-container">
+            <div id="main-area" class="main-signin"></div>
+            <div id="main-area-outline" class="main-signin-outline"></div>
+            <div id="main-area-divider" class="main-signin-divider">
+                <div id="text-signin-header" class="gui-header">
+                    Sign In to Teritree
+                </div>
+
+                <button type="button" onclick="startLogin()" id="log-in" class="sign-type-button login">Log In</button><br>
+                <button type="button" onclick="startSignup()" id="sign-up" class="sign-type-button signup">Sign Up</button>
+                <button type="button" onclick="experian()" id="experian" class="sign-type-button experian">Sign in as Guest</button>
+
+                <form id="sign-in-form">
+                    <input type="text" onclick="clearWarnings()" class="input-box" id="username" name="username" placeholder="Username"> <br>
+                    <div id="username-warning" class="input-warning" style="display: none"></div>
+                    <input type="password" onclick="clearWarnings()" class="input-box" id="password" name="password" placeholder="Password">
+                    <div id="password-warning" class="input-warning" style="display: none"></div>
+                </form>
+
+                <tr id="signin-bottom-buttons">
+                    <td><button type="button" onclick="signin()" id="sign-in-complete" class="sign-type-confirm bottom-signin">Sign In</button></td>
+                    <td><button type="button" id="sign-in-google-auth" class="mini-button-auth bottom-signin third-p-auth">G</button></td>
+                    <td><button type="button" id="sign-in-microsoft-auth" class="mini-button-auth bottom-signin third-p-auth">M</button></td>
+                </tr>
+
+                <tr id="signup-bottom-buttons">
+                    <td><button type="button" onclick="signup()" id="sign-up-complete" class="sign-type-confirm bottom-signin">Sign Up</button></td>
+                    <td><button type="button" id="sign-up-google-auth" class="mini-button-auth bottom-signin third-p-auth">G</button></td>
+                    <td><button type="button" id="sign-up-microsoft-auth" class="mini-button-auth bottom-signin third-p-auth">M</button></td>
+                </tr>
+            </div>
+        </div>
+    </body>
+
+    <script src="signin/resources/script.js"></script>
+</html>

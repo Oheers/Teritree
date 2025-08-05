@@ -2,12 +2,17 @@
   "name": "Teritree",
   "version": "1.0.0",
   "dependencies": {
+    "@tailwindcss/cli": "^4.1.11",
     "body-parser": "^1.20.2",
     "cryptojs": "^2.5.3",
     "express": "^4.18.2",
     "firebase": "^10.7.2",
     "mysql2": "^3.0.0",
     "noisejs": "^2.1.0",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "tailwindcss": "^4.1.11"
+  },
+  "scripts": {
+    "gen-tailwind": "npx @tailwindcss/cli -i ./public/changelog/resources/styles.css -o ./public/changelog/resources/output.css &&  npx @tailwindcss/cli -i ./public/signin/resources/styles.css -o ./public/signin/resources/output.css &&  npx @tailwindcss/cli -i ./public/main/resources/styles.css -o ./public/main/resources/output.css\n"
   }
 }

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@tailwind utilities;
+
 @font-face {
     font-family: 'calibriteritree';
     src: url('../../global/resources/calibri-teritree.woff2') format('woff2'),
@@ -8,18 +10,19 @@
     font-style: normal;
 }
 
-:root {
-    --blur-amount: 10px
+@layer utilities {
+    .bg-pixelated {
+        image-rendering: pixelated;
+    }
 }
 
-body {
-    margin: 0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #000; /* Set background color if video aspect ratio doesn't fill the screen */
+@theme {
+    --color-teritree-header-forest: #A8CA58;
+    --color-teritree-text-forest: #35401C
+}
+
+:root {
+    --blur-amount: 10px
 }
 
 #video-container {

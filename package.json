@@ -13,6 +13,6 @@
     "tailwindcss": "^4.1.11"
   },
   "scripts": {
-    "gen-tailwind": "npx @tailwindcss/cli -i ./public/changelog/resources/styles.css -o ./public/changelog/resources/output.css &&  npx @tailwindcss/cli -i ./public/signin/resources/styles.css -o ./public/signin/resources/output.css &&  npx @tailwindcss/cli -i ./public/main/resources/styles.css -o ./public/main/resources/output.css\n"
+    "reload-tailwind": "npx @tailwindcss/cli -i ./public/changelog/resources/styles.css -o ./public/changelog/resources/output.css &&  npx @tailwindcss/cli -i ./public/signin/resources/styles.css -o ./public/signin/resources/output.css &&  npx @tailwindcss/cli -i ./public/main/resources/styles.css -o ./public/main/resources/output.css && node app.js"
   }
 }

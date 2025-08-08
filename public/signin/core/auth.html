@@ -5,49 +5,16 @@
         <title>Teritree - Log In / Sign Up</title>
         <link rel="icon" type="image/x-icon" href="global/resources/favicon.png">
         <link href="signin/resources/output.css" rel="stylesheet" type="text/css" media="screen">
+
     </head>
 
-    <body>
-        <div id="video-container">
-            <video id="video-background" class="background-video" autoplay muted loop>
-                <source src="signin/resources/background.webm" type="video/webm">
-                <!-- Include other video formats for better browser compatibility -->
-                <!-- <source src="your-video.mp4" type="video/mp4"> -->
-                <!-- <source src="your-video.ogv" type="video/ogg"> -->
-                Your browser does not support the video tag.
-            </video>
-        </div>
-
-        <div id="content-container">
-            <div id="main-area" class="main-signin"></div>
-            <div id="main-area-outline" class="main-signin-outline"></div>
-            <div id="main-area-divider" class="main-signin-divider">
-                <div id="text-signin-header" class="gui-header">
-                    Sign In to Teritree
-                </div>
-
-                <button type="button" onclick="startLogin()" id="log-in" class="sign-type-button login">Log In</button><br>
-                <button type="button" onclick="startSignup()" id="sign-up" class="sign-type-button signup">Sign Up</button>
-                <button type="button" onclick="experian()" id="experian" class="sign-type-button experian">Sign in as Guest</button>
-
-                <form id="sign-in-form">
-                    <input type="text" onclick="clearWarnings()" class="input-box" id="username" name="username" placeholder="Username"> <br>
-                    <div id="username-warning" class="input-warning" style="display: none"></div>
-                    <input type="password" onclick="clearWarnings()" class="input-box" id="password" name="password" placeholder="Password">
-                    <div id="password-warning" class="input-warning" style="display: none"></div>
-                </form>
-
-                <tr id="signin-bottom-buttons">
-                    <td><button type="button" onclick="signin()" id="sign-in-complete" class="sign-type-confirm bottom-signin">Sign In</button></td>
-                    <td><button type="button" id="sign-in-google-auth" class="mini-button-auth bottom-signin third-p-auth">G</button></td>
-                    <td><button type="button" id="sign-in-microsoft-auth" class="mini-button-auth bottom-signin third-p-auth">M</button></td>
-                </tr>
-
-                <tr id="signup-bottom-buttons">
-                    <td><button type="button" onclick="signup()" id="sign-up-complete" class="sign-type-confirm bottom-signin">Sign Up</button></td>
-                    <td><button type="button" id="sign-up-google-auth" class="mini-button-auth bottom-signin third-p-auth">G</button></td>
-                    <td><button type="button" id="sign-up-microsoft-auth" class="mini-button-auth bottom-signin third-p-auth">M</button></td>
-                </tr>
+    <body class="bg-white">
+        <div class="h-[3vh] lg:h-[5vh] w-full bg-teritree-header-forest top-0 left-0 z-50"></div>
+        <div class="h-[20vh] py-[15vw] px-[22vw] lg:px-[clamp(0vw,27vw,30vw)] w-full fixed top-[5vh] left-0 z-50 flex justify-between items-center">
+            <div class="h-[10vw] w-[10vw] bg-no-repeat bg-cover bg-pixelated bg-[url(/signin/resources/logo.png)]"></div>
+            <div class="flex flex-col items-end font-[Lato] font-black text-teritree-text-forest">
+                <div class="text-8xl leading-none">Teritree</div>
+                <div class="text-2xl">Join 5 other players.</div>
             </div>
         </div>
     </body>

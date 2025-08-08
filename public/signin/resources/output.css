@@ -7,8 +7,17 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-8xl: 6rem;
+    --text-8xl--line-height: 1;
+    --font-weight-black: 900;
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
+    --color-teritree-header-forest: #A8CA58;
+    --color-teritree-text-forest: #35401C;
   }
 }
 @layer base {
@@ -160,8 +169,23 @@
   .visible {
     visibility: visible;
   }
+  .fixed {
+    position: fixed;
+  }
   .relative {
     position: relative;
+  }
+  .top-0 {
+    top: calc(var(--spacing) * 0);
+  }
+  .top-\[5vh\] {
+    top: 5vh;
+  }
+  .left-0 {
+    left: calc(var(--spacing) * 0);
+  }
+  .z-50 {
+    z-index: 50;
   }
   .container {
     width: 100%;
@@ -184,6 +208,9 @@
   .block {
     display: block;
   }
+  .flex {
+    display: flex;
+  }
   .grid {
     display: grid;
   }
@@ -199,8 +226,78 @@
   .table-cell {
     display: table-cell;
   }
+  .h-\[3vh\] {
+    height: 3vh;
+  }
+  .h-\[10vw\] {
+    height: 10vw;
+  }
+  .h-\[20vh\] {
+    height: 20vh;
+  }
+  .w-\[10vw\] {
+    width: 10vw;
+  }
+  .w-full {
+    width: 100%;
+  }
   .resize {
     resize: both;
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .items-end {
+    align-items: flex-end;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .bg-teritree-header-forest {
+    background-color: var(--color-teritree-header-forest);
+  }
+  .bg-white {
+    background-color: var(--color-white);
+  }
+  .bg-\[url\(\/signin\/resources\/logo\.png\)\] {
+    background-image: url(/signin/resources/logo.png);
+  }
+  .bg-cover {
+    background-size: cover;
+  }
+  .bg-no-repeat {
+    background-repeat: no-repeat;
+  }
+  .px-\[22vw\] {
+    padding-inline: 22vw;
+  }
+  .py-\[15vw\] {
+    padding-block: 15vw;
+  }
+  .font-\[Lato\] {
+    font-family: Lato;
+  }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+  .text-8xl {
+    font-size: var(--text-8xl);
+    line-height: var(--tw-leading, var(--text-8xl--line-height));
+  }
+  .leading-none {
+    --tw-leading: 1;
+    line-height: 1;
+  }
+  .font-black {
+    --tw-font-weight: var(--font-weight-black);
+    font-weight: var(--font-weight-black);
+  }
+  .text-teritree-text-forest {
+    color: var(--color-teritree-text-forest);
   }
   .outline {
     outline-style: var(--tw-outline-style);
@@ -210,6 +307,16 @@
     --tw-blur: blur(8px);
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
+  .lg\:h-\[5vh\] {
+    @media (width >= 64rem) {
+      height: 5vh;
+    }
+  }
+  .lg\:px-\[clamp\(0vw\,27vw\,30vw\)\] {
+    @media (width >= 64rem) {
+      padding-inline: clamp(0vw, 27vw, 30vw);
+    }
+  }
 }
 @font-face {
   font-family: 'calibriteritree';
@@ -217,17 +324,13 @@
   font-weight: normal;
   font-style: normal;
 }
+@layer utilities {
+  .bg-pixelated {
+    image-rendering: pixelated;
+  }
+}
 :root {
   --blur-amount: 10px;
-}
-body {
-  margin: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #000;
 }
 #video-container {
   position: absolute;
@@ -403,6 +506,14 @@ input:active {
 .experian {
   margin-top: 5%;
 }
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
 @property --tw-outline-style {
   syntax: "*";
   inherits: false;
@@ -464,6 +575,8 @@ input:active {
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
+      --tw-leading: initial;
+      --tw-font-weight: initial;
       --tw-outline-style: solid;
       --tw-blur: initial;
       --tw-brightness: initial;

@@ -178,9 +178,6 @@
   .top-0 {
     top: calc(var(--spacing) * 0);
   }
-  .top-\[5vh\] {
-    top: 5vh;
-  }
   .left-0 {
     left: calc(var(--spacing) * 0);
   }
@@ -271,11 +268,11 @@
   .bg-no-repeat {
     background-repeat: no-repeat;
   }
-  .px-\[22vw\] {
-    padding-inline: 22vw;
+  .px-\[calc\(22vw\+\(\(100vw-64rem\)\*0\.2\)\)\] {
+    padding-inline: calc(22vw + ((100vw - 64rem) * 0.2));
   }
-  .py-\[15vw\] {
-    padding-block: 15vw;
+  .py-\[5vw\] {
+    padding-block: 5vw;
   }
   .font-\[Lato\] {
     font-family: Lato;
@@ -312,9 +309,9 @@
       height: 5vh;
     }
   }
-  .lg\:px-\[clamp\(0vw\,27vw\,30vw\)\] {
+  .lg\:py-\[10vw\] {
     @media (width >= 64rem) {
-      padding-inline: clamp(0vw, 27vw, 30vw);
+      padding-block: 10vw;
     }
   }
 }

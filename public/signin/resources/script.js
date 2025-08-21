@@ -1,12 +1,28 @@
 // Adjust the video container size on window resize
 window.addEventListener('resize', adjustVideoContainerSize);
 
+/**
+ * Sets the initial demo video height to start from below the changelog/login buttons and end just as the browser window
+ * stops. It'll take into account small portrait screens and in this case, choose to show the video in full with the
+ * rest of the content a bit further below.
+ */
+function set_video_sizing() {
+    if (window.scrollY > 0) return;
+    const video = document.getElementById('demo-video');
+    const video_position = video.getBoundingClientRect();
+    console.log(window.innerHeight - video_position.top, window.innerWidth * (9/16))
+    video.style.height = `${Math.min(window.innerHeight - video_position.top, window.innerWidth * (9/16))}px`;
+}
+
+set_video_sizing();
+
 const authToken = getCookie("authToken");
 if (authToken !== undefined) {
     autoLogin(authToken)
 }
 
 function adjustVideoContainerSize() {
+    set_video_sizing();
     const video = document.getElementById('video-background');
 
     const containerWidth = window.innerWidth;

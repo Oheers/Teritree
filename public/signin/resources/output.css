@@ -202,6 +202,9 @@
   .mx-6 {
     margin-inline: calc(var(--spacing) * 6);
   }
+  .mt-12 {
+    margin-top: calc(var(--spacing) * 12);
+  }
   .mr-\[10\%\] {
     margin-right: 10%;
   }
@@ -306,6 +309,9 @@
   }
   .bg-no-repeat {
     background-repeat: no-repeat;
+  }
+  .object-cover {
+    object-fit: cover;
   }
   .px-\[calc\(22vw\+\(\(100vw-64rem\)\*0\.2\)\)\] {
     padding-inline: calc(22vw + ((100vw - 64rem) * 0.2));

@@ -7,11 +7,10 @@ window.addEventListener('resize', adjustVideoContainerSize);
  * rest of the content a bit further below.
  */
 function set_video_sizing() {
-    if (window.scrollY > 0) return;
     const video = document.getElementById('demo-video');
     const video_position = video.getBoundingClientRect();
     console.log(window.innerHeight - video_position.top, window.innerWidth * (9/16))
-    video.style.height = `${Math.min(window.innerHeight - video_position.top, window.innerWidth * (9/16))}px`;
+    video.style.height = `${Math.min(window.innerHeight - window.scrollY - video_position.top, window.innerWidth * (9/16))}px`;
 }
 
 set_video_sizing();

@@ -9,8 +9,7 @@ window.addEventListener('resize', adjustVideoContainerSize);
 function set_video_sizing() {
     const video = document.getElementById('demo-video');
     const video_position = video.getBoundingClientRect();
-    console.log(window.innerHeight - video_position.top, window.innerWidth * (9/16))
-    video.style.height = `${Math.min(window.innerHeight - window.scrollY - video_position.top, window.innerWidth * (9/16))}px`;
+    video.style.height = `${Math.min(Math.max(window.innerHeight - window.scrollY - video_position.top, window.innerWidth * (1/16)), window.innerWidth * (9/16))}px`;
 }
 
 set_video_sizing();

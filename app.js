@@ -17,8 +17,12 @@ const port = 3000
 
 app.use(express.static('./public/'));
 
-// Returns auth.html to any user trying to access teritree.io
+// Returns index.html to any user trying to access teritree.io
 app.get('/', (req, res) => {
+    res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/index.html'))
+})
+
+app.get('/signin', (req, res) => {
     res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/auth.html'))
 })
 
@@ -28,7 +32,7 @@ app.get('/play', (req, res) => {
         if (r.auth) {
             res.status(200).sendFile(path.resolve(__dirname, './public/main/core/index.html'))
         } else {
-            res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/auth.html'))
+            res.status(200).sendFile(path.resolve(__dirname, './public/signin/core/index.html'))
         }
     })
 })

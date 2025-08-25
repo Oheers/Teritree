@@ -58,17 +58,17 @@ event.emitter.on("tile_change", function tileChange(playerID, tileID, itemID, se
 })
 
 event.emitter.on("afk_player", function afkPlayer(playerID) {
-    emitToSocket(playerID, "kick_player", {
+    /*emitToSocket(playerID, "kick_player", {
         msg:"Too many players are connected to the server. Try again later."
     })
-    disconnectPlayer(playerID);
+    disconnectPlayer(playerID);*/
 })
 
 event.emitter.on("user_already_logged_in", function afkPlayer(playerID) {
-    emitToSocket(playerID, "kick_player", {
+    /*emitToSocket(playerID, "kick_player", {
         msg:"You have logged in from another location."
     })
-    disconnectPlayer(playerID);
+    disconnectPlayer(playerID);*/
 })
 
 event.emitter.on("new_town", function newTown(playerID, townName, townX, townY, townID) {
@@ -125,7 +125,7 @@ function init(server) {
             const player = dbBackend.verifyAuthUser(token, socket.id);
             if (player === undefined) {
                 io.emit("kick_player", {
-                    msg: "Authorization token expired. Please log in again."
+                    msg: "Token could not be found. Please log in again."
                 })
                 return;
             }

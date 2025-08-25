@@ -12,7 +12,6 @@
     --color-gray-100: oklch(96.7% 0.003 264.542);
     --color-gray-200: oklch(92.8% 0.006 264.531);
     --color-gray-900: oklch(21% 0.034 264.665);
-    --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
     --text-lg: 1.125rem;
@@ -245,8 +244,8 @@
   .mb-6 {
     margin-bottom: calc(var(--spacing) * 6);
   }
-  .ml-16 {
-    margin-left: calc(var(--spacing) * 16);
+  .ml-\[8vw\] {
+    margin-left: 8vw;
   }
   .ml-auto {
     margin-left: auto;
@@ -401,9 +400,6 @@
   .text-center {
     text-align: center;
   }
-  .font-\[Lato\] {
-    font-family: Lato;
-  }
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
@@ -465,6 +461,13 @@
     &:hover {
       @media (hover: hover) {
         cursor: pointer;
+      }
+    }
+  }
+  .hover\:cursor-text {
+    &:hover {
+      @media (hover: hover) {
+        cursor: text;
       }
     }
   }
@@ -579,9 +582,79 @@
 }
 @font-face {
   font-family: 'calibriteritree';
-  src: url('../../global/resources/calibri-teritree.woff2') format('woff2'), url('../../global/resources/calibri-teritree.woff') format('woff');
+  src: url('../../global/resources/fonts/calibri-teritree.woff2') format('woff2'), url('../../global/resources/fonts/calibri-teritree.woff') format('woff');
   font-weight: normal;
   font-style: normal;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-BlackItalic.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-BlackItalic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-Black.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-LightItalic.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-LightItalic.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-BoldItalic.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-BoldItalic.woff') format('woff');
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-Bold.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-Regular.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-Light.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato Hairline';
+  src: url('../../global/resources/fonts/Lato/Lato-HairlineItalic.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-HairlineItalic.woff') format('woff');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato Hairline';
+  src: url('../../global/resources/fonts/Lato/Lato-Hairline.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-Hairline.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lato';
+  src: url('../../global/resources/fonts/Lato/Lato-Italic.woff2') format('woff2'), url('../../global/resources/fonts/Lato/Lato-Italic.woff') format('woff');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
 }
 @layer utilities {
   .bg-pixelated {

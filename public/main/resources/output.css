@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'calibriteritree';
-    src: url('../../global/resources/calibri-teritree.woff2') format('woff2'),
-    url('../../global/resources/calibri-teritree.woff') format('woff');
+    src: url('../../global/resources/fonts/calibri-teritree.woff2') format('woff2'),
+    url('../../global/resources/fonts/calibri-teritree.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 }

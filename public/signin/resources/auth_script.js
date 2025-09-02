@@ -1,3 +1,5 @@
+let signUp = true;
+
 document.getElementById('play_guest').addEventListener('click', function(){
     play_as_guest();
 })
@@ -10,6 +12,10 @@ document.getElementById('show_password_check').addEventListener('click', functio
         document.getElementById("password").type="password";
         document.getElementById("password2").type="password";
     }
+})
+
+document.getElementById('toggle_sign_in_up').addEventListener('click', function(){
+    toggle_welcome_screen();
 })
 
 /**
@@ -55,4 +61,27 @@ function setCookie(cname, cvalue, exdays) {
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     let expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function toggle_welcome_screen() {
+    document.getElementById("password2").hidden = signUp;
+    if (signUp) {
+        document.getElementById("auth-header").innerHTML = "Welcome back to Teritree"
+        document.getElementById("auth-subtitle").innerHTML = "Sign in with username and password"
+        document.getElementById("username").placeholder = "Username";
+        document.getElementById("password").placeholder = "Password";
+        document.getElementById("welcome-toggle-prefix").innerHTML = "New to the game?";
+        document.getElementById("welcome-toggle-button").innerHTML = "Create an account";
+        document.getElementById("sign-up-button-text").innerHTML = "Sign In";
+    } else {
+        document.getElementById("auth-header").innerHTML = "Welcome to Teritree"
+        document.getElementById("auth-subtitle").innerHTML = "Create an account"
+        document.getElementById("username").placeholder = "Create a Username";
+        document.getElementById("password").placeholder = "Create a Password";
+        document.getElementById("welcome-toggle-prefix").innerHTML = "Already have an account?";
+        document.getElementById("welcome-toggle-button").innerHTML = "Sign in";
+        document.getElementById("sign-up-button-text").innerHTML = "Sign Up";
+    }
+
+    signUp = !signUp;
 }

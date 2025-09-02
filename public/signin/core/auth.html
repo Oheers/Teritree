@@ -11,8 +11,8 @@
         <div class="h-[3vh] w-full bg-teritree-header-darksnow top-0 left-0 absolute"></div>
         <div class="flex h-screen">
             <div class="m-auto">
-                <div class="text-[clamp(1rem,8vw,2rem)] font-Lato font-black text-teritree-text-forest text-center">Welcome to Teritree!</div>
-                <div class="text-[clamp(0.5rem,8vw,1rem)] font-Lato font-normal text-teritree-text-forest text-center">Create an account</div>
+                <div id="auth-header" class="text-[clamp(1rem,8vw,2rem)] font-Lato font-black text-teritree-text-forest text-center">Welcome to Teritree!</div>
+                <div id="auth-subtitle" class="text-[clamp(0.5rem,8vw,1rem)] font-Lato font-normal text-teritree-text-forest text-center">Create an account</div>
                 <form class="flex flex-col items-center mt-16" autocomplete="off">
                     <div class="w-[clamp(240px,20vw,20vw)] font-Lato flex justify-between mb-2">
                         <label class="font-bold" for="username">Username</label>
@@ -23,9 +23,9 @@
                         <label class="font-bold" for="password">Password</label>
                         <span hidden class="text-red-500">Passwords don't match.</span>
                     </div>
-                    <input type="password" id="password" placeholder="Create a Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text">
-                    <input type="password" id="password2" placeholder="Confirm Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text mt-2">
-                    <label class="flex items-center space-x-4 cursor-pointer select-none mt-2 w-[clamp(240px,20vw,20vw)]">
+                    <input type="password" id="password" placeholder="Create a Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text mb-2">
+                    <input type="password" id="password2" placeholder="Confirm Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text mb-2">
+                    <label class="flex items-center space-x-4 cursor-pointer select-none w-[clamp(240px,20vw,20vw)]">
                         <input type="checkbox" class="hidden peer" id="show_password_check">
                         <span class="relative w-8 h-8 border-4 border-gray-100 peer-checked:border-none peer-checked:bg-teritree-header-darksnow after:content-[''] after:absolute after:left-3 after:top-1.75 after:w-[8px] after:h-[16px] after:border-white after:border-r-[3px] after:border-b-[3px] after:rotate-45 after:opacity-0 peer-checked:after:opacity-100 rounded-none"></span>
                         <span class="font-Lato font-normal">Show Password</span>
@@ -33,7 +33,7 @@
                     <div class="flex mt-16 gap-4 flex-col sm:flex-row">
                         <button class="grid justify-center w-[clamp(240px,20vw,20vw)] h-15 bg-gray-100 hover:bg-gray-200 hover:cursor-pointer pl-4 py-2">
                             <span class="flex w-full h-full items-center">
-                                <span class="text-lg font-Lato font-bold text-center">Sign Up</span>
+                                <span id="sign-up-button-text" class="text-lg font-Lato font-bold text-center">Sign Up</span>
                             </span>
                         </button>
                         <button type="button" class="w-[clamp(240px,20vw,20vw)] h-15 bg-gray-100 hover:bg-gray-200 hover:cursor-pointer pl-4 py-2" id="play_guest">
@@ -43,8 +43,9 @@
                             </span>
                         </button>
                     </div>
-                    <div class="mt-6 font-Lato">
-                        Already have an account? <a href="#" class="text-teritree-header-darksnow hover:cursor-pointer">Sign in</a>
+                    <div class="mt-6 font-Lato" id="toggle_sign_in_up">
+                        <span id="welcome-toggle-prefix">Already have an account?</span>
+                        <span id="welcome-toggle-button" class="text-teritree-header-darksnow hover:cursor-pointer">Sign in</span>
                     </div>
                 </form>
             </div>

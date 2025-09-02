@@ -2,6 +2,16 @@ document.getElementById('play_guest').addEventListener('click', function(){
     play_as_guest();
 })
 
+document.getElementById('show_password_check').addEventListener('click', function(){
+    if (document.getElementById('show_password_check').checked) {
+        document.getElementById("password").type="text";
+        document.getElementById("password2").type="text";
+    } else {
+        document.getElementById("password").type="password";
+        document.getElementById("password2").type="password";
+    }
+})
+
 /**
  * Currently being used to get access to the public account,
  */

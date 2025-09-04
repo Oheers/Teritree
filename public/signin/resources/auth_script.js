@@ -1,7 +1,11 @@
-let signUp = true;
+let sign_up = true;
 
 document.getElementById('play_guest').addEventListener('click', function(){
     play_as_guest();
+})
+
+document.getElementById('submit_form').addEventListener('click', function(){
+    submit_request();
 })
 
 document.getElementById('show_password_check').addEventListener('click', function(){
@@ -63,9 +67,14 @@ function setCookie(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+/**
+ * Checks the sign_up variable, if it's true then this means the user has pressed to change to the login screen, if it's
+ * false it means the user has pressed to change back to the welcome screen, this will change all the text in all the
+ * relevant elements to display this separate screen.
+ */
 function toggle_welcome_screen() {
-    document.getElementById("password2").hidden = signUp;
-    if (signUp) {
+    document.getElementById("password2").hidden = sign_up;
+    if (sign_up) {
         document.getElementById("auth-header").innerHTML = "Welcome back to Teritree"
         document.getElementById("auth-subtitle").innerHTML = "Sign in with username and password"
         document.getElementById("username").placeholder = "Username";
@@ -83,5 +92,91 @@ function toggle_welcome_screen() {
         document.getElementById("sign-up-button-text").innerHTML = "Sign Up";
     }
 
-    signUp = !signUp;
+    sign_up = !sign_up;
+}
+
+/**
+ * Checks whether the username will pass serverside validation, requiring that the username is at least 4 characters
+ * long and only a-Z0-9_ characters.
+ *
+ * @param username The username to be queried.
+ * @returns {{pass: boolean, error: string}} Whether or not the username will pass serverside verification, and an error
+ * string if not.
+ */
+function validate_username(username) {
+    if (username.length < 4) {
+        return {pass: false, error: "Username too short."};
+    }
+
+    if (/^[a-z0-9_]*$/gi.test(username)) return {pass: true, error: undefined};
+    else return {pass: false, error: "Username must be alphanumeric."}
+}
+
+/**
+ * Checks if the password passes the validation requirements, in this case the only requirement is that the password is
+ * more than 6 characters long.
+ *
+ * @param password The password input string.
+ * @returns {{pass: boolean, error: string}} Whether or not the password will pass serverside verification, and an error
+ * string if not.
+ */
+function validate_password(password) {
+    if (password.length < 6) return {pass: false, error: "Password too short."};
+    else return {pass: true, error: undefined};
+}
+
+/**
+ * Checks if the user's password and confirm password boxes match, as a clientside validation. This will not be checked
+ * serverside so is the only line of defense for the user having a chance of remembering the password.
+ *
+ * @param password1 The password in the first, "Create a Password" box.
+ * @param password2 The password in the second, "Confirm Password" box.
+ * @returns {{pass: boolean, error: string}} Whether or not the passwords match, and an error string if not.
+ */
+function validate_password_matching(password1, password2) {
+    if (password1 !== password2) return {pass: false, error: "Passwords must match."};
+    else return {pass: true, error: undefined};
+}
+
+/**
+ * Sets the element set up to show the error to be visible to the client and sets a message there.
+ *
+ * @param error_id The id of the element in the DOM handling errors.
+ * @param message The message to be shown.
+ */
+function display_login_error(error_id, message) {
+    document.getElementById(error_id).hidden = false;
+    document.getElementById(error_id).innerHTML = message;
+}
+
+function clear_login_errors(...error_id) {
+    error_id.forEach(element_id => document.getElementById(element_id).hidden = true);
+}
+
+/**
+ * Carries out a check against an input with a given method to make sure it'll pass the serverside validation,
+ * displaying any errors to an existing element set up to display errors.
+ *
+ * @param input_id The id of the element the user inputs data into.
+ * @param validation_method The method taking in a string to run validation checks against.
+ * @param error_id The id of the element to display the error message to.
+ */
+function verify_input(input_id, validation_method, error_id) {
+    const input = document.getElementById(input_id).value;
+    const validation_attempt = validation_method(input);
+    if (!validation_attempt.pass) {
+        display_login_error(error_id, validation_attempt.error);
+    }
+}
+
+/**
+ * This will submit the request to the server, first running clientside checks to make sure the username and password
+ * are valid.
+ */
+function submit_request() {
+    clear_login_errors("username-error", "password-error");
+    verify_input("username", validate_username, "username-error");
+    const password_match_validation = validate_password_matching(document.getElementById("password").value, document.getElementById("password2").value);
+    if (!password_match_validation.pass) display_login_error("password-error", password_match_validation.error);
+    verify_input("password", validate_password, "password-error");
 }

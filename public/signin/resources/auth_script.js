@@ -24,6 +24,7 @@ document.getElementById('show_password_check').addEventListener('click', functio
 
 document.getElementById('toggle_sign_in_up').addEventListener('click', function(){
     toggle_welcome_screen();
+    clear_login_errors("username-error", "password_error");
 })
 
 /**

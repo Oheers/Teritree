@@ -104,9 +104,8 @@ function toggle_welcome_screen() {
  * string if not.
  */
 function validate_username(username) {
-    if (username.length < 4) {
-        return {pass: false, error: "Username too short."};
-    }
+    if (username.length === 0) return {pass: false, error: "Username is required."};
+    else if (username.length < 4) return {pass: false, error: "Username too short."};
 
     if (/^[a-z0-9_]*$/gi.test(username)) return {pass: true, error: undefined};
     else return {pass: false, error: "Username must be alphanumeric."}
@@ -121,7 +120,8 @@ function validate_username(username) {
  * string if not.
  */
 function validate_password(password) {
-    if (password.length < 6) return {pass: false, error: "Password too short."};
+    if (password.length === 0) return {pass: false, error: "Password is required"};
+    else if (password.length < 6) return {pass: false, error: "Password too short."};
     else return {pass: true, error: undefined};
 }
 

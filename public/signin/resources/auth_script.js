@@ -8,6 +8,10 @@ document.getElementById('submit_form').addEventListener('click', function(){
     submit_request();
 })
 
+document.getElementById('close-error').addEventListener('click', function(){
+    document.getElementById('popup').hidden = true;
+})
+
 document.getElementById('show_password_check').addEventListener('click', function(){
     if (document.getElementById('show_password_check').checked) {
         document.getElementById("password").type="text";
@@ -145,10 +149,26 @@ function validate_password_matching(password1, password2) {
  * @param message The message to be shown.
  */
 function display_login_error(error_id, message) {
+    console.log("running nbeast");
     document.getElementById(error_id).hidden = false;
     document.getElementById(error_id).innerHTML = message;
 }
 
+/**
+ * Shows a full screen error to the user, covering the screen with the error and a "close button"
+ *
+ * @param error The error message to be displayed.
+ */
+function display_full_error(error) {
+    document.getElementById("error-message").innerHTML = error;
+    document.getElementById("popup").hidden = false;
+}
+
+/**
+ * Hides all login error elements.
+ *
+ * @param error_id All the element ids to be hidden.
+ */
 function clear_login_errors(...error_id) {
     error_id.forEach(element_id => document.getElementById(element_id).hidden = true);
 }
@@ -179,4 +199,57 @@ function submit_request() {
     const password_match_validation = validate_password_matching(document.getElementById("password").value, document.getElementById("password2").value);
     if (!password_match_validation.pass) display_login_error("password-error", password_match_validation.error);
     verify_input("password", validate_password, "password-error");
+    if (sign_up) post_sign_up(document.getElementById("username").value, document.getElementById("password").value);
+}
+
+/**
+ * If the user can't authenticate for whatever reason, the server throws an error code like username_short. This will
+ * decode it and format it nicely to the client by calling the display_login_error method.
+ *
+ * @param error_id The error id sent by the server.
+ * @returns true if an error was found, false if no error could be found.
+ */
+function known_error_check(error_id) {
+    if (error_id === "username_taken") display_login_error("username-error", "Username already taken.");
+    else if (error_id === "username_short") display_login_error("username-error", "Username is too short.");
+    else if (error_id === "username_long") display_login_error("username-error", "Username is too long.");
+    else if (error_id === "username_weird") display_login_error("username-error", "Username must be alphanumeric.");
+    else if (error_id === "password_short") display_login_error("password-error", "Password is too short.");
+    else if (error_id === "password_long") display_login_error("password-error", "Password is too long.");
+    else return false;
+    return true;
+}
+
+/**
+ * Sends a POST request to the backend to /signup with the chosen usernamd and password. If successful, the server
+ * returns a auth token, which is set as a cookie and will redirect the client to the main website using this auth token.
+ *
+ * @param username The new username
+ * @param password The new password
+ */
+async function post_sign_up(username, password) {
+    await fetch(`/signup`, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    }).then(response => {
+        return response.json();
+    }).then(jsonResponse => {
+        if (jsonResponse.auth) {
+            setCookie("authToken", jsonResponse.token, 1);
+            window.location.href = `/play?id=${jsonResponse.token}`;
+        } else {
+            if (!known_error_check(jsonResponse.error)) display_full_error("Something went wrong whilst trying to create the account. Try again later.");
+        }
+    })
 }

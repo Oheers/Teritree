@@ -55,8 +55,14 @@
             <div class="fixed inset-0 flex h-screen z-20">
                 <div class="m-auto">
                     <div class="bg-white w-[50vw] h-[30vh]">
-                        <div class="w-full h-full m-auto font-Lato font-normal">
-                            Incorrect Password.
+                        <div class="w-full h-full p-8 m-auto font-Lato font-normal flex flex-col items-center">
+                            <span class="text-[clamp(1rem,8vw,2rem)] font-Lato font-black text-teritree-text-forest">Error!</span>
+                            <span id="error-message" class="mt-2">Something went wrong whilst trying to create the account. Try again later.</span>
+                            <button type="button" class="mt-auto grid justify-center w-[clamp(240px,20vw,20vw)] h-15 bg-gray-100 hover:bg-gray-200 hover:cursor-pointer pl-4 py-2" id="close-error">
+                                <span class="flex w-full h-full items-center">
+                                    <span class="text-lg font-Lato font-bold text-center">Close</span>
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>

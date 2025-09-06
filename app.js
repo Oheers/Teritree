@@ -57,14 +57,15 @@ app.post('/signup', bodyParser.json(), (req, res) => {
     const authToken = crypto.randomBytes(8).toString("hex");
     // Adding account to database
     dbBackend.createAccount(body.username, body.password, authToken).then(r => {
-        if (r) {
+        if (r.auth) {
             res.json({
                 auth: true,
                 token: authToken
             })
         } else {
             res.json({
-                auth: false
+                auth: false,
+                error: r.error
             })
         }
     })

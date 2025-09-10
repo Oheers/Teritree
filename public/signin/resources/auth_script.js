@@ -1,5 +1,7 @@
 let sign_up = true;
 
+attempt_automatic_login();
+
 document.getElementById('play_guest').addEventListener('click', function(){
     play_as_guest();
 })
@@ -16,6 +18,15 @@ document.getElementById('welcome-toggle-button').addEventListener('click', funct
     toggle_welcome_screen();
     clear_login_errors("username-error", "password_error");
 })
+
+/**
+ * If the user has checked "remember me", the client will store a cookie containing the cookie, this will attempt to
+ * fetch that cookie and if one exists, use it to log the user in automatically.
+ */
+function attempt_automatic_login() {
+    const auth_token = get_cookie('authToken');
+    if (auth_token !== undefined) post_auth_token_data(auth_token);
+}
 
 /**
  * Currently being used to get access to the public account,
@@ -40,7 +51,7 @@ async function play_as_guest() {
         return response.json();
     }).then(jsonResponse => {
         if (jsonResponse.auth) {
-            setCookie("authToken", jsonResponse.token, 1);
+            set_cookie("authToken", jsonResponse.token, 1);
             window.location.href = `/play?id=${jsonResponse.token}`;
         }
     })
@@ -53,11 +64,33 @@ async function play_as_guest() {
  * @param cvalue The value to set the cookie to
  * @param exdays How many days left until the cookie expires.
  */
-function setCookie(cname, cvalue, exdays) {
+function set_cookie(cname, cvalue, exdays) {
     const d = new Date();
     d.setTime(d.getTime() + (exdays*24*60*60*1000));
     let expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+/**
+ * Get a cookie value stored at a certain cname in the cookie storage.
+ *
+ * @param cname The cname the cookie is stored against.
+ * @returns {string} The value stored by the cookie.
+ */
+function get_cookie(cname) {
+    const name = cname + "=";
+    const decoded_cookie = decodeURIComponent(document.cookie);
+    const ca = decoded_cookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
 
 /**
@@ -200,6 +233,16 @@ function submit_request() {
 }
 
 /**
+ * Checks whether the element id "remember_me_check" is checked, returning whether the user wants to stay signed in
+ * or not.
+ *
+ * @returns {boolean} Whether the "remember me" button is checked.
+ */
+function keep_signed_in_checked() {
+    return document.getElementById("remember_me_check").checked;
+}
+
+/**
  * If the user can't authenticate for whatever reason, the server throws an error code like username_short. This will
  * decode it and format it nicely to the client by calling the display_login_error method.
  *
@@ -248,12 +291,44 @@ async function post_account_data(username, password, endpoint, error_message) {
         return response.json();
     }).then(jsonResponse => {
         if (jsonResponse.auth) {
-            setCookie("authToken", jsonResponse.token, 1);
+            if (keep_signed_in_checked()) set_cookie("authToken", jsonResponse.token, 30);
             window.location.href = `/play?id=${jsonResponse.token}`;
         } else {
             if (!known_error_check(jsonResponse.error)) display_full_error(error_message);
         }
     }).catch(error => {
         display_full_error("Authentication servers are offline or not working. Try again later.")
+    })
+}
+
+/**
+ * Uses a pre-existing authorization token to authenticate the user with the server, a new token will be issues to the
+ * user and this will be stored in the authToken cookie for future use.
+ *
+ * @param auth_token The pre-existing authorization token.
+ */
+async function post_auth_token_data(auth_token) {
+    await fetch(`/login-auth-token`, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+        body: JSON.stringify({
+            token: auth_token
+        })
+    }).then(response => {
+        return response.json();
+    }).then(jsonResponse => {
+        if (jsonResponse.auth) {
+            set_cookie("authToken", jsonResponse.token, 1);
+            window.location.href = `/play?id=${jsonResponse.token}`;
+        }
+    }).catch(error => {
+        display_full_error("An error occurred whilst trying to sign in, authorization token may have expired. Please try signing in again.")
     })
 }

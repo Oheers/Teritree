@@ -247,5 +247,7 @@ async function post_account_data(username, password, endpoint, error_message) {
         } else {
             if (!known_error_check(jsonResponse.error)) display_full_error(error_message);
         }
+    }).catch(error => {
+        display_full_error("Authentication servers are offline or not working. Try again later.")
     })
 }

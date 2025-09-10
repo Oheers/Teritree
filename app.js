@@ -46,6 +46,7 @@ app.post('/login', bodyParser.json(), (req, res) => {
     dbBackend.signin(body.username, body.password).then(r => {
         res.json({
             auth: r.auth,
+            error: r.error,
             token: r.token
         })
     })

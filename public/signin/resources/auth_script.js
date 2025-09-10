@@ -12,17 +12,7 @@ document.getElementById('close-error').addEventListener('click', function(){
     document.getElementById('popup').hidden = true;
 })
 
-document.getElementById('show_password_check').addEventListener('click', function(){
-    if (document.getElementById('show_password_check').checked) {
-        document.getElementById("password").type="text";
-        document.getElementById("password2").type="text";
-    } else {
-        document.getElementById("password").type="password";
-        document.getElementById("password2").type="password";
-    }
-})
-
-document.getElementById('toggle_sign_in_up').addEventListener('click', function(){
+document.getElementById('welcome-toggle-button').addEventListener('click', function(){
     toggle_welcome_screen();
     clear_login_errors("username-error", "password_error");
 })
@@ -52,8 +42,6 @@ async function play_as_guest() {
         if (jsonResponse.auth) {
             setCookie("authToken", jsonResponse.token, 1);
             window.location.href = `/play?id=${jsonResponse.token}`;
-        } else {
-            console.log("nuh uh", jsonResponse);
         }
     })
 }
@@ -150,7 +138,6 @@ function validate_password_matching(password1, password2) {
  * @param message The message to be shown.
  */
 function display_login_error(error_id, message) {
-    console.log("running nbeast");
     document.getElementById(error_id).hidden = false;
     document.getElementById(error_id).innerHTML = message;
 }
@@ -197,10 +184,13 @@ function verify_input(input_id, validation_method, error_id) {
 function submit_request() {
     clear_login_errors("username-error", "password-error");
     verify_input("username", validate_username, "username-error");
-    const password_match_validation = validate_password_matching(document.getElementById("password").value, document.getElementById("password2").value);
-    if (!password_match_validation.pass) display_login_error("password-error", password_match_validation.error);
     verify_input("password", validate_password, "password-error");
-    if (sign_up) post_sign_up(document.getElementById("username").value, document.getElementById("password").value);
+    if (sign_up) {
+        const password_match_validation = validate_password_matching(document.getElementById("password").value, document.getElementById("password2").value);
+        if (!password_match_validation.pass) display_login_error("password-error", password_match_validation.error);
+        post_account_data(document.getElementById("username").value, document.getElementById("password").value, "signup", "Something went wrong whilst trying to create the account. Try again later.");
+    }
+    else post_account_data(document.getElementById("username").value, document.getElementById("password").value, "login", "Something went wrong whilst trying to login to the account. Try again later.");
 }
 
 /**
@@ -217,6 +207,8 @@ function known_error_check(error_id) {
     else if (error_id === "username_weird") display_login_error("username-error", "Username must be alphanumeric.");
     else if (error_id === "password_short") display_login_error("password-error", "Password is too short.");
     else if (error_id === "password_long") display_login_error("password-error", "Password is too long.");
+    else if (error_id === "password_incorrect") display_login_error("password-error", "Password incorrect.");
+    else if (error_id === "account_not_found") display_login_error("username-error", "Username does not exist.");
     else return false;
     return true;
 }
@@ -227,9 +219,12 @@ function known_error_check(error_id) {
  *
  * @param username The new username
  * @param password The new password
+ * @param endpoint The endpoint to send the data to, e.g. url.com/signin if endpoint is "signin"
+ * @param error_message The method will handle standard errors but if an unexpected one is shown, what should be
+ * displayed to the user?
  */
-async function post_sign_up(username, password) {
-    await fetch(`/signup`, {
+async function post_account_data(username, password, endpoint, error_message) {
+    await fetch(`/${endpoint}`, {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -250,7 +245,7 @@ async function post_sign_up(username, password) {
             setCookie("authToken", jsonResponse.token, 1);
             window.location.href = `/play?id=${jsonResponse.token}`;
         } else {
-            if (!known_error_check(jsonResponse.error)) display_full_error("Something went wrong whilst trying to create the account. Try again later.");
+            if (!known_error_check(jsonResponse.error)) display_full_error(error_message);
         }
     })
 }

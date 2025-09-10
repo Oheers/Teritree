@@ -241,12 +241,12 @@ async function signin(username, password) {
     return new Promise((resolve) => {
         dbManager.getAccount(username).then(r => {
             if (r[0][0] === undefined) {
-                resolve({auth: false});
+                resolve({auth: false, error: "account_not_found"});
             } else if (password !== r[0][0].password) {
-                resolve({auth: false});
+                resolve({auth: false, error: "password_incorrect"});
             } else {
                 // @todo add x and y to this return.
-                resolve({auth: true, token: r[0][0].token, x: r[0][0].x, y: r[0][0].y});
+                resolve({auth: true, error: undefined, token: r[0][0].token, x: r[0][0].x, y: r[0][0].y});
             }
         });
     })

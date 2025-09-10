@@ -168,13 +168,16 @@ function clear_login_errors(...error_id) {
  * @param input_id The id of the element the user inputs data into.
  * @param validation_method The method taking in a string to run validation checks against.
  * @param error_id The id of the element to display the error message to.
+ * @returns True if the input passes validation, false if not.
  */
 function verify_input(input_id, validation_method, error_id) {
     const input = document.getElementById(input_id).value;
     const validation_attempt = validation_method(input);
     if (!validation_attempt.pass) {
         display_login_error(error_id, validation_attempt.error);
+        return false;
     }
+    return true;
 }
 
 /**
@@ -183,11 +186,14 @@ function verify_input(input_id, validation_method, error_id) {
  */
 function submit_request() {
     clear_login_errors("username-error", "password-error");
-    verify_input("username", validate_username, "username-error");
-    verify_input("password", validate_password, "password-error");
+    if (!verify_input("username", validate_username, "username-error")) return;
+    if (!verify_input("password", validate_password, "password-error")) return;
     if (sign_up) {
         const password_match_validation = validate_password_matching(document.getElementById("password").value, document.getElementById("password2").value);
-        if (!password_match_validation.pass) display_login_error("password-error", password_match_validation.error);
+        if (!password_match_validation.pass) {
+            display_login_error("password-error", password_match_validation.error);
+            return;
+        }
         post_account_data(document.getElementById("username").value, document.getElementById("password").value, "signup", "Something went wrong whilst trying to create the account. Try again later.");
     }
     else post_account_data(document.getElementById("username").value, document.getElementById("password").value, "login", "Something went wrong whilst trying to login to the account. Try again later.");

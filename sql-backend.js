@@ -202,14 +202,36 @@ function verifyAuthUser(tokenID, socketID) {
     }
 }
 
+/**
+ * Completes serverside validation against the client's sign up request.
+ *
+ * @param username The username to be validated
+ * @param password The password to be validated
+ * @returns {{fail: boolean, error: string}} The authorization result, fail will be true if the validation fails, and
+ * error gives an error code of username_short, username_weird (not alphanumeric), username_long or password_short.
+ */
+function validate_username_password(username, password) {
+    if (username.length < 4) return {fail: true, error: "username_short"};
+    if (!/^[a-z0-9_]*$/gi.test(username)) return {fail: true, error: "username_weird"};
+    if (username.length > 16) return {fail: true, error: "username_long"};
+    if (password.length < 6) return {fail: true, error: "password_short"};
+    if (password.length > 16) return {fail: true, error: "password_long"};
+    return {fail: false, error: undefined};
+}
+
 async function createAccount(username, password, authToken) {
     return new Promise((resolve) => {
         dbManager.getAccount(username).then(r => {
             if (r[0][0] !== undefined) {
-                resolve(false);
+                resolve({auth: false, error: "username_taken"});
             } else {
+                const validation = validate_username_password(username, password);
+                if (validation.fail) {
+                    resolve({auth: false, error: validation.error});
+                    return;
+                }
                 dbManager.newAccount(username, password, authToken, 0, 0)
-                    .then(result => {  resolve(true); })
+                    .then(result => {  resolve({auth: true, error: undefined}); })
             }
         });
     })
@@ -219,12 +241,12 @@ async function signin(username, password) {
     return new Promise((resolve) => {
         dbManager.getAccount(username).then(r => {
             if (r[0][0] === undefined) {
-                resolve({auth: false});
+                resolve({auth: false, error: "account_not_found"});
             } else if (password !== r[0][0].password) {
-                resolve({auth: false});
+                resolve({auth: false, error: "password_incorrect"});
             } else {
                 // @todo add x and y to this return.
-                resolve({auth: true, token: r[0][0].token, x: r[0][0].x, y: r[0][0].y});
+                resolve({auth: true, error: undefined, token: r[0][0].token, x: r[0][0].x, y: r[0][0].y});
             }
         });
     })

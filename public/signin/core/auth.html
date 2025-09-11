@@ -8,31 +8,44 @@
     </head>
 
     <body class="bg-white">
-        <div class="h-[3vh] w-full bg-teritree-header-darkforest top-0 left-0 absolute"></div>
-        <div class="ml-3 mt-[4vh] w-1/2 md:w-1/3 text-Lato italic font-normal absolute">The website is in the process of being completely redesigned, to access the game currently, please press "Play as Guest".</div>
+        <div class="h-[3vh] w-full bg-teritree-header-darksnow top-0 left-0 absolute"></div>
         <div class="flex h-screen">
             <div class="m-auto">
-                <div class="text-[clamp(1rem,8vw,2rem)] font-Lato font-black text-teritree-text-forest text-center">Welcome to Teritree!</div>
-                <div class="text-[clamp(0.5rem,8vw,1rem)] font-Lato font-normal text-teritree-text-forest text-center">Create an account</div>
+                <div id="auth-header" class="text-[clamp(1rem,8vw,2rem)] font-Lato font-black text-teritree-text-forest text-center">Welcome to Teritree!</div>
+                <div id="auth-subtitle" class="text-[clamp(0.5rem,8vw,1rem)] font-Lato font-normal text-teritree-text-forest text-center">Create an account</div>
                 <form class="flex flex-col items-center mt-16" autocomplete="off">
-                    <input type="text" id="username" placeholder="Username" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text">
-                    <input type="password" id="password" placeholder="Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text my-2">
-                    <input type="password" id="password2" placeholder="Confirm Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text">
-                    <div class="flex mt-12 gap-4 flex-col sm:flex-row">
-                        <button class="grid justify-center w-[clamp(240px,20vw,20vw)] h-15 bg-gray-100 hover:bg-gray-200 hover:cursor-pointer pl-4 py-2">
+                    <div class="w-[clamp(240px,20vw,20vw)] font-Lato flex justify-between mb-2">
+                        <label class="font-bold items-center" for="username">Username</label>
+                        <span id="username-error" hidden class="text-red-500 text-right">Username already taken.</span>
+                    </div>
+                    <input type="text" id="username" placeholder="Create a Username" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text">
+                    <div class="w-[clamp(240px,20vw,20vw)] font-Lato flex justify-between mt-6 mb-2">
+                        <label class="font-bold" for="password">Password</label>
+                        <span id="password-error" hidden class="text-red-500 text-right">Passwords don't match.</span>
+                    </div>
+                    <input type="password" id="password" placeholder="Create a Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text mb-2">
+                    <input type="password" id="password2" placeholder="Confirm Password" class="w-[clamp(240px,20vw,20vw)] h-12 px-4 bg-gray-100 focus:outline-none hover:cursor-text mb-2">
+                    <label class="flex items-center space-x-4 cursor-pointer select-none w-[clamp(240px,20vw,20vw)]">
+                        <input type="checkbox" class="hidden peer" id="remember_me_check">
+                        <span class="relative w-8 h-8 border-4 border-gray-100 peer-checked:border-none peer-checked:bg-teritree-header-darksnow after:content-[''] after:absolute after:left-3 after:top-1.75 after:w-[8px] after:h-[16px] after:border-white after:border-r-[3px] after:border-b-[3px] after:rotate-45 after:opacity-0 peer-checked:after:opacity-100 rounded-none"></span>
+                        <span class="font-Lato font-normal">Remember Me</span>
+                    </label>
+                    <div class="flex mt-16 gap-4 flex-col sm:flex-row">
+                        <button type="button" class="grid justify-center w-[clamp(240px,20vw,20vw)] h-15 bg-gray-100 hover:bg-gray-200 hover:cursor-pointer pl-4 py-2" id="submit_form">
                             <span class="flex w-full h-full items-center">
-                                <span class="text-lg font-Lato font-bold text-center">Sign Up</span>
+                                <span id="sign-up-button-text" class="text-lg font-Lato font-bold text-center">Sign Up</span>
                             </span>
                         </button>
                         <button type="button" class="w-[clamp(240px,20vw,20vw)] h-15 bg-gray-100 hover:bg-gray-200 hover:cursor-pointer pl-4 py-2" id="play_guest">
                             <span class="flex w-full h-full items-center">
                                 <span class="w-[65%] text-lg font-Lato font-bold text-center">Play as Guest</span>
-                                <img src="/signin/resources/logo.png" alt="tree" class="w-auto h-5/6 ml-auto mr-[10%] bg-pixelated" />
+                                <img src="/signin/resources/pirate.png" alt="tree" class="w-auto h-5/6 ml-auto mr-[10%] bg-pixelated" />
                             </span>
                         </button>
                     </div>
-                    <div class="mt-6 font-Lato">
-                        Already have an account? <a href="#" class="text-green-600 hover:cursor-pointer">Sign in</a>
+                    <div class="mt-6 font-Lato" id="toggle_sign_in_up">
+                        <span id="welcome-toggle-prefix">Already have an account?</span>
+                        <span id="welcome-toggle-button" class="text-teritree-header-darksnow hover:cursor-pointer">Sign in</span>
                     </div>
                 </form>
             </div>
@@ -42,8 +55,14 @@
             <div class="fixed inset-0 flex h-screen z-20">
                 <div class="m-auto">
                     <div class="bg-white w-[50vw] h-[30vh]">
-                        <div class="w-full h-full m-auto font-Lato font-normal">
-                            Incorrect Password.
+                        <div class="w-full h-full p-8 m-auto font-Lato font-normal flex flex-col items-center">
+                            <span class="text-[clamp(1rem,8vw,2rem)] font-Lato font-black text-teritree-text-forest">Error!</span>
+                            <span id="error-message" class="mt-2">Something went wrong whilst trying to create the account. Try again later.</span>
+                            <button type="button" class="mt-auto grid justify-center w-[clamp(240px,20vw,20vw)] h-15 bg-gray-100 hover:bg-gray-200 hover:cursor-pointer pl-4 py-2" id="close-error">
+                                <span class="flex w-full h-full items-center">
+                                    <span class="text-lg font-Lato font-bold text-center">Close</span>
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
